@@ -23,6 +23,8 @@ import androidx.annotation.Nullable;
 
 /**
  * Simple activity that gathers and displays information from the GLES driver.
+ * Dumps version info and extension lists.
+ * - The "Save" button writes a copy of the output to the app's file area.
  */
 
 public class GlesInfoActivity extends Activity {

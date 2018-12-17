@@ -34,8 +34,16 @@ public class GrafikaActivity extends ListActivity {
             {
                 "{util} OpenGL ES info",
                     "Dumps info about graphics drivers",
-                    "GlesInfoActivity"
-            }
+                    "GlesInfoActivity"},
+            { "{util} Color bars",
+                    "Shows RGB color bars",
+                    "ColorBarActivity" },
+            { "Simple Canvas in TextureView",
+                    "Renders with Canvas as quickly as possible",
+                    "TextureViewCanvasActivity" },
+            { "Simple GL in TextureView",
+                    "Renders with GL as quickly as possible",
+                    "TextureViewGLActivity" },
     };
 
     @Override

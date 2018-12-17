@@ -3,4 +3,7 @@
 
     <!-- Grafika -->
     <string name="save">Save</string>
+    <string name="toggleReleaseCallbackOff">Toggle release (now: ST callback)</string>
+    <string name="toggleReleaseCallbackOn">Toggle release (now: renderer)</string>
+
 </resources>

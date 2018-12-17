@@ -1,6 +1,9 @@
 package com.android.mm;
 
 import android.content.Context;
+
+import com.android.mm.algorithms.structures.Bag;
+
 import androidx.test.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnit4;
 
@@ -22,5 +25,20 @@ public class ExampleInstrumentedTest {
         Context appContext = InstrumentationRegistry.getTargetContext();
 
         assertEquals("com.android.mm", appContext.getPackageName());
+    }
+
+    @Test
+    public void testBag() {
+        Bag<String> bag = new Bag<>();
+
+        bag.add("1");
+        bag.add("1");
+        bag.add("2");
+
+        // 可以加入重复值。
+        assertEquals(bag.size(), 3);
+        assertFalse(bag.contains(null));
+        assertTrue(bag.contains("1"));
+        assertFalse(bag.contains("3"));
     }
 }
