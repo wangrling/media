@@ -28,12 +28,24 @@ public class NdkActivity extends ListActivity {
             {
                 "Bitmap Plasma",
                     "Render a plasma (等离子体) effect in an Android."
-            }
+            },
+            {
+                "JNI Callback (难)",
+                    "C程序使用(*env)->结构，C++程序使用(env)->结构。" +
+                            "Demonstrate calling back to Java from C code."
+            },
+            {
+                "Native Audio",
+                    "Plays and records sounds with the C++ OpenSLES API using JNI."
+            },
+
     };
 
     private Class CLASSES[] = {
             GLES3JNIActivity.class,
-            PlasmaActivity.class
+            PlasmaActivity.class,
+            JNICallbackActivity.class,
+            NativeAudioActivity.class
     };
 
     @Override

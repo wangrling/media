@@ -18,7 +18,7 @@ import androidx.annotation.Nullable;
 public class MultiMediaActivity extends ListActivity {
 
     private static List<String> mDataSet = Arrays.asList(
-            "Grafika", "ExoPlayer", "Algorithms", "Music", "Ndk"
+            "Grafika", "ExoPlayer", "Algorithms", "Music", "Ndk", "Concurrency"
     );
 
     @Override

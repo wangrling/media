@@ -12,7 +12,9 @@ import androidx.annotation.Nullable;
 public class AlgorithmsActivity extends ListActivity {
 
     private static final List<String> algorithms = Arrays.asList(
-        "Bag: collection which does not allow removing elements (only collect and iterate)."
+            "Bag: collection which does not allow removing elements (only collect and iterate).",
+            "Stack: An element gets added to the top of the stack and only the element on the top may be removed."
+
     );
 
     @Override

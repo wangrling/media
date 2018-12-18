@@ -26,19 +26,4 @@ public class ExampleInstrumentedTest {
 
         assertEquals("com.android.mm", appContext.getPackageName());
     }
-
-    @Test
-    public void testBag() {
-        Bag<String> bag = new Bag<>();
-
-        bag.add("1");
-        bag.add("1");
-        bag.add("2");
-
-        // 可以加入重复值。
-        assertEquals(bag.size(), 3);
-        assertFalse(bag.contains(null));
-        assertTrue(bag.contains("1"));
-        assertFalse(bag.contains("3"));
-    }
 }
