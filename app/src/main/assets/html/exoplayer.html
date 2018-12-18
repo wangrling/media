@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+</head>
+
+<body>
+<div class="container-fluid">
+    <h3>Developer guide</h3>
+    <p>This guide touches on the pros and cons (利弊) of using ExoPlayer.
+        It shows how to use ExoPlayer to play DASH, SmoothStreaming and HLS adaptive streams,
+        as well as formats such as MP4, M4A, FMP4, WebM, MKV, MP3, Ogg, WAV, MPEG-TS,
+        MPEG-PS, FLV and ADTS(AAC). It also discusses ExoPlayer events, messages, customization
+        and DRM support.
+    </p>
+    <h4>Library overview</h4>
+    <p>An <code>ExoPlayer</code> exposes traditional high-level media player
+    functionality such as the ability to buffer media, play, pause and seek.</p>
+    <h4>Getting started</h4>
+    <ol>
+        <li>Create a <code>SimpleExoPlayer</code> instance.</li>
+        <code>SimpleExoPlayer player =
+            ExoPlayerFactory
+            .newSimpleInstance(context);</code>
+        <li>Attach the player to a view.</li>
+        <code>playerView.setPlayer(player);</code>
+        <li>Prepare the player with a <code>MediaSource</code> to play.</li>
+        <code>MediaSource videoSource =
+        new ExtractorMediaSource
+        .Factory(dataSourceFactory)
+        .createMediaSource(mp4VideoUri);
+        player.prepare(videoSource);</code>
+        <li>Controlling the player</li>
+        <code>PlayerView</code> or <code>PlayerControlView</code>
+        <code>player.addListener(eventListener);</code>
+        <li>Release the player when done.</li>
+        <code>ExoPlayer.release();</code>
+    </ol>
+    <h4>MediaSource</h4>
+    <ol>
+        <li>DashMediaSource</li>
+        <li>SsMediaSource</li>
+        <li>HlsMediaSource</li>
+        <li>ExtractorMediaSource</li>
+        <li>ConcatenatingMediaSource</li>
+        <li>ClippingMediaSource</li>
+        <li>LoopingMediaSource</li>
+        <li>MergingMediaSource</li>
+    </ol>
+    <h4>Sending messages to components</h4>
+    <h4>Customization</h4>
+    <ol>
+        <li>Renderer</li>
+        <li>TrackSelector</li>
+        <li>LoadControl</li>
+        <li>Extractor</li>
+        <li>MediaSource</li>
+        <li>DataSource</li>
+    </ol>
+    <h4>代码编写完成情况</h4>
+</div>
+</body>
+</html>

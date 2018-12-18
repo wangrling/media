@@ -1,5 +1,6 @@
 package com.android.mm.grafika.gles;
 
+import android.graphics.SurfaceTexture;
 import android.opengl.EGL14;
 import android.opengl.EGLConfig;
 import android.opengl.EGLContext;
@@ -7,6 +8,7 @@ import android.opengl.EGLDisplay;
 import android.opengl.EGLExt;
 import android.opengl.EGLSurface;
 import android.util.Log;
+import android.view.Surface;
 
 // 主要看EGL协议
 
@@ -16,6 +18,7 @@ import static android.opengl.EGLExt.EGL_RECORDABLE_ANDROID;
 /**
  * Core EGL state (display, context, config)
  * 包含EGLDisplay, EGLContext, EGLConfig核心元素。
+ * 不包含Surface画布。
  * <p>
  *     The EGLContext must only be attach to one thread at a time. This class is not thread-safe.
  * </p>
@@ -194,6 +197,25 @@ public class EglCore {
         return configs[0];
     }
 
+    public EGLSurface createWindowSurface(Object surface) {
+        if (!(surface instanceof Surface) && !(surface instanceof SurfaceTexture)) {
+            throw new RuntimeException("invalid surface: " + surface);
+        }
+
+        // Create a window surface, and attach it to the Surface we received.
+        int[] surfaceAttribs = {
+                EGL14.EGL_NONE
+        };
+        EGLSurface eglSurface = EGL14.eglCreateWindowSurface(mEGLDisplay, mEGLConfig, surface,
+                surfaceAttribs, 0);
+        checkEglError("eglCreateWindowSurface");
+        if (eglSurface == null) {
+            throw new RuntimeException("surface was null");
+        }
+
+        return eglSurface;
+    }
+
     /**
      * Creates an EGL surface associated with an offscreen buffer.
      * 1. Pbuffers are typically allocated in offscreen (non-visible) graphics memory
@@ -228,6 +250,15 @@ public class EglCore {
         if (!EGL14.eglMakeCurrent(mEGLDisplay, eglSurface, eglSurface, mEGLContext)) {
             throw new RuntimeException("eglMakeCurrent failed");
         }
+    }
+
+    /**
+     * Calls eglSwapBuffers.  Use this to "publish" the current frame.
+     *
+     * @return false on failure
+     */
+    public boolean swapBuffers(EGLSurface eglSurface) {
+        return EGL14.eglSwapBuffers(mEGLDisplay, eglSurface);
     }
 
     /**
@@ -266,8 +297,16 @@ public class EglCore {
         EGL14.eglDestroySurface(mEGLDisplay, eglSurface);
     }
 
+    // Performs a simple surface query.
+    public int querySurface(EGLSurface eglSurface, int what) {
+        int[] value = new int[1];
+        EGL14.eglQuerySurface(mEGLDisplay, eglSurface, what, value, 0);
+        return value[0];
+    }
+
     /**
      * Queries a string value.
+     * returns in value the value of attribute for surface.
      */
     public String queryString(int what) {
         return EGL14.eglQueryString(mEGLDisplay, what);

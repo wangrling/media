@@ -3,6 +3,8 @@
 
     <!-- Grafika -->
     <string name="save">Save</string>
+    <string name="play">Play</string>
+    <string name="stop">Stop</string>
     <string name="toggleReleaseCallbackOff">Toggle release (now: ST callback)</string>
     <string name="toggleReleaseCallbackOn">Toggle release (now: renderer)</string>
 

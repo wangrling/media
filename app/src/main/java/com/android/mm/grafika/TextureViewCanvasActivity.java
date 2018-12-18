@@ -145,7 +145,13 @@ public class TextureViewCanvasActivity extends Activity {
                     dirty = new Rect(0, mHeight * 3 / 8, mWidth, mHeight * 5 / 8);
                 }
                 // A rectangle that represents the dirty region that the caller wants to redraw.
-                Canvas canvas = surface.lockCanvas(dirty);
+                Canvas canvas;
+                try {
+                    canvas = surface.lockCanvas(dirty);
+                } catch (IllegalArgumentException e) {
+                    Log.e(TAG, "dequeueBuffer: BufferQueue has been abandoned");
+                    break;
+                }
                 if (canvas == null) {
                     Log.d(TAG, "lockCanvas() failed");
                     break;

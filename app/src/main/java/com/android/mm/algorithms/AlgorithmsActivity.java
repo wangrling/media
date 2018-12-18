@@ -1,6 +1,5 @@
 package com.android.mm.algorithms;
 
-import android.app.Activity;
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;

@@ -21,11 +21,16 @@
         <activity android:name=".grafika.ColorBarActivity" />
         <activity android:name=".grafika.TextureViewCanvasActivity" />
         <activity android:name=".grafika.TextureViewGLActivity" />
+        <activity android:name=".grafika.PlayMovieSurfaceActivity" />
 
         <activity android:name=".exoplayer.ExoPlayerActivity" />
 
 
         <activity android:name=".algorithms.AlgorithmsActivity" />
 
+        <activity android:name=".music.MusicActivity" />
+
+        <activity android:name=".ndk.NdkActivity" />
+        <activity android:name=".ndk.GLES3JNIActivity" />
     </application>
 </manifest>

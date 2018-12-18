@@ -1,14 +1,9 @@
 package com.android.mm;
 
-import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.GestureDetector;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import java.util.Arrays;
@@ -23,7 +18,7 @@ import androidx.annotation.Nullable;
 public class MultiMediaActivity extends ListActivity {
 
     private static List<String> mDataSet = Arrays.asList(
-            "Grafika", "ExoPlayer", "Algorithms"
+            "Grafika", "ExoPlayer", "Algorithms", "Music", "Ndk"
     );
 
     @Override
