@@ -32,5 +32,6 @@
 
         <activity android:name=".ndk.NdkActivity" />
         <activity android:name=".ndk.GLES3JNIActivity" />
+        <activity android:name=".ndk.PlasmaActivity" />
     </application>
 </manifest>

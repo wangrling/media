@@ -260,7 +260,3 @@ void Renderer::render() {
     draw(mNumInstances);
     checkGlError("Renderer::render");
 }
-
-
-
-

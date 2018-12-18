@@ -17,7 +17,8 @@ include_directories(${SAMPLES})
 add_library(androidndk SHARED
             ${SAMPLES}/GLES3JNI.cpp
             ${SAMPLES}/GLES3Renderer.cpp
+            ${SAMPLES}/Plasma.cpp
         )
 
 target_link_libraries(androidndk
-        ${OPENGL_LIB} android EGL log m)
+        ${OPENGL_LIB} jnigraphics android EGL log m )

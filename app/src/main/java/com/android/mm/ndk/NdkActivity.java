@@ -24,11 +24,16 @@ public class NdkActivity extends ListActivity {
             {
                 "GLES3JNI",
                     "Demonstrates how to use OpenGL ES 3.0 from JNI/native code."
+            },
+            {
+                "Bitmap Plasma",
+                    "Render a plasma (等离子体) effect in an Android."
             }
     };
 
     private Class CLASSES[] = {
-            GLES3JNIActivity.class
+            GLES3JNIActivity.class,
+            PlasmaActivity.class
     };
 
     @Override
