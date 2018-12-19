@@ -22,7 +22,7 @@ public class NdkActivity extends ListActivity {
 
     private static final String[][] TESTS = {
             {
-                "GLES3JNI",
+                "GL ES3 JNI",
                     "Demonstrates how to use OpenGL ES 3.0 from JNI/native code."
             },
             {
@@ -35,12 +35,44 @@ public class NdkActivity extends ListActivity {
                             "Demonstrate calling back to Java from C code."
             },
             {
-                "OpenSLES Audio",
+                "OpenSL ES Audio",
                     "Plays and records sounds with the C++ OpenSLES API using JNI."
             },
             {
                 "Native Codec",
                     "Uses the Native Media Codec API to play a video."
+            },
+            {
+                "OppenMAX AL",
+                    "Uses OpenMAX AL to play a video."
+            },
+            {
+                "Sensor Graph",
+                    "Read current accelerometer values and draw them using OpenGL."
+            },
+            {
+                "San Angeles",
+                    "Uses GLES C/API to render a procedural scene."
+            },
+            {
+                "Fast Audio Path",
+                    "Uses OpenSL ES to create a player and recorder in Android Fast Audio Path."
+            },
+            {
+                "Teapots",
+                    "Demonstrates multiple frame rate throttoling techniques."
+            },
+            {
+                "WebP",
+                    "Decoding 3 webp images and load them into on-screen buffer."
+            },
+            {
+                "Camera",
+                    "Preview camera images with AReadImage and take jpeg photos."
+            },
+            {
+                "Endless Tunnel",
+                    "Implement a game using Android native glue."
             }
 
     };

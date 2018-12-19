@@ -13,6 +13,7 @@
 #include <errno.h>
 #include <limits.h>
 
+
 #include <media/NdkMediaCodec.h>
 #include <media/NdkMediaExtractor.h>
 
@@ -26,6 +27,7 @@
 #include <android/native_window_jni.h>
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
+#include <time.h>
 #include "Looper.h"
 
 typedef struct {
@@ -39,25 +41,145 @@ typedef struct {
     bool sawOutputEOS;
     bool isPlaying;
     bool renderOnce;
-} WorkData;
+} WorkerData;
 
-WorkData data = {-1, NULL, NULL, NULL, 0, false, false, false, false};
+WorkerData data = {-1, NULL, NULL, NULL, 0, false, false, false, false};
 
 // 播放状态
 enum {
     kMsgCodecBuffer,
     kMsgPause,
     kMsgResume,
-    KMsgPauseAck,
-    KMsgDecodeDone,
-    KMsgSeek
+    kMsgPauseAck,
+    kMsgDecodeDone,
+    kMsgSeek
 };
 
 class MyLooper : public Looper {
     virtual void handle(int what, void* obj);
+
+    void doCodecWork(WorkerData *ptr);
 };
 
 static MyLooper* mLooper = NULL;
+
+void MyLooper::handle(int what, void *obj) {
+    switch (what) {
+        case kMsgCodecBuffer:
+            doCodecWork((WorkerData*)obj);
+            break;
+        case kMsgDecodeDone: {
+            WorkerData* d = (WorkerData*) obj;
+            AMediaCodec_stop(d->codec);
+            AMediaCodec_delete(d->codec);
+            AMediaExtractor_delete(d->ex);
+            d->sawInputEOS = true;
+            d->sawOutputEOS = true;
+            break;
+        }
+        case kMsgSeek: {
+            WorkerData* d = (WorkerData*) obj;
+            AMediaExtractor_seekTo(d->ex, 0, AMEDIAEXTRACTOR_SEEK_NEXT_SYNC);
+            AMediaCodec_flush(d->codec);
+            d->renderStart = -1;
+            d->sawInputEOS = false;
+            d->sawOutputEOS = false;
+            if (!d->isPlaying) {
+                d->renderOnce = true;
+                post(kMsgCodecBuffer, d);
+            }
+            LOGV("seeked");
+            break;
+        }
+        case kMsgPause: {
+            WorkerData* d = (WorkerData*) obj;
+            if (d->isPlaying) {
+                // flush all outstanding codecbuffer messages with a no-op message
+                d->isPlaying = false;
+                post(kMsgPauseAck, NULL, true);
+            }
+            break;
+        }
+        case kMsgResume: {
+            WorkerData* d = (WorkerData*) obj;
+            if (!d->isPlaying) {
+                d->renderStart = -1;
+                d->isPlaying = true;
+                post(kMsgCodecBuffer, d);
+            }
+        }
+        break;
+    }
+}
+
+int64_t systemNanoTime() {
+    timespec now;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+
+    return now.tv_sec * 1000000000LL + now.tv_nsec;
+}
+
+void MyLooper::doCodecWork(WorkerData *d) {
+    ssize_t bufIdx = -1;
+    if (!d->sawInputEOS) {
+        bufIdx = AMediaCodec_dequeueInputBuffer(d->codec, 2000);
+        LOGV("input buffer %zd", bufIdx);
+        if (bufIdx >= 0) {
+            size_t bufSize;
+            auto buf = AMediaCodec_getInputBuffer(d->codec, bufIdx, &bufSize);
+            // 将数据读到Buffer中。
+            auto sampleSize = AMediaExtractor_readSampleData(d->ex, buf, bufSize);
+            if (sampleSize < 0) {
+                sampleSize = 0;
+                d->sawInputEOS = true;
+                LOGV("EOS");
+            }
+            auto presentationTimeUs = AMediaExtractor_getSampleTime(d->ex);
+
+            AMediaCodec_queueInputBuffer(d->codec, bufIdx, 0, sampleSize, presentationTimeUs,
+            d->sawInputEOS ? AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM : 0);
+            AMediaExtractor_advance(d->ex);
+        }
+    }
+
+    if (!d->sawOutputEOS) {
+        AMediaCodecBufferInfo info;
+        auto status = AMediaCodec_dequeueOutputBuffer(d->codec, &info, 0);
+        if (status >= 0) {
+            if (info.flags & AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM) {
+                LOGV("output EOS");
+                d->sawOutputEOS = true;
+            }
+            int64_t presentationNano = info.presentationTimeUs * 1000;
+            if (d->renderStart < 0) {
+                d->renderStart = systemNanoTime() - presentationNano;
+            }
+            int64_t delay = (d->renderStart + presentationNano) - systemNanoTime();
+            if (delay > 0) {
+                usleep(delay / 1000);
+            }
+            AMediaCodec_releaseOutputBuffer(d->codec, status, info.size != 0);
+            if (d->renderOnce) {
+                d->renderOnce = false;
+                return ;
+            }
+        } else if (status == AMEDIACODEC_INFO_OUTPUT_BUFFERS_CHANGED) {
+            LOGV("output buffers changed");
+        } else if (status == AMEDIACODEC_INFO_OUTPUT_FORMAT_CHANGED) {
+            auto format = AMediaCodec_getOutputFormat(d->codec);
+            LOGV("format changed to: %s", AMediaFormat_toString(format));
+            AMediaFormat_delete(format);
+        } else if (status == AMEDIACODEC_INFO_TRY_AGAIN_LATER) {
+            LOGV("no output buffer right now");
+        } else {
+            LOGV("unexpected info code: %zd", status);
+        }
+    }
+    if (!d->sawInputEOS || !d->sawOutputEOS) {
+        // 继续解码
+        mLooper->post(kMsgCodecBuffer, d);
+    }
+}
 
 
 extern "C"
@@ -81,7 +203,7 @@ Java_com_android_mm_ndk_NativeCodecActivity_createStreamingMediaPlayer(JNIEnv *e
 
     data.fd = fd;
 
-    WorkData* d = &data;
+    WorkerData* d = &data;
 
     AMediaExtractor* ex = AMediaExtractor_new();
     // 解码器获取开始的位置和片源长度。
@@ -142,7 +264,14 @@ Java_com_android_mm_ndk_NativeCodecActivity_setPlayingStreamingMediaPlayer(JNIEn
                                                                            jboolean isPlaying) {
 
     // TODO
-
+    LOGV("play/pause: %d", isPlaying);
+    if (mLooper) {
+        if (isPlaying) {
+            mLooper->post(kMsgResume, &data);
+        } else {
+            mLooper->post(kMsgPause, &data);
+        }
+    }
 }
 
 extern "C"
@@ -173,5 +302,8 @@ JNIEXPORT void JNICALL
 Java_com_android_mm_ndk_NativeCodecActivity_rewindStreamingMediaPlayer(JNIEnv *env, jclass type) {
 
     // TODO
-
+    LOGV("rewind");
+    if (mLooper) {
+        mLooper->post(kMsgSeek, &data);
+    }
 }

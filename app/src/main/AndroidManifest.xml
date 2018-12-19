@@ -34,6 +34,7 @@
         <activity android:name=".grafika.TextureViewGLActivity" />
         <activity android:name=".grafika.PlayMovieSurfaceActivity" />
 
+
         <activity android:name=".exoplayer.ExoPlayerActivity" />
 
 
@@ -50,5 +51,7 @@
         <activity android:name=".ndk.NativeCodecActivity" />
 
         <activity android:name=".concurrency.ConcurrencyActivity" />
-    </application>
+
+        <activity android:name=".oboe.OboeActivity" />
+     </application>
 </manifest>
