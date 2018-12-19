@@ -8,4 +8,10 @@
     <string name="toggleReleaseCallbackOff">Toggle release (now: ST callback)</string>
     <string name="toggleReleaseCallbackOn">Toggle release (now: renderer)</string>
 
+    <!-- ndk -->
+    <string name="startPause">Start/Pause</string>
+    <string name="rewind">Rewind</string>
+    <string-array name="sourceVideo">
+        <item>avc_aac_480x360_24fps.mp4</item>
+    </string-array>
 </resources>

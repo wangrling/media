@@ -18,7 +18,12 @@ add_library(androidndk SHARED
             ${SAMPLES}/GLES3JNI.cpp
             ${SAMPLES}/GLES3Renderer.cpp
             ${SAMPLES}/Plasma.cpp
+            ${SAMPLES}/NativeCodec.cpp
+            ${SAMPLES}/Looper.cpp
         )
-
+# OpenSL ES OpenSLES
+# plasma    jnigraphics
+# OpenGL ES GLESv3
+# MediaCodec OpenMAXAL mediandk
 target_link_libraries(androidndk
-        ${OPENGL_LIB} jnigraphics android EGL log m )
+        ${OPENGL_LIB} jnigraphics mediandk OpenMAXAL android EGL log m )

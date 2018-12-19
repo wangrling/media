@@ -115,7 +115,7 @@ public class TextureViewCanvasActivity extends Activity {
         private void doAnimation() {
             final int BLOCK_WIDTH = 80;
             final int BLOCK_SPEED = 2;
-            int clearColor = 0;
+            int clearColor = 128;
             int xpos = -BLOCK_WIDTH / 2;
             int xdir = BLOCK_SPEED;
 
@@ -166,7 +166,7 @@ public class TextureViewCanvasActivity extends Activity {
                     // just be drawing into the area covered by it -- the system lets us draw
                     // whatever we want, then overwrites the areas outside the dirty rect with
                     // the previous contents.  So we've got a lot of overdraw here.
-                    canvas.drawRGB(clearColor, clearColor, clearColor);
+                    canvas.drawRGB(clearColor, clearColor/2, clearColor/4);
                     canvas.drawRect(xpos, mHeight / 4, xpos + BLOCK_WIDTH, mHeight * 3 / 4, paint);
                 } finally {
                     // Publish the frame.  If we overrun the consumer, frames will be dropped,

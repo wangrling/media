@@ -47,6 +47,7 @@
         <activity android:name=".ndk.PlasmaActivity" />
         <activity android:name=".ndk.JNICallbackActivity" />
         <activity android:name=".ndk.NativeAudioActivity" />
+        <activity android:name=".ndk.NativeCodecActivity" />
 
         <activity android:name=".concurrency.ConcurrencyActivity" />
     </application>

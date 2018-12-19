@@ -35,9 +35,13 @@ public class NdkActivity extends ListActivity {
                             "Demonstrate calling back to Java from C code."
             },
             {
-                "Native Audio",
+                "OpenSLES Audio",
                     "Plays and records sounds with the C++ OpenSLES API using JNI."
             },
+            {
+                "Native Codec",
+                    "Uses the Native Media Codec API to play a video."
+            }
 
     };
 
@@ -45,7 +49,8 @@ public class NdkActivity extends ListActivity {
             GLES3JNIActivity.class,
             PlasmaActivity.class,
             JNICallbackActivity.class,
-            NativeAudioActivity.class
+            NativeAudioActivity.class,
+            NativeCodecActivity.class
     };
 
     @Override

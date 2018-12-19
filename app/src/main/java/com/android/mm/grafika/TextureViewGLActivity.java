@@ -141,7 +141,7 @@ public class TextureViewGLActivity extends Activity {
         private void doAnimation(WindowSurface eglSurface) {
             final int BLOCK_WIDTH = 80;
             final int BLOCK_SPEED = 2;
-            float clearColor = 0.0f;
+            float clearColor = 1.0f;
             int xpos = -BLOCK_WIDTH / 2;
             int xdir = BLOCK_SPEED;
             int width = eglSurface.getWidth();
@@ -159,7 +159,7 @@ public class TextureViewGLActivity extends Activity {
                     }
 
                     // Still alive, render a frame.
-                    GLES30.glClearColor(clearColor, clearColor, clearColor, 1.0f);
+                    GLES30.glClearColor(clearColor, clearColor/2, clearColor/4, 1.0f);
                     GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT);
 
                     GLES30.glEnable(GLES30.GL_SCISSOR_TEST);
