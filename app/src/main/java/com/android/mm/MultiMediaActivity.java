@@ -19,7 +19,7 @@ public class MultiMediaActivity extends ListActivity {
 
     private static List<String> mDataSet = Arrays.asList(
             "Grafika", "ExoPlayer", "Algorithms", "Music", "Ndk", "Concurrency",
-            "Oboe", "Rtmp", "Amr", "MediaCts"
+            "Oboe", "Rtmp", "Amr", "MediaCts", "Arch", "Patterns"
     );
 
     @Override

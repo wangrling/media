@@ -14,7 +14,19 @@ import androidx.annotation.Nullable;
 public class MediaCtsActivity extends ListActivity {
 
     private static final String[] CTS_TESTS = {
-        "AudioTrack: "
+            "The AudioTrack class manages and plays a single audio resource for Java applications. " +
+                "It allows streaming of PCM audio buffers to the audio sink for playback. This is " +
+                "achieved by \"pushing\" the data to the AudioTrack object using one of the " +
+                "{@link #write(byte[], int, int)}, {@link #write(short[], int, int)}, " +
+                "and {@link #write(float[], int, int, int)} methods.",
+
+            "The SurfaceView provides a dedicated drawing surface embedded inside of a view hierarchy. " +
+                    "The Surface will be created for you while the SurfaceView's window is " +
+                    "visible; you should implement {@link SurfaceHolder.Callback#surfaceCreated} " +
+                    "and {@link SurfaceHolder.Callback#surfaceDestroyed} to discover when the " +
+                    "Surface is created and destroyed as the window is shown and hidden."
+
+
     };
 
     @Override

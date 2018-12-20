@@ -35,7 +35,8 @@
         <activity android:name=".grafika.PlayMovieSurfaceActivity" />
 
 
-        <activity android:name=".exoplayer.ExoPlayerActivity" />
+        <activity android:name=".exoplayer.ExoPlayerActivity"
+            android:parentActivityName=".MultiMediaActivity"/>
 
 
         <activity android:name=".algorithms.AlgorithmsActivity" />
@@ -56,5 +57,14 @@
 
         <activity android:name=".mediacts.MediaCtsActivity" />
         <activity android:name=".mediacts.SurfaceViewCtsActivity" />
+
+        <activity android:name=".arch.ArchActivity" />
+
+        <activity android:name=".arch.mvp.tasks.TasksActivity" />
+        <activity android:name=".arch.mvp.detail.TaskDetailActivity"
+            android:parentActivityName=".arch.mvp.tasks.TasksActivity"/>
+        <activity android:name=".arch.mvp.tasks.StatisticsActivity" />
+        <activity android:name=".arch.mvp.add.AddEditTaskActivity" />
+
      </application>
 </manifest>
