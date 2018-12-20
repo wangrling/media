@@ -53,5 +53,8 @@
         <activity android:name=".concurrency.ConcurrencyActivity" />
 
         <activity android:name=".oboe.OboeActivity" />
+
+        <activity android:name=".mediacts.MediaCtsActivity" />
+        <activity android:name=".mediacts.SurfaceViewCtsActivity" />
      </application>
 </manifest>
