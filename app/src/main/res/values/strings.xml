@@ -19,6 +19,8 @@
     <string name="statistics">Statistics</string>
     <string name="link">Link</string>
     <string name="info">Info</string>
+    <string name="java">Java</string>
+    <string name="cpp">Cpp</string>
     <string-array name="sourceVideo">
         <item>avc_aac_480x360_24fps.mp4</item>
     </string-array>

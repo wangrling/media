@@ -9,6 +9,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
+import com.android.mm.R;
 import com.android.mm.mediacts.util.PollingCheck;
 
 import org.hamcrest.Description;
@@ -45,7 +46,6 @@ public class SurfaceViewTest {
     private Context mContext;
     private SurfaceViewCtsActivity.MockSurfaceView mMockSurfaceView;
 
-    private int mSurfaceViewId;
     @Before
     public void setUp() throws Exception {
 
@@ -60,13 +60,7 @@ public class SurfaceViewTest {
         }.run();
 
         mMockSurfaceView = activity.getSurfaceView();
-    }
-
-    @UiThreadTest
-    public void testConstructor() {
-        new SurfaceView(mContext);
-        new SurfaceView(mContext, null);
-        new SurfaceView(mContext, null, 0);
+        mMockSurfaceView.setTag("mock");
     }
 
     @Test
@@ -107,11 +101,11 @@ public class SurfaceViewTest {
         assertTrue(actual instanceof SurfaceHolder);
     }
 
-    @UiThreadTest
     /**
      * Check point:
      * check surfaceView scroll X and y before and after scrollTo
      */
+    @Test
     public void testOnScrollChanged() {
         final int scrollToX = 200;
         final int scrollToY = 200;
@@ -128,38 +122,5 @@ public class SurfaceViewTest {
 
         assertEquals(scrollToX, mMockSurfaceView.getScrollX());
         assertEquals(scrollToY, mMockSurfaceView.getScrollY());
-    }
-
-    @Test
-    public void testOnDetachedFromWindow() {
-        final SurfaceViewCtsActivity.MockSurfaceView mockSurfaceView = mActivityRule.getActivity().getSurfaceView();
-        assertFalse(mockSurfaceView.isDetachedFromWindow());
-
-        assertTrue(mockSurfaceView.isShown());
-
-        onView().perform(new ViewAction() {
-            @Override
-            public Matcher<View> getConstraints() {
-                return null;
-            }
-
-            @Override
-            public String getDescription() {
-                return null;
-            }
-
-            @Override
-            public void perform(UiController uiController, View view) {
-                pressBack();
-            }
-        });
-
-        new PollingCheck() {
-            @Override
-            protected boolean check() {
-                return mockSurfaceView.isDetachedFromWindow() &&
-                        !mockSurfaceView.isShown();
-            }
-        }.run();
     }
 }

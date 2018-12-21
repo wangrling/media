@@ -11,6 +11,8 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.android.mm.R;
+
 import androidx.annotation.Nullable;
 
 public class SurfaceViewCtsActivity extends Activity {
@@ -20,7 +22,8 @@ public class SurfaceViewCtsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // New a MockSurfaceView
-        mSurfaceView = new MockSurfaceView(this);
+        mSurfaceView = new MockSurfaceView(getApplicationContext());
+
         setContentView(mSurfaceView);
     }
 

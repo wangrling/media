@@ -29,8 +29,7 @@ public class ExoPlayerActivity extends AppCompatActivity {
         }
 
         getSupportFragmentManager().beginTransaction()
-            .replace(R.id.contentFrame, new WebViewFragment())
-                .addToBackStack(null)
+                .replace(R.id.contentFrame, new WebViewFragment())
                 .commit();
     }
 
@@ -40,6 +39,12 @@ public class ExoPlayerActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        super.onBackPressed();
     }
 
     /**
