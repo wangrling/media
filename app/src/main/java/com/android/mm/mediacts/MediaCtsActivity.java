@@ -2,6 +2,7 @@ package com.android.mm.mediacts;
 
 import android.app.Activity;
 import android.app.ListActivity;
+import android.media.MediaExtractor;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 
@@ -24,7 +25,19 @@ public class MediaCtsActivity extends ListActivity {
                     "The Surface will be created for you while the SurfaceView's window is " +
                     "visible; you should implement {@link SurfaceHolder.Callback#surfaceCreated} " +
                     "and {@link SurfaceHolder.Callback#surfaceDestroyed} to discover when the " +
-                    "Surface is created and destroyed as the window is shown and hidden."
+                    "Surface is created and destroyed as the window is shown and hidden.",
+
+            "A TextureView can be used to display a content stream. Unlike {@link SurfaceView}, " +
+                    "TextureView does not create a separate window but behaves as a regular View. " +
+                    "This key difference allows a TextureView to be moved, transformed, animated, etc." +
+                    "Using a TextureView is simple: all you need to do is get its {@link SurfaceTexture}.",
+
+            "MediaExtractor facilitates extraction of demuxed, typically encoded,  " +
+                    "media data from a data source.",
+
+            "MediaCodec class can be used to access low-level media codec, i.e. encoder/decoder components."
+
+
 
 
     };

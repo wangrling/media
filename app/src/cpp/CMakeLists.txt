@@ -27,3 +27,10 @@ add_library(androidndk SHARED
 # MediaCodec OpenMAXAL mediandk
 target_link_libraries(androidndk
         ${OPENGL_LIB} jnigraphics mediandk OpenMAXAL android EGL log m )
+
+# Concurrency 部分单独编译
+# add_subdirectory(concurrency)
+
+# sonic
+add_library(sonic SHARED sonic/SonicJni.cpp sonic/Sonic.cpp)
+target_link_libraries(sonic android log m)

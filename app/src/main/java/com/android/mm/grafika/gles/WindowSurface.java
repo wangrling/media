@@ -19,6 +19,21 @@ public class WindowSurface extends EglSurfaceBase {
 
 
     /**
+     * Associates an EGL surface with the native window surface.
+     * <p>
+     * Set releaseSurface to true if you want the Surface to be released when release() is
+     * called.  This is convenient, but can interfere with framework classes that expect to
+     * manage the Surface themselves (e.g. if you release a SurfaceView's Surface, the
+     * surfaceDestroyed() callback won't fire).
+     */
+    public WindowSurface(EglCore eglCore, Surface surface, boolean releaseSurface) {
+        super(eglCore);
+        createWindowSurface(surface);
+        mSurface = surface;
+        mReleaseSurface = releaseSurface;
+    }
+
+    /**
      * Associates an EGL surface with the SurfaceTexture.
      */
     public WindowSurface(EglCore eglCore, SurfaceTexture surfaceTexture) {

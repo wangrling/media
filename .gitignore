@@ -13,6 +13,9 @@ bin/
 gen/
 out/
 
+# Concurrency build files
+app/src/cpp/concurrency/build/
+
 # Gradle files
 .gradle/
 build/

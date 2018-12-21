@@ -51,12 +51,14 @@
         <activity android:name=".ndk.NativeAudioActivity" />
         <activity android:name=".ndk.NativeCodecActivity" />
 
-        <activity android:name=".concurrency.ConcurrencyActivity" />
+        <activity android:name=".concurrency.ConcurrencyActivity"
+            android:parentActivityName=".MultiMediaActivity"/>
 
         <activity android:name=".oboe.OboeActivity" />
 
         <activity android:name=".mediacts.MediaCtsActivity" />
         <activity android:name=".mediacts.SurfaceViewCtsActivity" />
+        <activity android:name=".mediacts.TextureViewCtsActivity"/>
 
         <activity android:name=".arch.ArchActivity" />
 
@@ -67,6 +69,8 @@
         <activity android:name=".arch.mvp.add.AddEditTaskActivity" />
 
         <activity android:name=".patterns.PatternsActivity" />
+
+        <activity android:name=".sonic.SonicActivity" />
 
      </application>
 </manifest>

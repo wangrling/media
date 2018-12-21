@@ -78,6 +78,15 @@ public class EglSurfaceBase {
     }
 
     /**
+     * Sends teh presentation time stamp to EGL.
+     *
+     * @param nsecs Timestamp, in nanoseconds.
+     */
+    public void setPresentationTime(long nsecs) {
+        mEglCore.setPresentationTime(mEGLSurface, nsecs);
+    }
+
+    /**
      * Release the EGL surface.
      */
     public void releaseEglSurface() {

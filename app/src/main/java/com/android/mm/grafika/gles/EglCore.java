@@ -262,6 +262,13 @@ public class EglCore {
     }
 
     /**
+     * Sends the presentation time stamp to EGL.  Time is expressed in nanoseconds.
+     */
+    public void setPresentationTime(EGLSurface eglSurface, long nsecs) {
+        EGLExt.eglPresentationTimeANDROID(mEGLDisplay, eglSurface, nsecs);
+    }
+
+    /**
      * Discards all resources held by this class, notably the EGL context.  This must be
      * called from the thread where the context was created.
      *

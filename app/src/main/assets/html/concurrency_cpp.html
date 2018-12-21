@@ -8,7 +8,26 @@
 </head>
 <body>
 <div class="container-fluid">
+<h3>C++ Concurrency in Action</h3>
+    <h4>Hello, world of concurrency in C++!</h4>
+    <h4>Managing threads</h4>
+    <p>Thread are started by constructing a <code>std::thread</code> object that
+    specifies the task to run on that thread.</p>
+    <code>void doSomeWork();
+    std::thread mThread(doSomeWork);</code>
+    <p><code>std::thread</code> works with any <code>callable</code> types.</p>
+    <p><code>join()</code> is simple and brute force - either you wait for a thread to finish or
+    you don't.</p>
 
+
+    <h4>Sharing data between threads</h4>
+    <h4>Synchronizing concurrent operations</h4>
+    <h4>The C++ memory model and operations on atomic types</h4>
+    <h4>Designing lock-based concurrent data structures</h4>
+    <h4>Designing lock-free concurrent data structures</h4>
+    <h4>Designing concurrent code</h4>
+    <h4>Advanced thread management</h4>
+    <h4>Testing and debugging multithreaded applications</h4>
 
 </div>
 </body>
