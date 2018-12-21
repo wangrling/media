@@ -2,6 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item android:id="@+id/cs"
+        android:title="@string/cs"
+        app:showAsAction="always" />
+
     <item android:id="@+id/java"
         app:showAsAction="always"
         android:title="@string/java" />

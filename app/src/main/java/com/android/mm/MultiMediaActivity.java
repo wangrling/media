@@ -20,10 +20,76 @@ import androidx.annotation.Nullable;
 
 public class MultiMediaActivity extends ListActivity {
 
+    // 半年计划，不再增加新主题。
     private static List<String> mDataSet = Arrays.asList(
-            "Grafika", "ExoPlayer", "Algorithms", "Music", "Ndk", "Concurrency",
-            "Oboe", "Rtmp", "Amr", "MediaCts", "Arch", "Patterns", "Camera",
-            "Filament", "Codec", "Sonic", "WebRtc"
+            // 主要是多媒体的介绍。
+            "Grafika",
+            // 多媒体框架。
+            "ExoPlayer",
+            // 算法知识积累。
+            "Algorithms",
+            // 高通本地播放器。
+            "Music",
+            // 谷歌android-ndk示例。
+            "Ndk",
+            // 并发相关知识和计算机基础。
+            "Concurrency",
+            // 低延迟音频库。
+            "Oboe",
+            // 网络流协议。
+            "Rtmp",
+            // 音频协议。
+            "Amr",
+            // 源码多媒体测试集。
+            "MediaCts",
+            // 编程框架。
+            "Arch",
+            // 常用的设计模式。
+            "Patterns",
+            // 系统相机。
+            "Camera",
+            // 实时渲染库。
+            "Filament",
+            // 编解码库
+            "Codec",
+            // 音效处理。
+            "Sonic",
+            // 网页多媒体。
+            "WebRtc",
+            // 系统图片预览。
+            "Gallery",
+            // 系统闹钟程序。
+            "DeskClock",
+            // 系统计算器。
+            "Calculator",
+            // 系统录音程序。
+            "SoundRecorder",
+            // 系统多媒体管理。
+            "MediaProvider",
+            // 系统新功能库。
+            "Sunflower",
+            // 物理模拟库。
+            "Bullet",
+            // 多媒体底层库。
+            "FFmpeg",
+            // 图形加载和显示库。
+            "Fresco",
+            // 三维显示。
+            "OpenGL",
+            // 视频编辑器。
+            "VideoEditor",
+            // 材料设计。
+            "Plaid",
+            // 音视频播放器。
+            "VLC",
+            // HLS协议。
+            "HLS",
+            // OpenMAX协议。
+            "OpenMAX",
+            // Png和WebP图片编解码
+            "PP",
+            // H264协议。
+            "H264"
     );
 
     @Override

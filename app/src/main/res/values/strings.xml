@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">mm</string>
+    <string name="app_name">MM</string>
 
     <!-- Grafika -->
     <string name="save">Save</string>
@@ -21,9 +21,42 @@
     <string name="info">Info</string>
     <string name="java">Java</string>
     <string name="cpp">Cpp</string>
+    <string name="cs">Cs</string>
     <string name="speed">Speed</string>
     <string name="pitch">Pitch</string>
     <string name="rate">Rate</string>
+
+    <!-- webrtc -->
+    <string name="pref_video_call_key">videocall</string>
+    <string name="pref_resolution_key">resolution</string>
+    <string name="pref_fps_key">fps</string>
+    <string name="pref_capture_quality_slider_key">capturequalityslider</string>
+    <string name="pref_start_video_bitrate_key">startvideobitrate</string>
+    <string name="pref_start_video_bitrate_value_key">startvideobitratevalue</string>
+    <string name="pref_video_codec_key">videocodec</string>
+    <string name="pref_hw_codec_key">hwcodec</string>
+    <string name="pref_capture_to_texture_key">capturetotexture</string>
+    <string name="pref_audio_settings_key">audiosettings</string>
+    <string name="pref_start_audio_bitrate_key">startaudiobitrate</string>
+    <string name="pref_start_audio_bitrate_value_key">startaudiobitratevalue</string>
+    <string name="pref_audio_codec_key">audiocodec</string>
+    <string name="pref_no_audio_processing_key">audioprocessing</string>
+    <string name="pref_aec_dump_key">aecdump</string>
+    <string name="pref_opensles_key">opensles</string>
+    <string name="pref_misc_settings_key">miscsettings</string>
+    <string name="pref_room_server_url_key">roomserverurl</string>
+    <string name="pref_display_hud_key">displayhud</string>
+    <string name="pref_tracing_key">tracing</string>
+    <string name="pref_room_key">room</string>
+    <string name="pref_room_list_key">roomlist</string>
+    <string name="roomDescription">
+        Please enter a room name. Room names are shared with everyone, so think
+        of something unique and send it to a friend.
+    </string>
+    <string name="roomNames">Room names:</string>
+    <string name="settings">Settings</string>
+
+
     <string-array name="sourceVideo">
         <item>avc_aac_480x360_24fps.mp4</item>
     </string-array>

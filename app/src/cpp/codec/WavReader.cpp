@@ -188,7 +188,7 @@ void *wavReadOpen(const char *filename) {
 }
 
 void wavReadClose(void *obj) {
-    struct wav_reader* wr = (struct wav_reader*) obj;
+    struct wavReader* wr = (struct wavReader*) obj;
     if (wr->wav != stdin)
         fclose(wr->wav);
     free(wr);

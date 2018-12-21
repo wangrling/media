@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory>
+        <CheckBoxPreference
+            android:key="@string/pref_video_call_key"
+            android:defaultValue="true" />
+
+        <ListPreference
+            android:key="@string/pref_resolution_key"
+            />
+
+        <ListPreference
+            android:key="@string/pref_fps_key"
+            />
+
+        <CheckBoxPreference
+            android:key="@string/pref_capture_quality_slider_key"
+            />
+
+        <ListPreference
+            android:key="@string/pref_start_video_bitrate_key"
+            />
+
+        <EditTextPreference
+            android:key="@string/pref_start_video_bitrate_value_key"
+            />
+
+        <ListPreference
+            android:key="@string/pref_video_codec_key" />
+
+        <CheckBoxPreference
+            android:key="@string/pref_hw_codec_key"
+            />
+
+        <CheckBoxPreference
+            android:key="@string/pref_capture_to_texture_key"
+            />
+    </PreferenceCategory>
+
+
+    <PreferenceCategory
+        android:key="@string/pref_audio_settings_key"
+        >
+        <ListPreference
+            android:key="@string/pref_start_audio_bitrate_key"
+            />
+
+        <EditTextPreference
+            android:key="@string/pref_start_audio_bitrate_value_key"
+            />
+
+        <ListPreference
+            android:key="@string/pref_audio_codec_key"
+            />
+
+        <CheckBoxPreference
+            android:key="@string/pref_no_audio_processing_key"
+            />
+
+        <CheckBoxPreference
+            android:key="@string/pref_aec_dump_key"
+            />
+
+        <CheckBoxPreference
+            android:key="@string/pref_opensles_key"
+            />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="@string/pref_misc_settings_key"
+        >
+
+        <EditTextPreference
+            android:key="@string/pref_room_server_url_key"
+            />
+
+        <CheckBoxPreference
+            android:key="@string/pref_display_hud_key"
+            />
+
+        <CheckBoxPreference
+            android:key="@string/pref_tracing_key"
+            />
+    </PreferenceCategory>
+</PreferenceScreen>

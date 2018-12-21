@@ -1,4 +1,9 @@
-网络资源
+存放媒体资源，媒体信息的位置。
+
+
+
+endian的问题参考Computer Systems: A Programmer's Perspective
+修改wav_header.h文件，使它不依赖WEBRTC_ARCH_LITTLE_ENDIAN定义。
 
 wav格式协议
 http://soundfile.sapp.org/doc/WaveFormat/

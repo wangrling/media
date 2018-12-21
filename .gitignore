@@ -16,6 +16,9 @@ out/
 # Concurrency build files
 app/src/cpp/concurrency/build/
 
+# Webrtc build file
+app/src/cpp/webrtc/build/
+
 # Gradle files
 .gradle/
 build/
