@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_marginStart="@dimen/margin_small"
+    android:layout_marginTop="@dimen/margin_small"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:text="@string/sink_select"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/margin_medium"
+        android:layout_height="wrap_content" />
+
+    <Spinner
+        android:minHeight="32dp"
+        android:layout_marginTop="@dimen/margin_medium"
+        android:layout_marginBottom="@dimen/margin_medium"
+        android:id="@+id/sinkSpinner"
+        android:layout_marginStart="@dimen/margin_extra_large"
+        android:layout_marginEnd="@dimen/margin_extra_large"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/startJava"
+            android:src="@drawable/ic_play"
+            style="@style/MediaControlImageButton"
+             />
+        <ImageView
+            android:id="@+id/startNative"
+            android:src="@drawable/ic_play"
+            style="@style/MediaControlImageButton"
+            />
+        <include layout="@layout/image_button_stop"
+            android:id="@+id/finish"/>
+
+        <include layout="@layout/image_button_fast_rewind"
+            android:id="@+id/rewindJava"
+            />
+        <include layout="@layout/image_button_fast_rewind"
+            android:id="@+id/rewindNative" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_marginTop="@dimen/margin_large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingEnd="2dp"
+            android:paddingStart="2dp"
+            android:text="S"
+            />
+        <SurfaceView
+            android:id="@+id/surfaceView1"
+            android:layout_width="320px"
+            android:layout_height="240px"
+            />
+        <TextView
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="S"
+            />
+        <SurfaceView
+            android:id="@+id/surfaceView2"
+            android:layout_width="320px"
+            android:layout_height="240px"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_marginTop="@dimen/margin_extra_large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp"
+            android:text="T"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <com.android.mm.ndk.MyGLSurfaceView
+            android:id="@+id/glSurfaceView1"
+            android:layout_width="320px"
+            android:layout_height="240px" />
+
+        <TextView
+            android:text="T"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <com.android.mm.ndk.MyGLSurfaceView
+            android:id="@+id/glSurfaceView2"
+            android:layout_width="320px"
+            android:layout_height="240px" />
+    </LinearLayout>
+
+
+</LinearLayout>

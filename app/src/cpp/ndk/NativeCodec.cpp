@@ -279,7 +279,17 @@ JNIEXPORT void JNICALL
 Java_com_android_mm_ndk_NativeCodecActivity_shutdown(JNIEnv *env, jclass type) {
 
     // TODO
+    if (mLooper) {
+        mLooper->post(kMsgDecodeDone, &data, true /* flush */);
+        mLooper->quit();
+        delete mLooper;
+        mLooper = NULL;
+    }
 
+    if (data.window) {
+        ANativeWindow_release(data.window);
+        data.window = NULL;
+    }
 }
 
 extern "C"

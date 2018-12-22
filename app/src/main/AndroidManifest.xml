@@ -50,6 +50,9 @@
         <activity android:name=".ndk.JNICallbackActivity" />
         <activity android:name=".ndk.NativeAudioActivity" />
         <activity android:name=".ndk.NativeCodecActivity" />
+        <activity android:name=".ndk.OpenMaxActivity" />
+        <activity android:name=".ndk.FastAudioActivity" />
+        <activity android:name=".ndk.TeapotActivity" />
 
         <activity android:name=".concurrency.ConcurrencyActivity"
             android:parentActivityName=".MultiMediaActivity"/>

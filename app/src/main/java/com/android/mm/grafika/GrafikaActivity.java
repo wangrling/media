@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
+import com.android.mm.R;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,16 +35,17 @@ public class GrafikaActivity extends ListActivity {
     private static final String[][] TESTS = {
             {
                 "{util} OpenGL ES info",
-                    "Dumps info about graphics drivers",
+                    "Dumps info about graphics drivers, create a 1x1 pbuffer.",
                     "GlesInfoActivity"},
             { "{util} Color bars",
-                    "Shows RGB color bars",
+                    "Shows RGB color bars, implements SurfaceHolder.Callback interface.",
                     "ColorBarActivity" },
             { "Simple Canvas in TextureView",
-                    "Renders with Canvas as quickly as possible",
+                    "Renders with Canvas as quickly as possible, set a dirty rect.",
                     "TextureViewCanvasActivity" },
             { "Simple GL in TextureView",
-                    "Renders with GL as quickly as possible",
+                    "Renders with GLES in " +
+                            "a `TextureView`, rather than a `GLSurfaceView`.",
                     "TextureViewGLActivity" },
     };
 
@@ -51,7 +54,7 @@ public class GrafikaActivity extends ListActivity {
         super.onCreate(savedInstanceState);
 
         setListAdapter(new SimpleAdapter(this, createActivityList(),
-                android.R.layout.two_line_list_item, new String[] {TITLE, DESCRIPTION},
+                R.layout.wrapper_two_line_list_item, new String[] {TITLE, DESCRIPTION},
                 new int[] {android.R.id.text1, android.R.id.text2}));
     }
 

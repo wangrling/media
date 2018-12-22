@@ -38,8 +38,8 @@ public class TextureViewCanvasActivity extends Activity {
         mRenderer = new Renderer();
         mRenderer.start();
 
-        setContentView(R.layout.activity_texture_view_canvas);
-        mTextureView = (TextureView) findViewById(R.id.canvasTextureView);
+        mTextureView = new TextureView(this);
+        setContentView(mTextureView);
         mTextureView.setSurfaceTextureListener(mRenderer);
     }
 
@@ -116,7 +116,7 @@ public class TextureViewCanvasActivity extends Activity {
             final int BLOCK_WIDTH = 80;
             final int BLOCK_SPEED = 2;
             int clearColor = 128;
-            int xpos = -BLOCK_WIDTH / 2;
+            int xpos = BLOCK_WIDTH;
             int xdir = BLOCK_SPEED;
 
             // Create a Surface for the SurfaceTexture.
@@ -135,15 +135,11 @@ public class TextureViewCanvasActivity extends Activity {
             paint.setColor(Color.RED);
             paint.setStyle(Paint.Style.FILL);
 
-            boolean partial = false;
             while (true) {
-                Rect dirty = null;
-                if (partial) {
-                    // Set a dirty rect to confirm that the feature is working.  It's
-                    // possible for lockCanvas() to expand the dirty rect if for some
-                    // reason the system doesn't have access to the previous buffer.
-                    dirty = new Rect(0, mHeight * 3 / 8, mWidth, mHeight * 5 / 8);
-                }
+                // Set a dirty rect to confirm that the feature is working.  It's
+                // possible for lockCanvas() to expand the dirty rect if for some
+                // reason the system doesn't have access to the previous buffer.
+                Rect dirty = new Rect(0, mHeight * 3 / 8, mWidth, mHeight * 5 / 8);
                 // A rectangle that represents the dirty region that the caller wants to redraw.
                 Canvas canvas;
                 try {
@@ -182,11 +178,6 @@ public class TextureViewCanvasActivity extends Activity {
                     }
                 }
                 // Advance state
-                clearColor += 4;
-                if (clearColor > 255) {
-                    clearColor = 0;
-                    partial = !partial;
-                }
                 xpos += xdir;
 
                 if (xpos <= -BLOCK_WIDTH / 2 || xpos >= mWidth - BLOCK_WIDTH / 2) {

@@ -11,6 +11,10 @@ import androidx.annotation.Nullable;
 
 public class JNICallbackActivity extends Activity {
 
+    static {
+        System.loadLibrary("androidndk");
+    }
+
     int hour = 0;
     int minute = 0;
     int second = 0;
@@ -33,9 +37,9 @@ public class JNICallbackActivity extends Activity {
         startTicks();
     }
 
-    private void startTicks() {
-
-    }
+    // 三件事情，java层调用c层start, stop函数，c层调用java层updateTimer函数。
+    public native void startTicks();
+    public native void stopTicks();
 
     @Override
     protected void onPause() {
@@ -44,11 +48,8 @@ public class JNICallbackActivity extends Activity {
         stopTicks();
     }
 
-    private void stopTicks() {
-
-    }
-
     // A function calling from JNI to update current timer.
+    // 调用Java层的接口函数。
     @Keep
     private void updateTimer() {
         ++second;

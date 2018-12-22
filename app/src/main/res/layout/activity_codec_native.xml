@@ -5,27 +5,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
-        <Spinner
-            android:id="@+id/sourceSpinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
     <LinearLayout
-        android:layout_gravity="center"
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <include
             android:id="@+id/startNative"
-            android:text="@string/startPause"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <Button
+            layout="@layout/image_button_play" />
+
+        <include
             android:id="@+id/rewindNative"
-            android:text="@string/rewind"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            layout="@layout/image_button_fast_rewind" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -55,7 +48,7 @@
             android:padding="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-        <com.android.mm.ndk.CodecGLSurfaceView
+        <com.android.mm.ndk.MyGLSurfaceView
             android:id="@+id/glSurfaceView"
             android:layout_width="640px"
             android:layout_height="480px" />

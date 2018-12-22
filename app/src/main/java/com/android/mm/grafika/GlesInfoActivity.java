@@ -31,39 +31,16 @@ public class GlesInfoActivity extends Activity {
     private static final String TAG = GrafikaActivity.TAG;
 
     private String mGlInfo;
-    private File mOutputFile;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_gles_info);
-
-        mOutputFile = new File(getFilesDir(), "gles-info.txt");
-        TextView tv = findViewById(R.id.glesInfoFileText);
-        tv.setText(mOutputFile.toString());
+        TextView tv = findViewById(R.id.glesInfoText);
 
         mGlInfo = gatherGlInfo();
-
-        tv = findViewById(R.id.glesInfoText);
         tv.setText(mGlInfo);
-    }
-
-
-    /**
-     * onClick handler for "save" button.
-     */
-    public void clickSave(View view) {
-        try {
-            FileWriter writer = new FileWriter(mOutputFile);
-            writer.write(mGlInfo);
-            writer.close();
-            Log.d(TAG, "Output written to '" + mOutputFile + "'");
-            Toast.makeText(this, R.string.save, Toast.LENGTH_SHORT).show();
-        } catch (IOException ioe) {
-            Log.e(TAG, "Failed writing file", ioe);
-            // TODO: notify the user, not just logcat
-        }
     }
 
     /**

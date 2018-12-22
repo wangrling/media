@@ -102,11 +102,6 @@ public class ColorBarActivity extends Activity implements SurfaceHolder.Callback
                 canvas.drawRect(sliceWidth * i, 0, sliceWidth * (i+1), height, rectPaint);
             }
 
-            rectPaint.setColor(0x80808080);     // ARGB 50/50 grey (non-premul)
-            float sliceHeight = height / 8;
-            int posn = 0;
-            canvas.drawRect(0, sliceHeight * posn, width, sliceHeight * (posn+1), rectPaint);
-
             // Draw the labels last so they're on top of everything.
             for (int i = 0; i < 8; i++) {
                 drawOutlineText(canvas, textPaint, COLOR_NAMES[i],

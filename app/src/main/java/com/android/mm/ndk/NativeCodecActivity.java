@@ -8,14 +8,8 @@ import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.Spinner;
 
 import com.android.mm.R;
 
@@ -29,19 +23,25 @@ public class NativeCodecActivity extends Activity {
 
     static final String TAG = "NativeCodec";
 
-    String mSourceString = null;
+    String mSourceString = "mpeg_4_avc_aac_24fps.mp4";
 
     SurfaceView mSurfaceView;
     SurfaceHolder mSurfaceHolder;
+    // SurfaceHolder的包裹类。
+    VideoSink mSurfaceHolderVideoSink;
 
-    private CodecGLSurfaceView mGLSurfaceView;
+    GLViewVideoSink mGLViewVideoSink;
+    MyGLSurfaceView mGLView;
+
+
+    // 最终的目的是VideoSink，也是就是画布。
+    VideoSink mSelectedVideoSink;
+    // 本地正在使用的画布
+    VideoSink mNativeCodecPlayerVideoSink;
 
     private RadioButton mSurfaceViewRadio;
     private RadioButton mGLSurfaceViewRadio;
 
-    VideoSink mSelectedVideoSink;
-    VideoSink mSurfaceHolderVideoSink;
-    VideoSink mGLViewVideoSink;
 
     // 视频源是否已经创建
     boolean mCreated = false;
@@ -54,7 +54,7 @@ public class NativeCodecActivity extends Activity {
 
         setContentView(R.layout.activity_codec_native);
 
-        mGLSurfaceView = findViewById(R.id.glSurfaceView);
+        mGLView = findViewById(R.id.glSurfaceView);
 
         // set up the Surface video sink
         mSurfaceView = findViewById(R.id.surfaceView);
@@ -63,8 +63,10 @@ public class NativeCodecActivity extends Activity {
         mSurfaceHolder.addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
-                Log.v(TAG, "SurfaceView surfaceCreated");
-                setSurface(holder.getSurface());
+                Log.v(TAG, "surfaceCreated");
+                if (mSurfaceViewRadio.isChecked()) {
+                    setSurface(holder.getSurface());
+                }
             }
 
             @Override
@@ -79,38 +81,18 @@ public class NativeCodecActivity extends Activity {
             }
         });
 
-        // initialize content source spinner
-        Spinner sourceSpinner = (Spinner) findViewById(R.id.sourceSpinner);
-        ArrayAdapter<CharSequence> sourceAdapter = ArrayAdapter.createFromResource(
-                this, R.array.sourceVideo, android.R.layout.simple_spinner_item);
-        sourceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sourceSpinner.setAdapter(sourceAdapter);
-        sourceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                mSourceString = parent.getItemAtPosition(pos).toString();
-                Log.v(TAG, "onItemSelected " + mSourceString);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView parent) {
-                Log.v(TAG, "onNothingSelected");
-                mSourceString = null;
-            }
-        });
-
         mSurfaceViewRadio = findViewById(R.id.radioSurfaceView);
         mGLSurfaceViewRadio = findViewById(R.id.radioGLSurfaceView);
 
-        CompoundButton.OnCheckedChangeListener checkListener = new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        CompoundButton.OnCheckedChangeListener checkListener = (buttonView, isChecked) -> {
+
                 if (buttonView == mSurfaceViewRadio && isChecked) {
                     mGLSurfaceViewRadio.setChecked(false);
+                    Log.d(TAG, "surface view toggle");
                 }
                 if (buttonView == mGLSurfaceViewRadio && isChecked) {
                     mSurfaceViewRadio.setChecked(false);
+                    Log.d(TAG, "gl surface view toggle");
                 }
                 if (isChecked) {
                     if (mSurfaceViewRadio.isChecked()) {
@@ -118,39 +100,42 @@ public class NativeCodecActivity extends Activity {
                             mSurfaceHolderVideoSink = new SurfaceHolderVideoSink(mSurfaceHolder);
                         }
                         mSelectedVideoSink = mSurfaceHolderVideoSink;
-                        mGLSurfaceView.onPause();
+                        mGLView.onPause();
                         Log.d(TAG, "gl view pause");
                     } else {
-                        mGLSurfaceView.onResume();
+                        mGLView.onResume();
+                        Log.d(TAG, "gl view resume");
                         if (mGLViewVideoSink == null) {
-                            mGLViewVideoSink = new GLViewVideoSink(mGLSurfaceView);
+                            mGLViewVideoSink = new GLViewVideoSink(mGLView);
                         }
                         mSelectedVideoSink = mGLViewVideoSink;
                     }
                     switchSurface();
                 }
-            }
         };
         mSurfaceViewRadio.setOnCheckedChangeListener(checkListener);
         mGLSurfaceViewRadio.setOnCheckedChangeListener(checkListener);
         // 默认
         mGLSurfaceViewRadio.toggle();
+        // mSurfaceViewRadio.toggle();
 
         // The surfaces themselves are easier targets than the radio buttons.
         mSurfaceView.setOnClickListener((v)-> {
             mSurfaceViewRadio.toggle(); });
-        mGLSurfaceView.setOnClickListener((v) -> {
+        mGLView.setOnClickListener((v) -> {
             mGLSurfaceViewRadio.toggle(); });
 
+        // initialize button click handlers.
         // native MediaPlayer start/pause
-        ((Button) findViewById(R.id.startNative)).setOnClickListener((v) -> {
+        (findViewById(R.id.startNative)).setOnClickListener((v) -> {
             if (!mCreated) {
-                if (mGLViewVideoSink == null) {
+                if (mNativeCodecPlayerVideoSink == null) {
                     if(mSelectedVideoSink == null) {
+
                         return ;
                     }
                     mSelectedVideoSink.useAsSinkForNative();
-                    mGLViewVideoSink = mSelectedVideoSink;
+                    mNativeCodecPlayerVideoSink = mSelectedVideoSink;
                 }
                 if (mSourceString != null) {
                     mCreated = createStreamingMediaPlayer(getResources().getAssets(), mSourceString);
@@ -159,26 +144,28 @@ public class NativeCodecActivity extends Activity {
 
             if(mCreated) {
                 mIsPlaying = !mIsPlaying;
+
                 setPlayingStreamingMediaPlayer(mIsPlaying);
             }
         });
 
         // native MediaPlayer rewind.
-        ((Button) findViewById(R.id.rewindNative)).setOnClickListener((v) -> {
-            if (mGLViewVideoSink != null) {
+        (findViewById(R.id.rewindNative)).setOnClickListener((v) -> {
+            if (mNativeCodecPlayerVideoSink != null) {
                 rewindStreamingMediaPlayer();
             }
         });
     }
 
     void switchSurface() {
-        if (mCreated && mGLViewVideoSink != mSelectedVideoSink) {
+        Log.d(TAG, "media player is created " + mCreated);
+        if (mCreated && mNativeCodecPlayerVideoSink != mSelectedVideoSink) {
             // shutdown and recreate on other surface
             Log.i(TAG, "shutting down player");
             shutdown();
             mCreated = false;
             mSelectedVideoSink.useAsSinkForNative();
-            mGLViewVideoSink = mSelectedVideoSink;
+            mNativeCodecPlayerVideoSink = mSelectedVideoSink;
             if (mSourceString != null) {
                 Log.i(TAG, "recreating player");
                 mCreated = createStreamingMediaPlayer(getResources().getAssets(), mSourceString);
@@ -216,10 +203,10 @@ public class NativeCodecActivity extends Activity {
     }
 
     static class GLViewVideoSink extends VideoSink {
-        private final CodecGLSurfaceView codecGLSurfaceView;
+        private final MyGLSurfaceView mGLSurfaceView;
 
-        GLViewVideoSink(CodecGLSurfaceView glSurfaceView) {
-            codecGLSurfaceView = glSurfaceView;
+        GLViewVideoSink(MyGLSurfaceView glSurfaceView) {
+            mGLSurfaceView = glSurfaceView;
         }
         @Override
         void setFixedSize(int width, int height) {
@@ -228,7 +215,8 @@ public class NativeCodecActivity extends Activity {
 
         @Override
         void useAsSinkForNative() {
-            SurfaceTexture st =codecGLSurfaceView.getSurfaceTexture();
+            // 传递对应的TextureID值。
+            SurfaceTexture st = mGLSurfaceView.getSurfaceTexture();
             Surface s = new Surface(st);
             setSurface(s);
             s.release();

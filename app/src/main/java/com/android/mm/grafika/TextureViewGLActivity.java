@@ -18,16 +18,6 @@ import androidx.annotation.Nullable;
 public class TextureViewGLActivity extends Activity {
     private static final String TAG = GrafikaActivity.TAG;
 
-    // 允许在回调函数中释放SurfaceTexture实例。
-    // Experiment with allowing TextureView to release the SurfaceTexture from the callback vs.
-    // releasing it explicitly ourselves from the draw loop.  The latter seems to be problematic
-    // in 4.4 (KK) -- set the flag to "false", rotate the screen a few times, then check the
-    // output of "adb shell ps -t | grep `pid grafika`".
-    //
-    // Must be static or it'll get reset on every Activity pause/resume.
-    // 好像并没有什么作用。
-    private static volatile boolean sReleaseInCallback = true;
-
     private TextureView mTextureView;
     private Renderer mRenderer;
 
@@ -39,35 +29,20 @@ public class TextureViewGLActivity extends Activity {
         mRenderer = new Renderer();
         mRenderer.start();
 
-        setContentView(R.layout.activity_texture_view_gl);
-        mTextureView = (TextureView) findViewById(R.id.glTextureView);
+        mTextureView = new TextureView(this);
+        setContentView(mTextureView);
         mTextureView.setSurfaceTextureListener(mRenderer);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        updateControls();
     }
 
     @Override
     protected void onPause() {
         mRenderer.halt();
         super.onPause();
-    }
-
-    // Updates the UI elements to match current state.
-    private void updateControls() {
-        Button toggleRelease = findViewById(R.id.toggleReleaseButton);
-        int id = sReleaseInCallback ?
-                R.string.toggleReleaseCallbackOff : R.string.toggleReleaseCallbackOn;
-        toggleRelease.setText(id);
-    }
-
-    // onClick handler for toggleReleaseButton.
-    public void clickToggleRelease(View view) {
-        sReleaseInCallback = !sReleaseInCallback;
-        updateControls();
     }
 
     /**
@@ -120,10 +95,7 @@ public class TextureViewGLActivity extends Activity {
 
                 windowSurface.release();
                 mEglCore.release();
-                // 没有在回调中释放，那就在渲染中释放。
-                if (!sReleaseInCallback) {
-                    Log.i(TAG, "Releasing SurfaceTexture in renderer thread.");
-                }
+
             }
             Log.d(TAG, "Renderer thread exiting.");
         }
@@ -141,7 +113,7 @@ public class TextureViewGLActivity extends Activity {
         private void doAnimation(WindowSurface eglSurface) {
             final int BLOCK_WIDTH = 80;
             final int BLOCK_SPEED = 2;
-            float clearColor = 1.0f;
+            float clearColor = 0.5f;
             int xpos = -BLOCK_WIDTH / 2;
             int xdir = BLOCK_SPEED;
             int width = eglSurface.getWidth();
@@ -159,6 +131,7 @@ public class TextureViewGLActivity extends Activity {
                     }
 
                     // Still alive, render a frame.
+                    // GL进行绘制工作。
                     GLES30.glClearColor(clearColor, clearColor/2, clearColor/4, 1.0f);
                     GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT);
 
@@ -174,6 +147,8 @@ public class TextureViewGLActivity extends Activity {
                     GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT);
                     GLES30.glDisable(GLES30.GL_SCISSOR_TEST);
 
+                    // renderFrame();
+
                     // Publish the frame. If we overrun the consumer, frames will be dropped,
                     // so on a sufficiently fast device the animation will run at faster than
                     // the display refresh rate.
@@ -183,10 +158,6 @@ public class TextureViewGLActivity extends Activity {
                     eglSurface.swapBuffers();
 
                     // Advance state
-                    clearColor += 0.015625f;
-                    if (clearColor > 1.0f) {
-                        clearColor = 0.0f;
-                    }
 
                     xpos += xdir;
                     if (xpos <= -BLOCK_WIDTH / 2 || xpos >= width - BLOCK_WIDTH / 2) {
@@ -244,10 +215,7 @@ public class TextureViewGLActivity extends Activity {
             synchronized (mLock) {
                 mSurfaceTexture = null;
             }
-            if (sReleaseInCallback) {
-                Log.i(TAG, "Allowing TextureView to release SurfaceTexture");
-            }
-            return sReleaseInCallback;
+            return true;
         }
 
         @Override   // will be called on UI thread

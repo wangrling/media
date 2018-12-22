@@ -104,7 +104,7 @@ public class MultiMediaActivity extends ListActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        setListAdapter(new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, mDataSet));
+        setListAdapter(new ArrayAdapter<>(this, R.layout.wrapper_simple_expandable_list_item, mDataSet));
     }
 
     @Override
