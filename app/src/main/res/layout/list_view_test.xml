@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_margin="@dimen/margin_small"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/test"
+        android:text="@string/test"
+        android:textStyle="bold"
+        android:textAllCaps="true"
+        android:paddingStart="@dimen/margin_medium"
+        android:paddingEnd="@dimen/margin_medium"
+        style="@style/MediaControlImageButton"/>
+
+
+    <TextView
+        android:text="total"
+        android:id="@+id/total"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="@dimen/margin_medium"
+        android:textStyle="bold"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:layout_toEndOf="@+id/test"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:text="Success"
+        android:textStyle="bold"
+        android:id="@+id/success"
+        android:layout_marginStart="@dimen/margin_medium"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:layout_toEndOf="@+id/test"
+        android:layout_below="@+id/total"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <ImageView
+        android:id="@+id/check"
+        android:visibility="invisible"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_check"
+        style="@style/MediaControlImageButton"
+        />
+
+    <ImageView
+        android:id="@+id/fail"
+        android:visibility="invisible"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_wrong"
+        style="@style/MediaControlImageButton"
+        />
+
+    <ListView
+        android:id="@+id/list"
+        android:headerDividersEnabled="true"
+        android:layout_below="@+id/check"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+</RelativeLayout>

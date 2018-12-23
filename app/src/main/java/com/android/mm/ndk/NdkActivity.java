@@ -61,6 +61,10 @@ public class NdkActivity extends ListActivity {
                     "使用原生NativeActivity加载本地库文件。"
             },
             {
+                "GLM test",
+                    "GLM数学库测试程序。"
+            },
+            {
                 "Teapots",
                     "Demonstrates multiple frame rate throttoling techniques."
             },
@@ -84,6 +88,7 @@ public class NdkActivity extends ListActivity {
             OpenMaxActivity.class,
             FastAudioActivity.class,
             NativeActivity.class,
+            GlmTestActivity.class,
             TeapotActivity.class
 
     };

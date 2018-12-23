@@ -59,6 +59,7 @@
             <meta-data android:name="android.app.lib_name"
                 android:value="native" />
         </activity>
+        <activity android:name=".ndk.GlmTestActivity" />
         <activity android:name=".ndk.TeapotActivity">
             <meta-data android:name="android.app.lib_name"
                 android:value="teapot" />
@@ -86,6 +87,8 @@
         <activity android:name=".sonic.SonicActivity" />
 
         <activity android:name=".webrtc.WebRtcActivity" />
+
+        <activity android:name=".libgdx.LibGdxActivity" />
 
      </application>
 </manifest>

@@ -65,3 +65,7 @@ add_subdirectory(glm)
 
 # opengl-es-sdk-for-android
 include_directories(opengl)
+
+# 用于glm测试的库
+add_library(glmtest SHARED test/GlmTest.cpp)
+target_link_libraries(glmtest glm_shared android log m)
