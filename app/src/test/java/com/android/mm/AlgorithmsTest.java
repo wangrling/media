@@ -1,6 +1,7 @@
 package com.android.mm;
 
 import com.android.mm.algorithms.structures.Bag;
+import com.android.mm.algorithms.structures.CircularBuffer;
 import com.android.mm.algorithms.structures.stacks.ArrayStack;
 import com.android.mm.algorithms.structures.stacks.ListStack;
 
@@ -13,7 +14,7 @@ import static org.junit.Assert.*;
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
-public class ExampleUnitTest {
+public class AlgorithmsTest {
     @Test
     public void addition_isCorrect() {
         assertEquals(4, 2 + 2);
@@ -59,6 +60,27 @@ public class ExampleUnitTest {
         assertEquals(listStack.pop(), 9);
         assertEquals(listStack.peek(), 2);
         assertEquals(listStack.pop(), 2);
+    }
 
+    @Test
+    public void testCircularBuffer() throws InterruptedException {
+        int bufferSize = 1024;
+
+        // create circular buffer
+        CircularBuffer cb = new CircularBuffer(bufferSize);
+
+        // Create threads that read and write the buffer.
+        Thread writeThread = new Thread(new CircularBuffer.WriteWorker(cb));
+        Thread readThread = new Thread(new CircularBuffer.ReadWorker(cb));
+
+        readThread.start();
+        writeThread.start();
+
+        // wait some amount of time.
+        Thread.sleep(5000);
+
+        // interrupt threads and exit.
+        writeThread.interrupt();
+        readThread.interrupt();
     }
 }

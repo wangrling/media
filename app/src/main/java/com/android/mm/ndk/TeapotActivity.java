@@ -1,16 +1,22 @@
 package com.android.mm.ndk;
 
-import android.app.Activity;
-import android.os.Bundle;
+import android.app.NativeActivity;
 
-import androidx.annotation.Nullable;
+import android.view.Choreographer;
 
-public class TeapotActivity extends Activity {
+/**
+ * 可以继承NativeActivity，然后在Manifest中配置相关的库。
+ * 没有处理手机的输入事件，导致程序无响应。
+ */
+
+public class TeapotActivity extends NativeActivity implements
+        Choreographer.FrameCallback {
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-
+    public void doFrame(long frameTimeNanos) {
+        Choreographer.getInstance().postFrameCallback(this);
+        choreographerCallback(frameTimeNanos);
     }
+
+    protected native void choreographerCallback(long frameTimeNanos);
 }

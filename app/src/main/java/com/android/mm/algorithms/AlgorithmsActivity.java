@@ -13,7 +13,8 @@ public class AlgorithmsActivity extends ListActivity {
 
     private static final List<String> algorithms = Arrays.asList(
             "Bag: collection which does not allow removing elements (only collect and iterate).",
-            "Stack: An element gets added to the top of the stack and only the element on the top may be removed."
+            "Stack: An element gets added to the top of the stack and only the element on the top may be removed.",
+            "CircularBuffer: 环形缓冲区，记录读写位置和剩余数，读写两个线程同步工作。"
 
     );
 

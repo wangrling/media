@@ -1,7 +1,7 @@
 package com.android.mm.ndk;
 
-import android.app.Activity;
 import android.app.ListActivity;
+import android.app.NativeActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -49,12 +49,16 @@ public class NdkActivity extends ListActivity {
                     "Uses the Native Media Codec API to play a video."
             },
             {
-                "OppenMAX AL",
+                "OppenMAX AL (没有TS解码器)",
                     "Uses OpenMAX AL to play a video."
             },
             {
                 "Fast Audio Path",
                     "Uses OpenSL ES to create a player and recorder in Android Fast Audio Path."
+            },
+            {
+                "Native Activity",
+                    "使用原生NativeActivity加载本地库文件。"
             },
             {
                 "Teapots",
@@ -79,7 +83,9 @@ public class NdkActivity extends ListActivity {
             NativeCodecActivity.class,
             OpenMaxActivity.class,
             FastAudioActivity.class,
+            NativeActivity.class,
             TeapotActivity.class
+
     };
 
     @Override

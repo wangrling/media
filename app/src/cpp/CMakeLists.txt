@@ -25,6 +25,7 @@ add_library(androidndk SHARED
             ${SAMPLES}/OpenMaxMedia.cpp
             ${SAMPLES}/AndroidFopen.cpp
             ${SAMPLES}/faudio/FastAudioJNI.cpp
+            ${SAMPLES}/NativeActivity.cpp
         )
 # OpenSL ES OpenSLES
 # plasma    jnigraphics
@@ -43,3 +44,24 @@ target_link_libraries(sonic android log m)
 # decode/encode codec
 add_library(codec SHARED codec/WavReader.cpp)
 target_link_libraries(codec android log m)
+
+# native activity
+add_library(glue STATIC
+        ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
+
+# Export ANativeActivity_onCreate()
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate")
+add_library(native SHARED ${SAMPLES}/NativeActivity.cpp)
+include_directories(native PRIVATE
+        ${ANDROID_NDK}/sources/android/native_app_glue/)
+# add lib dependencies
+target_link_libraries(native android glue EGL  GLESv3 log)
+
+add_library(teapot SHARED ${SAMPLES}/TeapotActivity.cpp ${SAMPLES}/TeapotRenderer.cpp)
+target_link_libraries(teapot android glue EGL GLESv3 log)
+
+include_directories(glm)
+add_subdirectory(glm)
+
+# opengl-es-sdk-for-android
+include_directories(opengl)

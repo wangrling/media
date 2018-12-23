@@ -9,6 +9,7 @@ find_package(Threads)
 set(TESTS
         SimpleHello
         LaunchingThread WaitingThread RAIIIdiom
+        DaemonProcess
         )
 
 foreach(TEST ${TESTS})

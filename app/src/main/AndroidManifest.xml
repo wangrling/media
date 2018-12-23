@@ -52,7 +52,17 @@
         <activity android:name=".ndk.NativeCodecActivity" />
         <activity android:name=".ndk.OpenMaxActivity" />
         <activity android:name=".ndk.FastAudioActivity" />
-        <activity android:name=".ndk.TeapotActivity" />
+        <!-- Our activity is the built-in NativeActivity framework class.
+         This will take care of integrating with our NDK code. -->
+        <activity android:name="android.app.NativeActivity">
+            <!-- Tell NativeActivity the name of our .so -->
+            <meta-data android:name="android.app.lib_name"
+                android:value="native" />
+        </activity>
+        <activity android:name=".ndk.TeapotActivity">
+            <meta-data android:name="android.app.lib_name"
+                android:value="teapot" />
+        </activity>
 
         <activity android:name=".concurrency.ConcurrencyActivity"
             android:parentActivityName=".MultiMediaActivity"/>

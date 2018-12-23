@@ -49,7 +49,7 @@ int main() {
     func mFunc(someLocalState);
     std::thread t(mFunc);
 
-    // 线程卫士
+    // 线程卫士，g销毁时，先将t销毁。
     ThreadGuard g(t);
 
     doSomethingInCurrentThread();

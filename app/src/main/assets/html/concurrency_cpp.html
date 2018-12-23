@@ -18,7 +18,8 @@
     <p><code>std::thread</code> works with any <code>callable</code> types.</p>
     <p><code>join()</code> is simple and brute force - either you wait for a thread to finish or
     you don't.</p>
-
+    <p>Calling <code>detach()</code> on a <code>std::thread</code> object leaves teh thread to
+    run in the background, with no direct means of communicating with it.</p>
 
     <h4>Sharing data between threads</h4>
     <h4>Synchronizing concurrent operations</h4>
