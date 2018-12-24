@@ -16,6 +16,15 @@ out/
 # Concurrency build files
 app/src/cpp/concurrency/build/
 
+# FFmpeg build files
+app/src/cpp/ffmpeg/build/
+
+# FFmpeg resource files
+app/src/cpp/ffmpeg/res/
+
+# FFmpeg libs
+app/src/cpp/ffmpeg/libs/
+
 # Webrtc build file
 app/src/cpp/webrtc/build/
 
