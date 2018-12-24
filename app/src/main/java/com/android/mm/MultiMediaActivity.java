@@ -21,6 +21,7 @@ import androidx.annotation.Nullable;
 public class MultiMediaActivity extends ListActivity {
 
     // 半年计划，不再增加新主题。
+    // 每天目标，七千行代码。
     private static List<String> mDataSet = Arrays.asList(
             // 主要是多媒体的介绍。
             "Grafika",

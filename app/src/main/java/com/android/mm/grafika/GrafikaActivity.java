@@ -64,7 +64,7 @@ public class GrafikaActivity extends Activity {
             },
 
             {
-                
+
             }
     };
 

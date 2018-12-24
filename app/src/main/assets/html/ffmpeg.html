@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+</head>
+
+<body>
+<div class="container-fluid">
+    <h3>FFmpeg Documentation</h3>
+
+    <h4>libavformat</h4>
+    <p>I/O and Muxing/Demuxing Library</p>
+    <p>Libavformat (lavf) is a library for dealing with various media container formats.
+        Its main two purposes are demuxing - i.e. splitting a media file into component streams,
+        and the reverse process of muxing - writing supplied data in a specified container format.
+        It also has an I/O module which supports a number of protocols for accessing the data (e.g.
+        file, tcp, http and others). Before using lavf, you need to call <code>av_register_all()</code> to
+        register all compiled muxers, demuxers and protocols. Unless you are absolutely sure
+        you won't use libavformat's network capabilities, you should also
+        call <code>avformat_network_init()</code>.</p>
+    <p>通过<code>AVInputFormat</code>结构体描述它所支持的输入格式(容器)，通过<code>AVOutputFormat</code>
+    结构体描述支持的输出格式。可以通过<code>av_iformat_next()</code>和<code>av_oformat_next()</code>查看所有
+    的格式。用于输入输出的是<code>AVFormatContext</code>,展示被操作文件的所有信息，通过<code>avformat_alloc_context</code>
+    获取。</p>
+    <p><code>AVFormatContext</code>包含一个AVStreams数组，which describe all elementary streams stored
+    in the file.</p>
+    <p>可以直接传递urls网址，包括a scheme/protocol, a ':', and a scheme specific string.</p>
+
+    <h4>libavcodec</h4>
+    <p>Encoding/Decoding Library</p>
+    <p>对音视频流进行编解码操作。</p>
+    <p><code>AVCodec* avcodec_find_decoder_by_name(const char* name)</code> find a registered decoder
+    with the specified name.</p>
+    <p>其余更多的接口通过TESTS程序呈现。</p>
+
+    <h4>libavfilter</h4>
+    <p>int av_buffersink_get_frame_flags(AVFilterContext* ctx, AVFrame* frame, int flags)
+    Get a frame with filtered data from sink and put it in frame.</p>
+
+    <h4>libavdevice</h4>
+    <p>(可选)提供特殊平台的格式封装和解压。</p>
+    <p>Libavdevice is a complementary library to libavformat. It provides various "special"
+    platform muxers and demuxers.</p>
+
+    <h4>libavutil</h4>
+    <p>工具集合，提供Crypto and Hashing, Mathematics, String Manipulation, Memory Management,
+    Data Structures, Video related, Audio related, Error Codes, Logging Facility, Other.</p>
+
+    <h4>libswresample</h4>
+    <p>(音频相关)Audio resampling, sample format conversion and mixing library. </p>
+    <p>Interaction with lswr is done through <code>SwrContext</code>, which is allocated
+    with <code>swr_alloc()</code> or <code>swr_alloc_set_opts()</code>.</p>
+    <code>SwrContext *swr = swr_alloc_set_opts(NULL,  // we're allocating a new context
+        AV_CH_LAYOUT_STEREO,  // out_ch_layout
+        AV_SAMPLE_FMT_S16,    // out_sample_fmt
+        44100,                // out_sample_rate
+        AV_CH_LAYOUT_5POINT1, // in_ch_layout
+        AV_SAMPLE_FMT_FLTP,   // in_sample_fmt
+        48000,                // in_sample_rate
+        0,                    // log_offset
+        NULL);                // log_ctx
+    </code>
+
+    <h4>libpostproc</h4>
+    <p>(视频相关)Video postprocessing library</p>
+    <div>参数个数都没数清楚。</div>
+    <code>void 	pp_postprocess (const uint8_t *src[3], const int srcStride[3],
+        uint8_t *dst[3], const int dstStride[3], int horizontalSize, int verticalSize,
+        const int8_t *QP_store, int QP_stride, pp_mode *mode, pp_context *ppContext,
+        int pict_type)</code>
+
+    <h4>libswscale</h4>
+    <code>Color conversion and scaling library.</code>
+
+</div>
+</body>
+</html>

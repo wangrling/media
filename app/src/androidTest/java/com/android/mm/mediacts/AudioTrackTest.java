@@ -10,6 +10,7 @@ import com.google.android.exoplayer2.extractor.ts.TsExtractor;
 import org.junit.Test;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class AudioTrackTest {
@@ -501,6 +502,191 @@ public class AudioTrackTest {
         float midVol = (AudioTrack.getMaxVolume() - AudioTrack.getMinVolume()) / 2;
         testSetVolumeCommon(TEST_NAME, midVol, true /*isStereo*/);
     }
+
+    // Test case 4: setPlaybackRate() with half the content rate return SUCCESS
+    @Test
+    public void testSetPlaybackRate() throws Exception {
+        // constants for test
+        final String TEST_NAME = "testSetPlaybackRate";
+        final int TEST_SR = 22050;
+        final int TEST_CONF = AudioFormat.CHANNEL_OUT_STEREO;
+        final int TEST_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
+        final int TEST_MODE = AudioTrack.MODE_STREAM;
+        final int TEST_STREAM_TYPE = AudioManager.STREAM_MUSIC;
+
+        // -------- initialization --------------
+        int minBufferSize = AudioTrack.getMinBufferSize(TEST_SR, TEST_CONF, TEST_FORMAT);
+        AudioTrack track = new AudioTrack(TEST_STREAM_TYPE, TEST_SR, TEST_CONF, TEST_FORMAT,
+                2 * minBufferSize, TEST_MODE);
+        byte data[] = new byte[minBufferSize];
+
+        // -------- test --------------
+        track.write(data, OFFSET_DEFAULT, data.length);
+        track.write(data, OFFSET_DEFAULT, data.length);
+
+        assertTrue(TEST_NAME, track.getState() == AudioTrack.STATE_INITIALIZED);
+        track.play();
+        // 时间延长一倍播放
+        assertTrue(TEST_NAME, track.setPlaybackRate((int) (TEST_SR / 2)) == AudioTrack.SUCCESS);
+    }
+
+    // Test case 5: setPlaybackRate(0) returns bad value error
+    @Test
+    public void testSetPlaybackRateZero() throws Exception {
+        // constants for test
+        final String TEST_NAME = "testSetPlaybackRateZero";
+        final int TEST_SR = 22050;
+        final int TEST_CONF = AudioFormat.CHANNEL_OUT_STEREO;
+        final int TEST_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
+        final int TEST_MODE = AudioTrack.MODE_STREAM;
+        final int TEST_STREAM_TYPE = AudioManager.STREAM_MUSIC;
+
+        // -------- initialization --------------
+        int minBuffSize = AudioTrack.getMinBufferSize(TEST_SR, TEST_CONF, TEST_FORMAT);
+        AudioTrack track = new AudioTrack(TEST_STREAM_TYPE, TEST_SR, TEST_CONF, TEST_FORMAT,
+                minBuffSize, TEST_MODE);
+        // -------- test --------------
+        assertTrue(TEST_NAME, track.getState() == AudioTrack.STATE_INITIALIZED);
+        assertTrue(TEST_NAME, track.setPlaybackRate(0) == AudioTrack.ERROR_BAD_VALUE);
+        // -------- tear down --------------
+        track.release();
+    }
+
+    // Test case 6: setPlaybackRate() accepts value twice the output sample rate.
+    @Test
+    public void testSetPlaybackRateTwiceOutputSR() {
+        // constants for test
+        final String TEST_NAME = "testSetPlaybackRateTwiceOutputSR";
+        final int TEST_SR = 22050;
+        final int TEST_CONF = AudioFormat.CHANNEL_OUT_STEREO;
+        final int TEST_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
+        final int TEST_MODE = AudioTrack.MODE_STREAM;
+        final int TEST_STREAM_TYPE = AudioManager.STREAM_MUSIC;
+
+        int minBufferSize = AudioTrack.getMinBufferSize(TEST_SR, TEST_CONF, TEST_FORMAT);
+
+        AudioTrack track = new AudioTrack(TEST_STREAM_TYPE, TEST_SR, TEST_CONF, TEST_FORMAT,
+                2 * minBufferSize, TEST_MODE);
+        byte data[] = new byte[minBufferSize];
+        int outputSR = AudioTrack.getNativeOutputSampleRate(TEST_STREAM_TYPE);
+        // -------- test --------------
+        track.write(data, OFFSET_DEFAULT, data.length);
+        track.write(data, OFFSET_DEFAULT, data.length);
+        assertTrue(TEST_NAME, track.getState() == AudioTrack.STATE_INITIALIZED);
+        track.play();
+        assertTrue(TEST_NAME, track.setPlaybackRate(2 * outputSR) == AudioTrack.SUCCESS);
+        // -------- tear down --------------
+        track.release();
+    }
+
+    // Test case 7: setPlaybackRate() and retrieve value, should be the same for
+    // half the content SR.
+    @Test
+    public void testSetGetPlaybackRate() {
+        // constants for test
+        final String TEST_NAME = "testSetGetPlaybackRate";
+        final int TEST_SR = 22050;
+        final int TEST_CONF = AudioFormat.CHANNEL_OUT_STEREO;
+        final int TEST_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
+        final int TEST_MODE = AudioTrack.MODE_STREAM;
+        final int TEST_STREAM_TYPE = AudioManager.STREAM_MUSIC;
+
+        // -------- initialization --------------
+        int minBuffSize = AudioTrack.getMinBufferSize(TEST_SR, TEST_CONF, TEST_FORMAT);
+        AudioTrack track = new AudioTrack(TEST_STREAM_TYPE, TEST_SR, TEST_CONF, TEST_FORMAT,
+                2 * minBuffSize, TEST_MODE);
+        byte data[] = new byte[minBuffSize];
+        // -------- test --------------
+        track.write(data, OFFSET_DEFAULT, data.length);
+        track.write(data, OFFSET_DEFAULT, data.length);
+        assertTrue(TEST_NAME, track.getState() == AudioTrack.STATE_INITIALIZED);
+        track.play();
+
+        track.setPlaybackRate((int)(TEST_SR / 2));
+        assertTrue(TEST_NAME, track.getPlaybackRate() == (int)(TEST_SR / 2));
+        // -------- tear down --------------
+        track.release();
+    }
+
+    // Test case 8: setPlaybackRate() invalid operation if track not initialized.
+    @Test
+    public void testSetPlaybackRateUninit() {
+        // constants for test
+        final String TEST_NAME = "testSetPlaybackRateUninit";
+        final int TEST_SR = 22050;
+        final int TEST_CONF = AudioFormat.CHANNEL_OUT_STEREO;
+        final int TEST_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
+        final int TEST_MODE = AudioTrack.MODE_STATIC;
+        final int TEST_STREAM_TYPE = AudioManager.STREAM_MUSIC;
+        // -------- initialization --------------
+        int minBuffSize = AudioTrack.getMinBufferSize(TEST_SR, TEST_CONF, TEST_FORMAT);
+        AudioTrack track = new AudioTrack(TEST_STREAM_TYPE, TEST_SR, TEST_CONF, TEST_FORMAT,
+                minBuffSize, TEST_MODE);
+
+        // -------- test --------------
+        assertEquals(TEST_NAME, AudioTrack.STATE_NO_STATIC_DATA, track.getState());
+        assertEquals(TEST_NAME, AudioTrack.ERROR_INVALID_OPERATION, track.setPlaybackRate(TEST_SR / 2));
+
+        // -------- tear down --------------
+        track.release();
+    }
+
+    // Test case 9: setVolume() with max volume returns SUCCESS
+    @Test
+    public void testSetVolumeMax() {
+        final String TEST_NAME = "testSetVolumeMax";
+        float maxVol = AudioTrack.getMaxVolume();
+        testSetVolumeCommon(TEST_NAME, maxVol, false /*isStereo*/);
+    }
+
+    // Test case 10: setVolume() with min volume returns SUCCESS
+    @Test
+    public void testSetVolumeMin() {
+        final String TEST_NAME = "testSetVolumeMin";
+        float minVol = AudioTrack.getMinVolume();
+        testSetVolumeCommon(TEST_NAME, minVol, false /*isStereo*/);
+    }
+
+    // Test case 11: setVolume() with mid volume returns SUCCESS
+    @Test
+    public void testSetVolumeMid() throws Exception {
+        final String TEST_NAME = "testSetVolumeMid";
+        // float midVol = (AudioTrack.getMaxVolume() - AudioTrack.getMinVolume()) / 2;
+        // 应该是加号
+        float midVol = (AudioTrack.getMaxVolume() + AudioTrack.getMinVolume()) / 2;
+        testSetVolumeCommon(TEST_NAME, midVol, false /*isStereo*/);
+    }
+
+    // -----------------------------------------------------------------
+    // Playback progress
+    // ----------------------------------
+
+    // Test case 1: setPlaybackHeadPosition() on playing track.
+    public void testSetPlaybackHeadPositionPlaying() {
+        // constants for test
+        final String TEST_NAME = "testSetPlaybackHeadPositionPlaying";
+        final int TEST_SR = 22050;
+        final int TEST_CONF = AudioFormat.CHANNEL_OUT_STEREO;
+        final int TEST_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
+        final int TEST_MODE = AudioTrack.MODE_STREAM;
+        final int TEST_STREAM_TYPE = AudioManager.STREAM_MUSIC;
+
+        // -------- initialization --------------
+        int minBuffSize = AudioTrack.getMinBufferSize(TEST_SR, TEST_CONF, TEST_FORMAT);
+        AudioTrack track = new AudioTrack(TEST_STREAM_TYPE, TEST_SR, TEST_CONF, TEST_FORMAT,
+                2 * minBuffSize, TEST_MODE);
+        byte data[] = new byte[minBuffSize];
+        // -------- test --------------
+        assertTrue(TEST_NAME, track.getState() == AudioTrack.STATE_INITIALIZED);
+        track.write(data, OFFSET_DEFAULT, data.length);
+        track.write(data, OFFSET_DEFAULT, data.length);
+
+        track.play();
+        assertTrue(TEST_NAME, track.setPlaybackHeadPosition(10) == AudioTrack.ERROR_INVALID_OPERATION);
+        // -------- tear down --------------
+        track.release();
+    }
+
 
 
 }

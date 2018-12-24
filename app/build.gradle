@@ -30,6 +30,13 @@ android {
             path "src/cpp/CMakeLists.txt"
         }
     }
+
+    //　用于加载已经生成的so库。
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['src/cpp']
+        }
+    }
 }
 
 dependencies {

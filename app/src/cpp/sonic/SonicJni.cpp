@@ -296,3 +296,4 @@ Java_com_android_mm_sonic_Sonic_getVolumeNative(JNIEnv *env, jobject instance, j
     LOGV("Reading volume");
     return sonicGetVolume(stream);
 }
+

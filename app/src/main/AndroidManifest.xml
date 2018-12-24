@@ -90,5 +90,7 @@
 
         <activity android:name=".libgdx.LibGdxActivity" />
 
+        <activity android:name=".ffmpeg.FFMpegActivity" />
+
      </application>
 </manifest>

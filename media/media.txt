@@ -1,6 +1,14 @@
 存放媒体资源，媒体信息的位置。
 
+libavformat
 
+
+C++库中添加FFmpeg头文件
+extern "C" {
+#include <libavutil/imgutils.h>
+#include <libavcodec/avcodec.h>
+#include <libswscale/swscale.h>
+}
 
 endian的问题参考Computer Systems: A Programmer's Perspective
 修改wav_header.h文件，使它不依赖WEBRTC_ARCH_LITTLE_ENDIAN定义。
