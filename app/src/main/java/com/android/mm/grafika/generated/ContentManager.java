@@ -1,8 +1,17 @@
 package com.android.mm.grafika.generated;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.os.AsyncTask;
+import android.util.Log;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
+import com.android.mm.R;
 import com.android.mm.grafika.GrafikaActivity;
+import com.android.mm.grafika.utils.WorkDialog;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -64,6 +73,68 @@ public class ContentManager {
         }
     }
 
+    public boolean isContentCreated(Context context) {
+        // Ideally this would probe each individual item to see if anything needs to be done,
+        // and a subsequent "prepare" call would generate only the necessary items.  This
+        // takes a much simpler approach and just checks to see if the files exist.  If the
+        // content changes the user will need to force a regen (via a menu option) or wipe data.
+        for (int i = 0; i < ALL_TAGS.length; i++) {
+            File file = getPath(i);
+            if (!file.canRead()) {
+                Log.d(TAG, "Can't find readable " + file);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Returns the storage location for the specified item.
+     */
+    public File getPath(int tag) {
+        return new File(mFilesDir, getFileName(tag));
+    }
+
+    /**
+     * Returns the filename for the tag.
+     */
+    private String getFileName(int tag) {
+        switch (tag) {
+            case MOVIE_EIGHT_RECTS:
+                return "gen-eight-rects.mp4";
+            case MOVIE_SLIDERS:
+                return "gen-sliders.mp4";
+            default:
+                throw new RuntimeException("Unknown tag " + tag);
+        }
+    }
+
+    /**
+     * Creates all content, overwriting any existing entries.
+     * <p>
+     * Call from main UI thread.
+     */
+    public void createAll(Activity activity) {
+        prepareContent(activity, ALL_TAGS);
+    }
+
+    /**
+     * Prepares the specified content.  For example, if the caller requires a movie that doesn't
+     * exist, this will post a progress dialog and generate the movie.
+     * <p>
+     * Call from main UI thread.  This returns immediately.  Content generation continues
+     * on a background thread.
+     */
+    private void prepareContent(Activity caller, int[] tags) {
+        // Put up the progress dialog.
+        AlertDialog.Builder builder = WorkDialog.create(caller, R.string.preparing);
+        builder.setCancelable(false);
+        AlertDialog dialog = builder.show();
+
+        // Generate content in async task.
+        GenerateTask genTask = new GenerateTask(caller, dialog, tags);
+    }
+
 
     public interface ProgressUpdater {
         /**
@@ -72,4 +143,130 @@ public class ContentManager {
          */
         void updateProgress(int percent);
     }
+
+    /**
+     * Performs generation of content on an async task thread.
+     */
+    private static class GenerateTask extends AsyncTask<Void, Integer, Integer> implements
+            ProgressUpdater {
+        // ----- accessed from UI thread -----
+        private final Context mContext;
+        private final AlertDialog mPrepDialog;
+        private final ProgressBar mProgressBar;
+
+        // ----- accessed from async thread -----
+        private int mCurrentIndex;
+
+        // ----- accessed from both -----
+        private final int[] mTags;
+        private volatile RuntimeException mFailure;
+
+        public GenerateTask(Context context, AlertDialog dialog, int[] tags) {
+            mContext = context;
+            mPrepDialog = dialog;
+            mTags = tags;
+            mProgressBar = (ProgressBar) mPrepDialog.findViewById(R.id.workProgressBar);
+            mProgressBar.setMax(tags.length * 100);
+        }
+
+        @Override
+        protected Integer doInBackground(Void... voids) {
+            ContentManager contentManager = ContentManager.getInstance();
+
+            Log.d(TAG, "doInBackground...");
+            for (int i = 0; i < mTags.length; i++) {
+                mCurrentIndex = i;
+                updateProgress(0);
+
+                try {
+                    contentManager.prepare(this, mTags[i]);
+                } catch (RuntimeException re) {
+                    mFailure = re;
+                    break;
+                }
+                updateProgress(100);
+            }
+
+            if (mFailure != null) {
+                Log.w(TAG, "Failed while generating content", mFailure);
+            } else {
+                Log.d(TAG, "generation complete");
+            }
+            return 0;
+        }
+
+        @Override   // async task thread
+        public void updateProgress(int percent) {
+            publishProgress(mCurrentIndex, percent);
+        }
+
+        @Override   // UI thread
+        protected void onProgressUpdate(Integer... values) {
+            int index = values[0];
+            int percent = values[1];
+
+            //Log.d(TAG, "progress " + index + "/" + percent + " of " + mTags.length * 100);
+            if (percent == 0) {
+                TextView name = (TextView) mPrepDialog.findViewById(R.id.workJobNameText);
+                name.setText(ContentManager.getInstance().getFileName(mTags[index]));
+            }
+
+            mProgressBar.setProgress(index * 100 + percent);
+        }
+
+        @Override   // UI thread
+        protected void onPostExecute(Integer integer) {
+            Log.d(TAG, "onPostExecute -- dismss");
+            mPrepDialog.dismiss();
+
+            if (mFailure != null) {
+                showFailureDialog(mContext, mFailure);
+            }
+        }
+
+        /**
+         * Posts an error dialog, including the message from the failure exception.
+         */
+        private void showFailureDialog(Context context, RuntimeException failure) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle(R.string.fail);
+            String msg = context.getString(R.string.contentGenerationFailedMsg,
+                    failure.getMessage());
+            builder.setMessage(msg);
+            builder.setPositiveButton(android.R.string.ok, (dialog, id) -> {
+                dialog.dismiss();
+            });
+            builder.setCancelable(false);
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
+    }
+
+    /**
+     * Prepares the specified item.
+     * <p>
+     * This may be called from the async task thread.
+     */
+    private void prepare(ProgressUpdater updater, int tag) {
+        GenerateMovie movie;
+        switch (tag) {
+            case MOVIE_EIGHT_RECTS:
+                movie = new MovieEightRects();
+                movie.create(getPath(tag), updater);
+                synchronized (mContent) {
+                    mContent.add(tag, movie);
+                }
+                break;
+            case MOVIE_SLIDERS:
+                movie = new MovieSliders();
+                movie.create(getPath(tag), updater);
+                synchronized (mContent) {
+                    mContent.add(tag, movie);
+                }
+                break;
+            default:
+                throw new RuntimeException("Unknown tag " + tag);
+        }
+    }
+
 }

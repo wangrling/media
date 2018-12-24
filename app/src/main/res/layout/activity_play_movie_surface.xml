@@ -21,7 +21,7 @@
         android:layout_height="wrap_content" />
 
     <com.android.mm.grafika.utils.AspectFrameLayout
-        android:id="@+id/playMovieLayout"
+        android:id="@+id/playMovieAFL"
         android:layout_centerInParent="true"
         android:layout_below="@+id/playStopButton"
         android:layout_width="match_parent"

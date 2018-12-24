@@ -5,6 +5,8 @@
     <string name="save">Save</string>
     <string name="play">Play</string>
     <string name="stop">Stop</string>
+    <string name="preparing">Preparing</string>
+    <string name="work_job_name">Working</string>
 
     <!-- ndk -->
     <string name="startPause">Start/Pause</string>
@@ -67,7 +69,6 @@
     <string name="roomNames">Room names:</string>
     <string name="settings">Settings</string>
 
-
     <string name="sink_select">Please select the video sink</string>
     <string-array name="sink_array">
         <item>Surface 1</item>
@@ -78,5 +79,8 @@
     <string name="error_creation">Error creating player:
         check media file is copied to android device</string>
     <string name="test">Test</string>
+    <string name="contentGenerationFailedMsg">Failed to generate content.  Some          features may be unavailable.\\n\\n%1$s</string>
+    <string name="fail">Fail</string>
+
 
 </resources>

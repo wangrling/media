@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="50dp">
+
+    <TextView
+        android:autoLink="web"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        android:text="@string/work_job_name"
+        android:id="@+id/workJobNameText"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent" />
+
+    <ProgressBar
+        android:id="@+id/workProgressBar"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>

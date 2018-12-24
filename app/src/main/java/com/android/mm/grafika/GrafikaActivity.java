@@ -4,11 +4,17 @@ import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Layout;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import com.android.mm.R;
+import com.android.mm.grafika.generated.ContentManager;
+import com.android.mm.grafika.utils.AboutBox;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +26,7 @@ import androidx.annotation.Nullable;
 /**
  * Grafika, a dumping ground for Android graphics & media hacks.
  */
-public class GrafikaActivity extends ListActivity {
+public class GrafikaActivity extends Activity {
     public static final String TAG = "Grafika";
 
     // map keys
@@ -47,22 +53,49 @@ public class GrafikaActivity extends ListActivity {
                     "Renders with GLES in " +
                             "a `TextureView`, rather than a `GLSurfaceView`.",
                     "TextureViewGLActivity" },
+            {
+                "Play video (SurfaceView)",
+                    "Plays the video track from an MP4 file in SurfaceView"
+            },
+
+            {
+                "Play video (TextureView)",
+                    "Uses a 'TextureView' for output. "
+            },
+
+            {
+                
+            }
     };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setListAdapter(new SimpleAdapter(this, createActivityList(),
+        setContentView(R.layout.activity_grafika);
+
+        // One-time singleton initialization; requires activity context to get file location.
+        ContentManager.initialize(this);
+
+        ListView listView = findViewById(R.id.listView);
+        listView.setAdapter(new SimpleAdapter(this, createActivityList(),
                 R.layout.wrapper_two_line_list_item, new String[] {TITLE, DESCRIPTION},
                 new int[] {android.R.id.text1, android.R.id.text2}));
-    }
 
-    @Override
-    protected void onListItemClick(ListView listView, View view, int position, long id) {
-        Map<String, Object> map = (Map<String, Object>)listView.getItemAtPosition(position);
-        Intent intent = (Intent) map.get(CLASS_NAME);
-        startActivity(intent);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Map<String, Object> map = (Map<String, Object>)listView.getItemAtPosition(position);
+                Intent intent = (Intent) map.get(CLASS_NAME);
+                startActivity(intent);
+            }
+        });
+
+        // 生成资源文件
+        ContentManager cm = ContentManager.getInstance();
+        if (!cm.isContentCreated(this)) {
+            ContentManager.getInstance().createAll(this);
+        }
     }
 
     /**
@@ -93,5 +126,25 @@ public class GrafikaActivity extends ListActivity {
         // Collections.sort(testList, TEST_LIST_COMPARATOR);
 
         return testList;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.info:
+                AboutBox.display(this);
+                return true;
+            case R.id.link:
+                ContentManager.getInstance().createAll(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
