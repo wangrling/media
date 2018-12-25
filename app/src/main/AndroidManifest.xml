@@ -89,6 +89,8 @@
         <activity android:name=".webrtc.WebRtcActivity" />
 
         <activity android:name=".libgdx.LibGdxActivity" />
+        <activity android:name=".libgdx.WindowTestActivity" />
+        <activity android:name=".libgdx.AudioTestActivity" />
 
         <activity android:name=".ffmpeg.FFMpegActivity" />
 

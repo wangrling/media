@@ -2,6 +2,14 @@
 #include <libavformat/avformat.h>
 #include <libavformat/avio.h>
 #include <libavutil/file.h>
+
+/**
+ * libavformat AVIOContext API example.
+ * 
+ * Make libavformat demuxer access media content through a custom callback.
+ * 获取文件信息。
+ */
+
 struct buffer_data
 {
     uint8_t *ptr;
