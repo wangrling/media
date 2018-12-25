@@ -1,21 +1,20 @@
 #include <stdio.h>
-extern "C" {
 #include <libavformat/avformat.h>
 #include <libavutil/dict.h>
-}
 
 /**
  * 解析文件的元数据，慢慢实践理解。
  */
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv)
+{
 
     /**
      * Format I/O context.
      * Use avformat_alloc_context() to create AVFormatContext.
      * 结构体有几十个成员变量。
      */
-    AVFormatContext* fmt_ctx = NULL;
+    AVFormatContext *fmt_ctx = NULL;
 
     /**
      * Metadata that applies to the whole file.
@@ -25,14 +24,16 @@ int main(int argc, char** argv) {
      *
      * Freed by libavformat in avformat_free_context().
      */
-    AVDictionaryEntry* tag = NULL;
+    AVDictionaryEntry *tag = NULL;
 
     int ret;
 
-    if (argc != 2) {
+    if (argc != 2)
+    {
         printf("usage: %s <input_file>\n"
                "example program to demonstrate the use of the libavformat metadata API.\n"
-               "\n", argv[0]);
+               "\n",
+               argv[0]);
         return 1;
     }
 
@@ -69,4 +70,3 @@ int main(int argc, char** argv) {
 
     return 0;
 }
-

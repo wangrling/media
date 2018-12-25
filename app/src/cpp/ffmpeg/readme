@@ -1,9 +1,6 @@
 
-加油！
 
-通过FFmpeg全面理解音视频，和提高C/C++写代码能力。
-
-需要指定编译器，具体需要的时候网上再查。
+只能使用c语言写，c++有些编译不通过。
 
 Android默认使用clang++
 export PREFIX=/usr/local/ffmpeg/

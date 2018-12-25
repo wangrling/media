@@ -1,6 +1,11 @@
 # MultiMedia
 关注移动端多媒体。
 
+jni调用层
+processFile(String path, String mimeType, MediaScannerClient client);
+android_media_MediaScanner_processFile(JNIEnv* env, jobject thiz, jstring path, jobject client);
+如果是静态调用就使用jclass类型。
+
 AudioTrack的cts测试，主要使用流程set -> getMinBufferSize -> write(重要) -> play -> release等，其中有生成正弦波形的代码。
 
 1. 精通Java, 熟悉c/c++, 熟悉Android/ios平台
@@ -13,7 +18,7 @@ AudioTrack的cts测试，主要使用流程set -> getMinBufferSize -> write(重�
 H265、AAC、RTMP、RTSP、HLS、MP4等各种网络协议
 或者视频格式等优先。
 5. 丰富的多媒体行业经验，对视频处理方面具有前瞻性
-和自己的见解和规划。
+和自己的见解和规划
 
 C++库中添加FFmpeg头文件
 extern "C" {
