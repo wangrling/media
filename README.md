@@ -1,5 +1,7 @@
-# media
-关注Android音频多媒体。
+# MultiMedia
+关注移动端多媒体。
+
+AudioTrack的cts测试，主要使用流程set -> getMinBufferSize -> write(重要) -> play -> release等，其中有生成正弦波形的代码。
 
 1. 精通Java, 熟悉c/c++, 熟悉Android/ios平台
 架构原理；

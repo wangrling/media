@@ -8,6 +8,10 @@ import android.util.Log;
 
 import org.junit.Test;
 
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
+
 import static android.media.AudioFormat.ENCODING_INVALID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -1399,7 +1403,7 @@ public class AudioTrackTest {
         return vaf;
     }
 
-    public int getBytesPerSample(int audioFormat) {
+    public static int getBytesPerSample(int audioFormat) {
         switch (audioFormat) {
             case AudioFormat.ENCODING_PCM_8BIT:
                 return 1;
@@ -1412,6 +1416,248 @@ public class AudioTrackTest {
             default:
                 throw new IllegalArgumentException("Bad audio format " + audioFormat);
         }
+    }
+
+    @Test
+    public void testPlayStreamData() throws Exception {
+        // constants for test
+        final String TEST_NAME = "testPlayStreamData";
+        final int TEST_FORMAT_ARRAY[] = {  // should hear 40 increasing frequency tones, 3 times
+                AudioFormat.ENCODING_PCM_8BIT,
+                AudioFormat.ENCODING_PCM_16BIT,
+                AudioFormat.ENCODING_PCM_FLOAT,
+        };
+        final int TEST_SR_ARRAY[] = {
+                4000,
+                22050,
+                44100,
+                48000,
+                96000,
+        };
+        final int TEST_CONF_ARRAY[] = {
+                AudioFormat.CHANNEL_OUT_MONO,    // 1.0
+                AudioFormat.CHANNEL_OUT_STEREO,  // 2.0
+                // AudioFormat.CHANNEL_OUT_STEREO | AudioFormat.CHANNEL_OUT_FRONT_CENTER, // 3.0
+                // AudioFormat.CHANNEL_OUT_QUAD,    // 4.0
+                // AudioFormat.CHANNEL_OUT_QUAD | AudioFormat.CHANNEL_OUT_FRONT_CENTER,   // 5.0
+                // AudioFormat.CHANNEL_OUT_5POINT1, // 5.1
+                // AudioFormat.CHANNEL_OUT_5POINT1 | AudioFormat.CHANNEL_OUT_BACK_CENTER, // 6.1
+                // AudioFormat.CHANNEL_OUT_7POINT1_SURROUND, // 7.1
+        };
+        final int TEST_MODE = AudioTrack.MODE_STREAM;
+        final int TEST_STREAM_TYPE = AudioManager.STREAM_MUSIC;
+
+        for (int TEST_FORMAT : TEST_FORMAT_ARRAY) {
+            double frequency = 400;     // frequency changes for each test
+            for (int TEST_SR : TEST_SR_ARRAY) {
+                for (int TEST_CONF : TEST_CONF_ARRAY) {
+                    // -------- initialization --------------
+                    final int minBufferSize = AudioTrack.getMinBufferSize(TEST_SR,
+                            TEST_CONF, TEST_FORMAT);        // in bytes
+                    final int bufferSamples = 12 * minBufferSize
+                            / getBytesPerSample(TEST_FORMAT);
+                    final int channelCount = Integer.bitCount(TEST_CONF);
+                    final double testFrequency = frequency / channelCount;
+
+                    AudioTrack track = new AudioTrack(TEST_STREAM_TYPE, TEST_SR,
+                            TEST_CONF, TEST_FORMAT, minBufferSize, TEST_MODE);
+                    assertTrue(TEST_NAME, track.getState() == AudioTrack.STATE_INITIALIZED);
+                    boolean hasPlayed = false;
+                    int written = 0;
+
+                    // test
+                    switch (TEST_FORMAT) {
+                        case AudioFormat.ENCODING_PCM_8BIT: {
+                            byte[] data = createSoundDataInByteArray(bufferSamples, TEST_SR,
+                                    testFrequency);
+                            while (written < data.length) {
+                                int ret = track.write(data, written,
+                                        Math.min(data.length - written, minBufferSize));
+                                assertTrue(TEST_NAME, ret >= 0);
+                                written += ret;
+                                if (!hasPlayed) {
+                                    track.play();
+                                    hasPlayed = true;
+                                }
+                            }
+                            break;
+                        }
+                        case AudioFormat.ENCODING_PCM_16BIT: {
+                            short[] data = createSoundDataInShortArray(
+                                    bufferSamples, TEST_SR, testFrequency);
+
+                            while (written < data.length) {
+                                int ret = track.write(data, written,
+                                        Math.min(data.length - written, minBufferSize));
+                                assertTrue(TEST_NAME, ret >= 0);
+                                written += ret;
+                                if (!hasPlayed) {
+                                    track.play();;
+                                    hasPlayed = true;
+                                }
+                            }
+                            break;
+                        }
+                        case AudioFormat.ENCODING_PCM_FLOAT: {
+                            float data[] = createSoundDataInFloatArray(
+                                    bufferSamples, TEST_SR, testFrequency);
+
+                            while (written < data.length) {
+                                int ret = track.write(data, written,
+                                        Math.min(data.length - written, minBufferSize),
+                                        AudioTrack.WRITE_BLOCKING);
+                                assertTrue(TEST_NAME, ret >= 0);
+                                written += ret;
+                                if (!hasPlayed) {
+                                    track.play();
+                                    hasPlayed = true;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                    Thread.sleep(WAIT_MSEC);
+                    track.stop();;
+                    Thread.sleep(WAIT_MSEC);
+                    track.release();
+                    frequency += 70; // increment test tone frequency
+
+                }
+            }
+        }
+    }
+
+    // byte[] 和ByteBuffer的区别
+    @Test
+    public void testPlayStreamByteBuffer() throws InterruptedException {
+        // constants for test
+        final String TEST_NAME = "testPlayStreamByteBuffer";
+        final int TEST_FORMAT_ARRAY[] = {  // should hear 4 tones played 3 times
+                AudioFormat.ENCODING_PCM_8BIT,
+                AudioFormat.ENCODING_PCM_16BIT,
+                AudioFormat.ENCODING_PCM_FLOAT,
+        };
+        final int TEST_SR_ARRAY[] = {
+                48000,
+        };
+        final int TEST_CONF_ARRAY[] = {
+                AudioFormat.CHANNEL_OUT_STEREO,
+        };
+        final int TEST_WRITE_MODE_ARRAY[] = {
+                AudioTrack.WRITE_BLOCKING,
+                AudioTrack.WRITE_NON_BLOCKING,
+        };
+        final int TEST_MODE = AudioTrack.MODE_STREAM;
+        final int TEST_STREAM_TYPE = AudioManager.STREAM_MUSIC;
+        for (int TEST_FORMAT : TEST_FORMAT_ARRAY) {
+            double frequency = 800; // frequency changes for each test
+            for (int TEST_SR : TEST_SR_ARRAY) {
+                for (int TEST_CONF : TEST_CONF_ARRAY) {
+                    for (int TEST_WRITE_MODE : TEST_WRITE_MODE_ARRAY) {
+                        for (int useDirect = 0; useDirect < 2; ++useDirect) {
+                            // -------- initialization --------------
+                            int minBufferSize = AudioTrack.getMinBufferSize(
+                                    TEST_SR, TEST_CONF, TEST_FORMAT);   // in bytes
+                            int bufferSize = 12 * minBufferSize;
+                            int bufferSamples = bufferSize /
+                                    getBytesPerSample(TEST_FORMAT);
+                            AudioTrack track = new AudioTrack(TEST_STREAM_TYPE, TEST_SR,
+                                    TEST_CONF, TEST_FORMAT, minBufferSize, TEST_MODE);
+
+                            assertTrue(TEST_NAME, track.getState() == AudioTrack.STATE_INITIALIZED);
+
+                            boolean hasPlayed = false;
+
+                            int written = 0;
+
+                            // 速度上的区别
+                            // There is no reason to expect direct buffers to be faster for access
+                            // inside the jvm. Their advantage comes when you pass them to native
+                            // code -- such as, the code behind channels of all kinds.
+                            ByteBuffer bb = (useDirect == 1)
+                                    ? ByteBuffer.allocateDirect(bufferSize)
+                                    : ByteBuffer.allocate(bufferSize);
+                            bb.order(java.nio.ByteOrder.nativeOrder());
+
+                            // -------- test --------------
+                            switch (TEST_FORMAT) {
+                                case AudioFormat.ENCODING_PCM_8BIT: {
+                                    byte data[] = createSoundDataInByteArray(
+                                            bufferSamples, TEST_SR, frequency);
+                                    bb.put(data);
+                                    bb.flip();
+                                    break;
+                                }case AudioFormat.ENCODING_PCM_16BIT: {
+                                    short data[] = createSoundDataInShortArray(
+                                            bufferSamples, TEST_SR, frequency);
+
+                                    ShortBuffer sb = bb.asShortBuffer();
+                                    sb.put(data);
+                                    bb.limit(sb.limit() * 2);
+                                    break;
+                                }case AudioFormat.ENCODING_PCM_FLOAT: {
+                                    float data[] = createSoundDataInFloatArray(
+                                            bufferSamples, TEST_SR,
+                                            frequency);
+                                    FloatBuffer fb = bb.asFloatBuffer();
+                                    fb.put(data);
+                                    bb.limit(fb.limit() * 4);
+                                    break;
+                                }
+                            }
+
+                            while (written < bufferSize) {
+                                int ret = track.write(bb, Math.min(bufferSize - written, minBufferSize),
+                                        TEST_WRITE_MODE);
+                                assertTrue(TEST_NAME, ret >= 0);
+                                written += ret;
+                                if (!hasPlayed) {
+                                    track.play();
+                                    hasPlayed = true;
+                                }
+                            }
+
+                            Thread.sleep(WAIT_MSEC);
+                            track.stop();
+                            Thread.sleep(WAIT_MSEC);
+                            // -------- tear down --------------
+                            track.release();
+                            frequency += 200; // increment test tone frequency
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testGetTimestamp() {
+        // constants for test
+        final String TEST_NAME = "testGetTimestamp";
+        final int TEST_SR = 22050;
+        final int TEST_CONF = AudioFormat.CHANNEL_OUT_MONO;
+        final int TEST_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
+        final int TEST_MODE = AudioTrack.MODE_STREAM;
+        final int TEST_STREAM_TYPE = AudioManager.STREAM_MUSIC;
+        final int TEST_LOOP_CNT = 2;
+        // For jitter we allow 30 msec in frames.  This is a large margin.
+        // Often this is just 0 or 1 frames, but that can depend on hardware.
+        final int TEST_JITTER_FRAMES_ALLOWED = TEST_SR * 30 / 1000;
+
+        // -------- initialization --------------
+        // 每帧数据量2x4字节。
+        final int bytesPerFrame =
+                getBytesPerSample(TEST_FORMAT)
+                * channelCountFromOutChannelMask(TEST_CONF);
+        final int minBufferSizeInBytes =
+                AudioTrack.getMinBufferSize(TEST_SR, TEST_CONF, )
+    }
+
+    /**
+     * Return the number of channels from an output channel mask.
+     */
+    public static int channelCountFromOutChannelMask(int mask) {
+        return Integer.bitCount(mask);
     }
 
     // 完全和AudioTrack一样。
