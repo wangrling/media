@@ -10,6 +10,7 @@
 <div class="container-fluid">
 <h3>C++ Concurrency in Action</h3>
     <h4>Hello, world of concurrency in C++!</h4>
+
     <h4>Managing threads</h4>
     <p>Thread are started by constructing a <code>std::thread</code> object that
     specifies the task to run on that thread.</p>
@@ -20,9 +21,27 @@
     you don't.</p>
     <p>Calling <code>detach()</code> on a <code>std::thread</code> object leaves teh thread to
     run in the background, with no direct means of communicating with it.</p>
+    <p>Write out an instance of <code>std::thread::Id</code> to an output stream such as std::cout:
+	<code>std::cout&lt;&lt;std::this_thread::get_id();</code></p>
+    <p>This chapter covered the basics of thread management with the C++ Standard Library: 
+	starting threads, waiting for them to finish, and not waiting for them to finish because
+	you want them to run in the background.</p>
+    <p>You You also saw how to pass arguments into the thread function when a thread is started, 
+	how to transfer the responsibility for managing a thread from one part of the code to another, 	
+	and how groups of threads can be used to divide work.</p>	
 
     <h4>Sharing data between threads</h4>
+    <p><code>std::unique_lock</code> provides a bit more flexibility than 
+	<code>std::lock_guard</code> by relaxing the invariants.</p>
+    <p>Discuss how problematic race conditions can be disastrous (災難) when sharing data between threads 
+	and how to use <code>std::mutex</code> and careful interface design to avoid them.</p>
+    <p>在unique_lock对象的声明周期内，它所管理的锁对象会一直保持上锁状态。</p>	
+	
     <h4>Synchronizing concurrent operations</h4>
+    <div>線程等待條件是否滿足</div>
+    <p>The Standard C++ Library provides not one but two implementations of a condition 
+	variable: <code>std::condition_variable</code> and <code>std::condition_variable_any</code>.</p>    
+	
     <h4>The C++ memory model and operations on atomic types</h4>
     <h4>Designing lock-based concurrent data structures</h4>
     <h4>Designing lock-free concurrent data structures</h4>
