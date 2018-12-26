@@ -2,6 +2,7 @@ package com.android.mm.mediacts;
 
 import android.media.AudioFormat;
 import android.media.AudioManager;
+import android.media.AudioTimestamp;
 import android.media.AudioTrack;
 import android.util.Log;
 
@@ -1650,7 +1651,94 @@ public class AudioTrackTest {
                 getBytesPerSample(TEST_FORMAT)
                 * channelCountFromOutChannelMask(TEST_CONF);
         final int minBufferSizeInBytes =
-                AudioTrack.getMinBufferSize(TEST_SR, TEST_CONF, )
+                AudioTrack.getMinBufferSize(TEST_SR, TEST_CONF, TEST_FORMAT);
+
+        final int bufferSizeInBytes = minBufferSizeInBytes * 3;
+        byte[] data = new byte[bufferSizeInBytes];
+        AudioTrack track = new AudioTrack(TEST_STREAM_TYPE, TEST_SR, TEST_CONF, TEST_FORMAT,
+                minBufferSizeInBytes, TEST_MODE);
+
+        // -------- test --------------
+        assertTrue(TEST_NAME, track.getState() == AudioTrack.STATE_INITIALIZED);
+        AudioTimestamp timestamp = new AudioTimestamp();
+        boolean hasPlayed = false;
+
+        long framesWritten = 0, lastFramesPresented = 0, lastFramesPresentedAt = 0;
+        int cumulativeJitterCount = 0;
+        float cumulativeJitter = 0;
+        float maxJitter = 0;
+
+        for (int i = 0; i < TEST_LOOP_CNT; i++) {
+            final long writeTime = System.nanoTime();
+
+            for (int written = 0; written < data.length; ) {
+                int ret = track.write(data, written, Math.min(data.length - written, minBufferSizeInBytes));
+                assertTrue(TEST_NAME, ret >= 0);
+                written += ret;
+                if (!hasPlayed) {
+                    track.play();
+                    hasPlayed = true;
+                }
+            }
+
+            framesWritten += data.length /bytesPerFrame;
+
+            // track.getTimestamp may return false if there are no physical HAL outputs.
+            // This may occur on TV devices without connecting an HDMI monitor.
+            // It may also be true immediately after start-up, as the mixing thread could
+            // be idle, but since we've already pushed much more than the minimum buffer size,
+            // that is unlikely.
+            // Nevertheless, we don't want to have unnecessary failures, so we ignore the
+            // first iteration if we don't get a timestamp.
+            final boolean result = track.getTimestamp(timestamp);
+            assertTrue(TEST_NAME, result || i == 0);
+            if (!result) {
+                continue;
+            }
+
+            final long framesPresented = timestamp.framePosition;
+            final long framesPresentedAt = timestamp.nanoTime;
+
+            // We read timestamp here to ensure that seen is greater than presented.
+            // This is an "on-the-fly" read without pausing because pausing may cause the
+            // timestamp to become stale and affect our jitter measurements.
+            final int framesSeen = track.getPlaybackHeadPosition();
+            assertTrue(TEST_NAME, framesWritten >= framesSeen);
+            assertTrue(TEST_NAME, framesSeen >= framesPresented);
+
+            if (i > 1) { // need delta info from previous iteration (skipping first)
+                final long deltaFrames = framesPresented - lastFramesPresented;
+                final long deltaTime = framesPresentedAt - lastFramesPresentedAt;
+                final long NANOSECONDS_PER_SECOND = 1000000000;
+                final long expectedFrames = deltaTime * TEST_SR / NANOSECONDS_PER_SECOND;
+                final long jitterFrames = Math.abs(deltaFrames - expectedFrames);
+                //Log.d(TAG, "framesWritten(" + framesWritten
+                //        + ") framesSeen(" + framesSeen
+                //        + ") framesPresented(" + framesPresented
+                //        + ") jitter(" + jitterFrames + ")");
+                // We check that the timestamp position is reasonably accurate.
+                assertTrue(TEST_NAME, deltaTime >= 0);
+                assertTrue(TEST_NAME, deltaFrames >= 0);
+                if (i > 2) {
+                    // The first two periods may have inherent jitter as the audio pipe
+                    // is filling up. We check jitter only after that.
+                    assertTrue(TEST_NAME, jitterFrames < TEST_JITTER_FRAMES_ALLOWED);
+                    cumulativeJitter += jitterFrames;
+                    cumulativeJitterCount++;
+                    if (jitterFrames > maxJitter) {
+                        maxJitter = jitterFrames;
+                    }
+                }
+                //Log.d(TAG, "lastFramesPresentedAt(" + lastFramesPresentedAt
+                //        + ") writeTime(" + writeTime
+                //        + ") framesPresentedAt(" + framesPresentedAt + ")");
+                // We check that the timestamp time is reasonably current.
+                assertTrue(TEST_NAME, framesPresentedAt >= writeTime);
+                assertTrue(TEST_NAME, writeTime >= lastFramesPresentedAt);
+            }
+            lastFramesPresented = framesPresented;
+            lastFramesPresentedAt = framesPresentedAt;
+        }
     }
 
     /**
