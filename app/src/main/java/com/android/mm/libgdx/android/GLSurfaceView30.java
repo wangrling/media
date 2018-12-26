@@ -23,13 +23,35 @@ import android.util.AttributeSet;
 
 public class GLSurfaceView30 extends GLSurfaceView {
 
+    static String TAG = "GLSurfaceView";
 
+    private static final boolean DEBUG = true;
 
-    public GLSurfaceView30(Context context) {
+    final ResolutionStrategy resolutionStrategy;
+
+    static int targetGLESVersion;
+
+    public GLSurfaceView30(Context context, ResolutionStrategy  resolutionStrategy, int targetGLESVersion) {
         super(context);
+
+        GLSurfaceView30.targetGLESVersion = targetGLESVersion;
+        this.resolutionStrategy = resolutionStrategy;
     }
 
-    public GLSurfaceView30(Context context, AttributeSet attrs) {
-        super(context, attrs);
+    public GLSurfaceView30(Context context, ResolutionStrategy resolutionStrategy) {
+        this(context, resolutionStrategy, 3);
+    }
+
+    /**
+     * By default, GLSurfaceView() create a RGB_565 opaque(模糊；不透明的) surface. If we want a
+     * translucent (半透明的；微微透明的) surface's format here, using PixelFormat.TRANSLUCENT for GL
+     * Surfaces is interpreted as any 32 bit-surface with alpha by SurfaceFlinger.
+     *
+     * @param translucent
+     * @param depth
+     * @param stencil
+     */
+    private void init(boolean translucent, int depth, int stencil) {
+
     }
 }

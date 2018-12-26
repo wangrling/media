@@ -20,6 +20,8 @@ import java.nio.ByteBuffer;
 /**
  * Plays the video track from a movie file to a Surface.
  * TODO: needs more advanced shuttle controls (pause/resume, skip)
+ *
+ * MoviePlayer充当生产者，不断地向获取到的Surface上填充解码的数据。
  */
 public class MoviePlayer {
     private static final String TAG = GrafikaActivity.TAG;

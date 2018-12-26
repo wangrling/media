@@ -1,6 +1,6 @@
 package com.android.mm.grafika.generated;
 
-import android.opengl.GLES30;
+import android.opengl.GLES20;
 import android.util.Log;
 
 import com.android.mm.grafika.GrafikaActivity;
@@ -14,10 +14,8 @@ import java.io.IOException;
  * <p>
  * To add a little flavor, the timing of the frames speeds up as the movie continues.
  */
-
-public class MovieEightRects extends GenerateMovie {
-
-    private final String TAG = GrafikaActivity.TAG;
+public class MovieEightRects extends GeneratedMovie {
+    private static final String TAG = GrafikaActivity.TAG;
 
     private static final String MIME_TYPE = "video/avc";
     private static final int WIDTH = 320;
@@ -49,7 +47,6 @@ public class MovieEightRects extends GenerateMovie {
 
                 // Generate a frame and submit it.
                 generateFrame(i);
-
                 submitFrame(computePresentationTimeNsec(i));
 
                 prog.updateProgress(i * 100 / NUM_FRAMES);
@@ -57,8 +54,8 @@ public class MovieEightRects extends GenerateMovie {
 
             // Send end-of-stream and drain remaining output.
             drainEncoder(true);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ioe) {
+            throw new RuntimeException(ioe);
         } finally {
             releaseEncoder();
         }
@@ -89,22 +86,20 @@ public class MovieEightRects extends GenerateMovie {
             startY = 0;
         }
 
+        GLES20.glClearColor(TEST_R0 / 255.0f, TEST_G0 / 255.0f, TEST_B0 / 255.0f, 1.0f);
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
-        GLES30.glClearColor(TEST_R0 / 255.0f, TEST_G0 / 255.0f, TEST_B0 / 255.0f, 1.0f);
-        GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT);
-
-        // 裁剪矩形区域
-        GLES30.glEnable(GLES30.GL_SCISSOR_TEST);
-        GLES30.glScissor(startX, startY, WIDTH / 4, HEIGHT / 2);
-        GLES30.glClearColor(TEST_R1 / 255.0f, TEST_G1 / 255.0f, TEST_B1 / 255.0f, 1.0f);
-        GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT);
-        GLES30.glDisable(GLES30.GL_SCISSOR_TEST);
+        GLES20.glEnable(GLES20.GL_SCISSOR_TEST);
+        GLES20.glScissor(startX, startY, WIDTH / 4, HEIGHT / 2);
+        GLES20.glClearColor(TEST_R1 / 255.0f, TEST_G1 / 255.0f, TEST_B1 / 255.0f, 1.0f);
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+        GLES20.glDisable(GLES20.GL_SCISSOR_TEST);
     }
 
     /**
-     * Generates the presentation time for the frame N, in nanoseconds.
-     *
-     * First 8 frames at 8 fps, next 8 at 16 fps, rest at 30 fps.
+     * Generates the presentation time for frame N, in nanoseconds.
+     * <p>
+     * First 8 frames at 8 fps, next 8 at 16fps, rest at 30fps.
      */
     private static long computePresentationTimeNsec(int frameIndex) {
         final long ONE_BILLION = 1000000000;

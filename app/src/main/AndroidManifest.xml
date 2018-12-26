@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="false"
@@ -33,6 +34,8 @@
         <activity android:name=".grafika.TextureViewCanvasActivity" />
         <activity android:name=".grafika.TextureViewGLActivity" />
         <activity android:name=".grafika.PlayMovieSurfaceActivity" />
+        <activity android:name=".grafika.PlayTextureActivity" />
+        <activity android:name=".grafika.ContinuousCaptureActivity" />
 
 
         <activity android:name=".exoplayer.ExoPlayerActivity"

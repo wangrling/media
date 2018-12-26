@@ -36,6 +36,8 @@ public class AndroidGraphics implements Graphics, GLSurfaceView.Renderer {
         return view;
     }
 
+
+
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 
@@ -49,5 +51,9 @@ public class AndroidGraphics implements Graphics, GLSurfaceView.Renderer {
     @Override
     public void onDrawFrame(GL10 gl) {
 
+    }
+
+    public View getView() {
+        return view;
     }
 }

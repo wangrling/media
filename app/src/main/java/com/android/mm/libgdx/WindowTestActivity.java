@@ -53,8 +53,7 @@ public class WindowTestActivity extends AndroidApplication implements Applicatio
 
     @Override
     public void render() {
-        Gdx.gl.glClearColor(color.r, color.g, color.g, color.a);
-        Gdx.gl.glClear(GL_COLOR_BUFFER_BIT);
+
     }
 
     @Override

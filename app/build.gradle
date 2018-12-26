@@ -58,5 +58,4 @@ dependencies {
     api 'com.google.guava:guava:26.0-android'
     api 'com.google.truth:truth:0.39'
 
-    implementation files('/home/wang/github/media/libs/libs/javax.servlet.jar')
 }

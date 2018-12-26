@@ -1,10 +1,8 @@
 package com.android.mm.grafika;
 
 import android.app.Activity;
-import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Layout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -55,16 +53,21 @@ public class GrafikaActivity extends Activity {
                     "TextureViewGLActivity" },
             {
                 "Play video (SurfaceView)",
-                    "Plays the video track from an MP4 file in SurfaceView"
+                    "Plays the video track from an MP4 file in SurfaceView.",
+                    "PlayMovieSurfaceActivity"
             },
-
             {
                 "Play video (TextureView)",
-                    "Uses a 'TextureView' for output. "
+                    "Uses a `TextureView` for output. You can use the\n" +
+                            "  checkboxes to loop playback and/or play the frames at a fixed rate of 60 FPS.",
+                    "PlayTextureActivity"
             },
 
             {
-
+                "Continuous capture",
+                    "Currently hard-wired to try to capture 7 seconds of video from the camera at " +
+                            "6MB/sec, preferrably 15fps 720p.",
+                    "ContinuousCaptureActivity"
             }
     };
 
@@ -82,16 +85,13 @@ public class GrafikaActivity extends Activity {
                 R.layout.wrapper_two_line_list_item, new String[] {TITLE, DESCRIPTION},
                 new int[] {android.R.id.text1, android.R.id.text2}));
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Map<String, Object> map = (Map<String, Object>)listView.getItemAtPosition(position);
-                Intent intent = (Intent) map.get(CLASS_NAME);
-                startActivity(intent);
-            }
-        });
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+                    Map<String, Object> map = (Map<String, Object>) listView.getItemAtPosition(position);
+                    Intent intent = (Intent) map.get(CLASS_NAME);
+                    startActivity(intent);
+                });
 
-        // 生成资源文件
+        // 生成MovieSliders.mp4和MovieEightRects.mp4两个视频文件。
         ContentManager cm = ContentManager.getInstance();
         if (!cm.isContentCreated(this)) {
             ContentManager.getInstance().createAll(this);

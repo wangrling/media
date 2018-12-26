@@ -1,10 +1,12 @@
 package com.android.mm.grafika.generated;
 
 import android.media.MediaCodec;
+import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 import android.media.MediaMuxer;
 import android.util.Log;
 import android.view.Surface;
+
 
 import com.android.mm.grafika.GrafikaActivity;
 import com.android.mm.grafika.gles.EglCore;
@@ -17,9 +19,7 @@ import java.nio.ByteBuffer;
 /**
  * Base class for generated movies.
  */
-
-public abstract class GenerateMovie implements Content {
-
+public abstract class GeneratedMovie implements Content {
     private static final String TAG = GrafikaActivity.TAG;
     private static final boolean VERBOSE = false;
 
@@ -39,12 +39,12 @@ public abstract class GenerateMovie implements Content {
     private boolean mMuxerStarted;
 
     /**
-     * Creates the movie content. Usually called from an async task thread.
+     * Creates the movie content.  Usually called from an async task thread.
      */
     public abstract void create(File outputFile, ContentManager.ProgressUpdater prog);
 
     /**
-     * Returns true if the codec has software implementation.
+     * Returns true if the codec has a software implementation.
      */
     private static boolean isSoftwareCodec(MediaCodec codec) {
         String codecName = codec.getCodecInfo().getName();
@@ -59,10 +59,12 @@ public abstract class GenerateMovie implements Content {
                                   int framesPerSecond, File outputFile) throws IOException {
         mBufferInfo = new MediaCodec.BufferInfo();
 
-        MediaFormat format = MediaFormat.createAudioFormat(mimeType, width, height);
+        MediaFormat format = MediaFormat.createVideoFormat(mimeType, width, height);
 
         // Set some properties.  Failing to specify some of these can cause the MediaCodec
         // configure() call to throw an unhelpful exception.
+        format.setInteger(MediaFormat.KEY_COLOR_FORMAT,
+                MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
         format.setInteger(MediaFormat.KEY_BIT_RATE, bitRate);
         format.setInteger(MediaFormat.KEY_FRAME_RATE, framesPerSecond);
         format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, IFRAME_INTERVAL);
@@ -73,7 +75,6 @@ public abstract class GenerateMovie implements Content {
         mEncoder = MediaCodec.createEncoderByType(mimeType);
         mEncoder.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
         Log.v(TAG, "encoder is " + mEncoder.getCodecInfo().getName());
-
         Surface surface;
         try {
             surface = mEncoder.createInputSurface();
@@ -101,7 +102,8 @@ public abstract class GenerateMovie implements Content {
         // We're not actually interested in multiplexing audio.  We just want to convert
         // the raw H.264 elementary stream we get from MediaCodec into a .mp4 file.
         if (VERBOSE) Log.d(TAG, "output will go to " + outputFile);
-        mMuxer = new MediaMuxer(outputFile.toString(), MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
+        mMuxer = new MediaMuxer(outputFile.toString(),
+                MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
 
         mTrackIndex = -1;
         mMuxerStarted = false;
@@ -134,6 +136,7 @@ public abstract class GenerateMovie implements Content {
 
     /**
      * Submits a frame to the encoder.
+     *
      * @param presentationTimeNsec The presentation time stamp, in nanoseconds.
      */
     protected void submitFrame(long presentationTimeNsec) {
@@ -148,12 +151,10 @@ public abstract class GenerateMovie implements Content {
 
     /**
      * Extracts all pending data from the encoder.
-     *
      * <p>
-     *     If endOfStream is not set, this returns when there is no more data to drain. It it
-     *     is set, we send EOS to the encoder, and then iterate until we see EOS on the output.
-     *     Calling this with endOfStream set should be done once, right before stopping the muxer.
-     * </p>
+     * If endOfStream is not set, this returns when there is no more data to drain.  If it
+     * is set, we send EOS to the encoder, and then iterate until we see EOS on the output.
+     * Calling this with endOfStream set should be done once, right before stopping the muxer.
      */
     protected void drainEncoder(boolean endOfStream) {
         final int TIMEOUT_USEC = 10000;
@@ -163,6 +164,7 @@ public abstract class GenerateMovie implements Content {
             if (VERBOSE) Log.d(TAG, "sending EOS to encoder");
             mEncoder.signalEndOfInputStream();
         }
+
         ByteBuffer[] encoderOutputBuffers = mEncoder.getOutputBuffers();
         while (true) {
             int encoderStatus = mEncoder.dequeueOutputBuffer(mBufferInfo, TIMEOUT_USEC);
@@ -184,7 +186,7 @@ public abstract class GenerateMovie implements Content {
                 MediaFormat newFormat = mEncoder.getOutputFormat();
                 Log.d(TAG, "encoder output format changed: " + newFormat);
 
-                // now that we have the Magic Goodies, start the muxer.
+                // now that we have the Magic Goodies, start the muxer
                 mTrackIndex = mMuxer.addTrack(newFormat);
                 mMuxer.start();
                 mMuxerStarted = true;
@@ -202,21 +204,19 @@ public abstract class GenerateMovie implements Content {
                 if ((mBufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
                     // The codec config data was pulled out and fed to the muxer when we got
                     // the INFO_OUTPUT_FORMAT_CHANGED status.  Ignore it.
-                    if (VERBOSE) {
-                        if (VERBOSE) Log.d(TAG, "ignoring BUFFER_FLAG_CODEC_CONFIG");
-                        mBufferInfo.size = 0;
-                    }
+                    if (VERBOSE) Log.d(TAG, "ignoring BUFFER_FLAG_CODEC_CONFIG");
+                    mBufferInfo.size = 0;
                 }
+
                 if (mBufferInfo.size != 0) {
                     if (!mMuxerStarted) {
                         throw new RuntimeException("muxer hasn't started");
                     }
 
-                    // adjust the ByteBuffer values to match BufferInfo.
+                    // adjust the ByteBuffer values to match BufferInfo
                     encodedData.position(mBufferInfo.offset);
                     encodedData.limit(mBufferInfo.offset + mBufferInfo.size);
 
-                    // 写入文件中
                     mMuxer.writeSampleData(mTrackIndex, encodedData, mBufferInfo);
                     if (VERBOSE) Log.d(TAG, "sent " + mBufferInfo.size + " bytes to muxer");
                 }

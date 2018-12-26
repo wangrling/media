@@ -6,9 +6,7 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 
-import com.android.mm.libgdx.gdx.ApplicationListener;
 import com.android.mm.libgdx.gdx.Audio;
-import com.android.mm.libgdx.gdx.audio.AndroidMusic;
 import com.android.mm.libgdx.gdx.audio.AudioDevice;
 import com.android.mm.libgdx.gdx.audio.AudioRecorder;
 import com.android.mm.libgdx.gdx.audio.Music;

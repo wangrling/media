@@ -133,6 +133,7 @@ public class ContentManager {
 
         // Generate content in async task.
         GenerateTask genTask = new GenerateTask(caller, dialog, tags);
+        genTask.execute();
     }
 
 
@@ -248,7 +249,8 @@ public class ContentManager {
      * This may be called from the async task thread.
      */
     private void prepare(ProgressUpdater updater, int tag) {
-        GenerateMovie movie;
+        GeneratedMovie movie;
+        Log.d(TAG, "prepare movie");
         switch (tag) {
             case MOVIE_EIGHT_RECTS:
                 movie = new MovieEightRects();

@@ -6,17 +6,21 @@
 
     <Button
         android:id="@+id/playStopButton"
-        android:layout_alignParentTop="true"
         android:onClick="clickPlayStop"
         android:text="@string/play"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:paddingStart="@dimen/margin_medium"
+        android:paddingEnd="@dimen/margin_medium"
+
+        style="@style/MediaControlImageButton" />
 
     <Spinner
         android:id="@+id/playMovieFileSpinner"
-        android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/playStopButton"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="@dimen/margin_large"
+        android:layout_marginTop="@dimen/margin_medium"
+        android:scaleX="1.2"
+        android:scaleY="1.2"
+        android:gravity="center_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 

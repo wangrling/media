@@ -22,7 +22,10 @@ public class MultiMediaActivity extends ListActivity {
 
     // 半年计划，不再增加新主题。
 	// 全力写代码！
+    // 应该先抄完再修改。
     // 每天目标，七千行代码。
+    // 从上往下，完成为止，不要挑剔。
+    // 不要轻易修改源代码，能运行就好，改出BUG还要自己修复。
     private static List<String> mDataSet = Arrays.asList(
             // 主要是多媒体的介绍。
             "Grafika",
@@ -38,6 +41,8 @@ public class MultiMediaActivity extends ListActivity {
             "Concurrency",
             // 低延迟音频库。
             "Oboe",
+            // 游戏引擎。
+            "LibGdx",
             // 网络流协议。
             "Rtmp",
             // 音频协议。
@@ -91,9 +96,8 @@ public class MultiMediaActivity extends ListActivity {
             // Png和WebP图片编解码
             "PP",
             // H264协议。
-            "H264",
-            // 游戏引擎。
-            "LibGdx"
+            "H264"
+
     );
 
     @Override
@@ -108,7 +112,8 @@ public class MultiMediaActivity extends ListActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        setListAdapter(new ArrayAdapter<>(this, R.layout.wrapper_simple_expandable_list_item, mDataSet));
+        setListAdapter(new ArrayAdapter<>(this,
+                R.layout.wrapper_simple_expandable_list_item, mDataSet));
     }
 
     @Override
@@ -129,6 +134,9 @@ public class MultiMediaActivity extends ListActivity {
                 break;
             }
             case R.id.info: {
+                break;
+            }
+            case R.id.settings: {
                 break;
             }
         }

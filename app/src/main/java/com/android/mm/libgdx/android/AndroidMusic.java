@@ -1,8 +1,25 @@
-package com.android.mm.libgdx.gdx.audio;
+package com.android.mm.libgdx.android;
 
 import android.media.MediaPlayer;
 
+import com.android.mm.libgdx.gdx.audio.Music;
+
 public class AndroidMusic implements Music, MediaPlayer.OnCompletionListener {
+    private final AndroidAudio audio;
+    private MediaPlayer player;
+    private boolean isPrepared = true;
+    protected boolean wasPlaying = false;
+    private float volume = 1f;
+    protected OnCompletionListener onCompletionListener;
+
+    AndroidMusic(AndroidAudio audio, MediaPlayer player) {
+        this.audio = audio;
+        this.player = player;
+        this.onCompletionListener = null;
+        // 设置播放完成的监听。
+        this.player.setOnCompletionListener(this);
+    }
+
     @Override
     public void onCompletion(MediaPlayer mp) {
 
@@ -65,7 +82,12 @@ public class AndroidMusic implements Music, MediaPlayer.OnCompletionListener {
 
     @Override
     public void dispose() {
-
+        if (player == null)
+            return ;
+        try {
+            player.release();
+        } catch (Throwable t) {
+        }
     }
 
     @Override

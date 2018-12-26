@@ -81,6 +81,8 @@
     <string name="test">Test</string>
     <string name="contentGenerationFailedMsg">Failed to generate content.  Some          features may be unavailable.\\n\\n%1$s</string>
     <string name="fail">Fail</string>
+    <string name="secondsOfVideo">%1$.3f seconds of video</string>
+    <string name="capture">Capture</string>
 
 
 </resources>

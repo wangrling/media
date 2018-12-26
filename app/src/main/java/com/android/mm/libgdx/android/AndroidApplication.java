@@ -1,6 +1,7 @@
 package com.android.mm.libgdx.android;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -85,4 +86,8 @@ public class AndroidApplication extends Activity implements AndroidApplicationBa
     }
 
 
+    @Override
+    public Context getContext() {
+        return null;
+    }
 }
