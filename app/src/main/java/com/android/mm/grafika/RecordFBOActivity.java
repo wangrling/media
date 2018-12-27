@@ -137,6 +137,8 @@ public class RecordFBOActivity extends Activity implements
 
 
     private class RenderThread extends Thread {
+
+
         @Override
         public void run() {
             super.run();
