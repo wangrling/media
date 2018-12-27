@@ -83,6 +83,10 @@
     <string name="fail">Fail</string>
     <string name="secondsOfVideo">%1$.3f seconds of video</string>
     <string name="capture">Capture</string>
+    <string name="recording">Recording</string>
+    <string name="saveing">Saving</string>
+    <string name="success">Success</string>
+    <string name="recordingFailed"><![CDATA[>Recording FAILED (err=%1$d)]]></string>
 
 
 </resources>

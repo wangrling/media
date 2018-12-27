@@ -15,12 +15,38 @@
         android:paddingEnd="@dimen/margin_medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
-
+    <!-- 录制多少秒钟 -->
     <TextView
-        android:id="@+id/captureVideo"
+        android:id="@+id/recordingSecondsText"
         android:layout_toRightOf="@+id/captureButton"
         android:layout_alignBaseline="@id/captureButton"
         android:text="@string/secondsOfVideo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.android.mm.grafika.utils.AspectFrameLayout
+        android:id="@+id/continuousCaptureAfl"
+        android:layout_centerInParent="true"
+        android:layout_below="@+id/captureButton"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <SurfaceView
+            android:id="@+id/continuousCaptureSurfaceView"
+            android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </com.android.mm.grafika.utils.AspectFrameLayout>
+
+    <TextView
+        android:id="@+id/recordingText"
+        android:layout_alignLeft="@+id/continuousCaptureAfl"
+        android:layout_alignTop="@+id/continuousCaptureAfl"
+        android:text="@string/recording"
+        android:textColor="#f00"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 

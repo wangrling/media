@@ -15,7 +15,7 @@ import androidx.core.content.ContextCompat;
  * Helper class for handling dangerous permissions for Android API level >= 23 which
  * requires user consent at runtime to access the camera.
  */
-class PermissionHelper {
+public class PermissionHelper {
     public static final int  RC_PERMISSION_REQUEST = 9222;
     public static boolean hasCameraPermission(Activity activity) {
         return ContextCompat.checkSelfPermission(activity,
