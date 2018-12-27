@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <SurfaceView
+        android:id="@+id/fboActivitySurfaceView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <Button
+        android:id="@+id/fboRecordButton"
+        android:layout_centerInParent="true"
+        android:layout_alignParentTop="true"
+        android:onClick="clickToggleRecording"
+        android:text="@string/recording"
+        style="@style/MediaControlImageButton"
+        android:paddingLeft="@dimen/margin_medium"
+        android:paddingEnd="@dimen/margin_medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <RadioGroup
+        android:orientation="vertical"
+        android:layout_marginStart="@dimen/margin_medium"
+        android:layout_below="@id/fboRecordButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/recDrawTwiceRadio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onRadioButtonClicked"
+            android:text="@string/recDrawTwice" />
+
+        <RadioButton
+            android:id="@+id/recFboRadio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onRadioButtonClicked"
+            android:text="@string/recOffscreen" />
+
+        <RadioButton
+            android:id="@+id/recFramebufferRadio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onRadioButtonClicked"
+            android:text="@string/recFramebuffer" />
+    </RadioGroup>
+
+</RelativeLayout>

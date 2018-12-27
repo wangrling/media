@@ -5,13 +5,15 @@
 
     <SurfaceView
         android:id="@+id/hardwareScalerSurfaceView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_below="@id/surfaceSizeRadioGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
     <TextView
         android:id="@+id/viewSizeValueText"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:layout_marginStart="@dimen/margin_small"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
@@ -19,7 +21,7 @@
     <RadioGroup
         android:id="@+id/surfaceSizeRadioGroup"
         android:layout_below="@+id/viewSizeValueText"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -27,36 +29,33 @@
             android:id="@+id/surfaceSizeTinyRadio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="onRadioButtonClicked"
-            android:text="@string/surfaceSizeTiny" />
+            android:onClick="onRadioButtonClicked" />
 
         <RadioButton
             android:id="@+id/surfaceSizeSmallRadio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="onRadioButtonClicked"
-            android:text="@string/surfaceSizeSmall" />
+            android:onClick="onRadioButtonClicked" />
 
         <RadioButton
             android:id="@+id/surfaceSizeMediumRadio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="onRadioButtonClicked"
-            android:text="@string/surfaceSizeMedium" />
+            android:onClick="onRadioButtonClicked" />
 
         <RadioButton
             android:id="@+id/surfaceSizeFullRadio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="onRadioButtonClicked"
-            android:text="@string/surfaceSizeFull" />
+            android:onClick="onRadioButtonClicked" />
 
     </RadioGroup>
 
     <CheckBox
         android:id="@+id/flatShadingCheckBox"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/surfaceSizeRadioGroup"
+        android:layout_centerInParent="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="@dimen/margin_medium"
         android:onClick="onFlatShadingClicked"
         android:text="@string/flatShaded"
         android:layout_width="wrap_content"

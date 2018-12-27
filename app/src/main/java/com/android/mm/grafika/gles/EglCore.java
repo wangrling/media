@@ -328,4 +328,12 @@ public class EglCore {
             throw new RuntimeException(msg + ": EGL error: 0x" + Integer.toHexString(error));
         }
     }
+
+    // Makes no context current.
+    public void makeNothingCurrent() {
+        if (!EGL14.eglMakeCurrent(mEGLDisplay, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_SURFACE,
+                EGL14.EGL_NO_CONTEXT)) {
+            throw new RuntimeException("eglMakeCurrent failed");
+        }
+    }
 }

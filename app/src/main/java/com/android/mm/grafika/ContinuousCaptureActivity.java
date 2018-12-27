@@ -53,6 +53,8 @@ import androidx.annotation.Nullable;
  * 1. 布局中创建SurfaceView, SurfaceHolder获取到Surface, 传递给OpenGL创建SurfaceTexture。
  * 2. 打开相机，传递SurfaceTexture,相机画面传递到TextureID中。
  * 3. 使用OpenGL画笔，分别将图像绘制到DisplaySurface和EncodeSurface中。
+ *
+ * 缺点：进行两次绘制操作。
  */
 
 public class ContinuousCaptureActivity extends Activity implements SurfaceHolder.Callback,
@@ -379,7 +381,7 @@ public class ContinuousCaptureActivity extends Activity implements SurfaceHolder
         mFileSaveInProgress = true;
         updateControls();
         TextView tv = findViewById(R.id.recordingSecondsText);
-        String str = getString(R.string.saveing);
+        String str = getString(R.string.saving);
         tv.setText(str);
 
         mCircEncoder.saveVideo(mOutputFile);

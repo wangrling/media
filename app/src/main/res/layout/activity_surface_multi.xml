@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_margin="@dimen/margin_small"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <SurfaceView
+        android:id="@+id/multiSurfaceView1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <SurfaceView
+        android:id="@+id/multiSurfaceView2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <SurfaceView
+        android:id="@+id/multiSurfaceView3"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <Button
+        android:id="@+id/multiSurfaceBounceButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="clickBounce"
+        android:text="Bounce"
+        style="@style/MediaControlImageButton"
+        android:paddingLeft="@dimen/margin_medium"
+        android:paddingEnd="@dimen/margin_medium"
+        android:layout_alignLeft="@id/multiSurfaceView1"
+        android:layout_alignTop="@+id/multiSurfaceView1"
+        />
+
+
+</RelativeLayout>

@@ -80,6 +80,25 @@ public class GrafikaActivity extends Activity {
                 "Hardware scaler",
                     "Shows GL rendering with on-the-fly surface size changes.",
                 "HardwareScalerActivity"
+            },
+
+            {
+                "Camera preview",
+                    "使用TextureView进行相机预览。",
+                    "LiveCameraActivity"
+            },
+
+            {
+                "Multi Surface",
+                    "Three overlapping (覆盖) Surfaces, one marked secure.",
+                    "MultiSurfaceActivity"
+            },
+
+            {
+                "Record GL (重点)",
+                    "Simultaneously draws to the display and to a video encoder with OpenGL ES, " +
+                            "using framebuffer objects to avoid re-rendering.",
+                    "RecordFBOActivity"
             }
     };
 
