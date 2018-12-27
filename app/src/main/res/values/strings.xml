@@ -79,7 +79,7 @@
     <string name="error_creation">Error creating player:
         check media file is copied to android device</string>
     <string name="test">Test</string>
-    <string name="contentGenerationFailedMsg">Failed to generate content.  Some          features may be unavailable.\\n\\n%1$s</string>
+    <string name="contentGenerationFailedMsg">Failed to generate content.  Some features may be unavailable.\\n\\n%1$s</string>
     <string name="fail">Fail</string>
     <string name="secondsOfVideo">%1$.3f seconds of video!</string>
     <string name="capture">Capture</string>
@@ -90,6 +90,10 @@
     <string name="normal">Normal</string>
     <string name="bw">Black/White</string>
     <string name="filter">Filter</string>
-
+    <string name="surfaceSizeTiny">[tiny]</string>
+    <string name="surfaceSizeSmall">[small]</string>
+    <string name="surfaceSizeMedium">[medium]</string>
+    <string name="surfaceSizeFull">[full]</string>
+    <string name="flatShaded">flat shaded</string>
 
 </resources>

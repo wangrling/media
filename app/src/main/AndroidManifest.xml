@@ -36,6 +36,8 @@
         <activity android:name=".grafika.PlayMovieSurfaceActivity" />
         <activity android:name=".grafika.PlayTextureActivity" />
         <activity android:name=".grafika.ContinuousCaptureActivity" />
+        <activity android:name=".grafika.DoubleDecodeActivity" />
+        <activity android:name=".grafika.HardwareScalerActivity" />
 
 
         <activity android:name=".exoplayer.ExoPlayerActivity"

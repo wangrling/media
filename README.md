@@ -1,6 +1,8 @@
 # MultiMedia
 关注移动端多媒体。
 
+打开相机，使用SurfaceView进行显示，创建一块环形内存保存七秒的内容，点击按钮保存，并且使用GLES Shader修改显示的效果。
+
 jni调用层
 processFile(String path, String mimeType, MediaScannerClient client);
 android_media_MediaScanner_processFile(JNIEnv* env, jobject thiz, jstring path, jobject client);

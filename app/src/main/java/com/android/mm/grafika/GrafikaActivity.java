@@ -68,6 +68,18 @@ public class GrafikaActivity extends Activity {
                     "Currently hard-wired to try to capture 7 seconds of video from the camera at " +
                             "6MB/sec, preferrably 15fps 720p.",
                     "ContinuousCaptureActivity"
+            },
+
+            {
+                "Double decode",
+                    "Plays the two auto-generated videos.  Note they play at different rates.",
+                    "DoubleDecodeActivity"
+            },
+
+            {
+                "Hardware scaler",
+                    "Shows GL rendering with on-the-fly surface size changes.",
+                "HardwareScalerActivity"
             }
     };
 
