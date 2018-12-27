@@ -15,12 +15,15 @@
         android:paddingEnd="@dimen/margin_medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
     <!-- 录制多少秒钟 -->
     <TextView
         android:id="@+id/recordingSecondsText"
         android:layout_toRightOf="@+id/captureButton"
         android:layout_alignBaseline="@id/captureButton"
+        android:layout_marginStart="@dimen/margin_medium"
         android:text="@string/secondsOfVideo"
+        android:textSize="20sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
@@ -31,6 +34,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
+        android:layout_marginBottom="@dimen/margin_extra_large"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -43,12 +47,56 @@
 
     <TextView
         android:id="@+id/recordingText"
-        android:layout_alignLeft="@+id/continuousCaptureAfl"
+        android:layout_centerInParent="true"
         android:layout_alignTop="@+id/continuousCaptureAfl"
         android:text="@string/recording"
         android:textColor="#f00"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
+    <RelativeLayout
+        android:text="Style"
+        android:orientation="horizontal"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/normal"
+            style="@style/MediaControlImageButton"
+            android:paddingLeft="@dimen/margin_medium"
+            android:paddingRight="@dimen/margin_medium"
+            android:onClick="chooseNormal"
+            android:text="@string/normal"
+            android:layout_marginStart="@dimen/margin_large"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/blackWrite"
+            style="@style/MediaControlImageButton"
+            android:onClick="chooseBlackWhite"
+            android:text="@string/bw"
+            android:paddingLeft="@dimen/margin_medium"
+            android:paddingRight="@dimen/margin_medium"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/filter"
+            style="@style/MediaControlImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="@dimen/margin_large"
+            android:onClick="chooseFilter"
+            android:paddingStart="@dimen/margin_medium"
+            android:paddingEnd="@dimen/margin_medium"
+            android:text="@string/filter" />
+    </RelativeLayout>
+
 
 
 </RelativeLayout>

@@ -1,10 +1,12 @@
 package com.android.mm.grafika;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.opengl.GLES20;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
@@ -102,7 +104,11 @@ public class ContinuousCaptureActivity extends Activity implements SurfaceHolder
         mHandler = new MainHandler(this);
         mHandler.sendEmptyMessageDelayed(MainHandler.MSG_BLINK_TEXT, 1500);
 
-        mOutputFile = new File(getFilesDir(), "continuous-capture.mp4");
+        // 保存在只有app可见的目录中，需要使用工具提取出来。
+        // 主要是不用申请写权限。
+        // mOutputFile = new File(getFilesDirs(), "continuous-capture.mp4");
+        // 改到外围存储中方便查看结果。
+        mOutputFile = new File(Environment.getExternalStorageDirectory() + "/continuous-capture.mp4");
         mSecondsOfVideo = 0.0f;
         updateControls();
     }
@@ -283,6 +289,22 @@ public class ContinuousCaptureActivity extends Activity implements SurfaceHolder
         startPreview();
     }
 
+
+    public void chooseNormal(View view) {
+        mFullFrameBlit = new FullFrameRect(
+                new Texture2dProgram(Texture2dProgram.ProgramType.TEXTURE_EXT));
+    }
+
+    public void chooseBlackWhite(View view) {
+        mFullFrameBlit = new FullFrameRect(
+                new Texture2dProgram(Texture2dProgram.ProgramType.TEXTURE_EXT_BW));
+    }
+
+    public void chooseFilter(View view) {
+        mFullFrameBlit = new FullFrameRect(
+                new Texture2dProgram(Texture2dProgram.ProgramType.TEXTURE_EXT_FILT));
+    }
+
     private void startPreview() {
         if (mCamera != null) {
             Log.d(TAG, "starting camera preview");
@@ -329,7 +351,9 @@ public class ContinuousCaptureActivity extends Activity implements SurfaceHolder
         TextView tv = findViewById(R.id.recordingSecondsText);
         tv.setText(str);
 
-        boolean wantEnabled = (mCircEncoder != null) && mFileSaveInProgress;
+        // 掉了一个取反符号！
+        boolean wantEnabled = (mCircEncoder != null) && !mFileSaveInProgress;
+        Log.d(TAG, "updateControls capture enabled: " + wantEnabled);
         Button button = findViewById(R.id.captureButton);
         if (button.isEnabled() != wantEnabled) {
             Log.d(TAG, "setting enabled = " + wantEnabled);
@@ -339,8 +363,11 @@ public class ContinuousCaptureActivity extends Activity implements SurfaceHolder
 
     /**
      * Handles onClick for "capture" button.
+     * getFilesDir() = /data/data/com.my.app/files
      */
     public void clickCapture(View view) {
+        // 为什么点击按钮没反应？
+        // setEnable(false)没有正确置位。
         Log.d(TAG, "capture");
         if (mFileSaveInProgress) {
             Log.w(TAG, "HEY: file save is already in progress");
@@ -357,6 +384,8 @@ public class ContinuousCaptureActivity extends Activity implements SurfaceHolder
 
         mCircEncoder.saveVideo(mOutputFile);
     }
+
+
 
     /**
      * Custom message handler for main UI thread.
@@ -401,6 +430,8 @@ public class ContinuousCaptureActivity extends Activity implements SurfaceHolder
                     TextView tv = activity.findViewById(R.id.recordingSecondsText);
                     // Attempting to make it blink by using setEnabled() doesn't work --
                     // it just changes the color.  We want to change the visibility.
+                    // 停止让它闪烁
+                    /*
                     int visibility = tv.getVisibility();
                     if (visibility == View.VISIBLE) {
                         visibility = View.INVISIBLE;
@@ -411,6 +442,7 @@ public class ContinuousCaptureActivity extends Activity implements SurfaceHolder
 
                     int delay = (visibility == View.VISIBLE) ? 1000 : 200;
                     sendEmptyMessageDelayed(MSG_BLINK_TEXT, delay);
+                    */
                     break;
                 }
                 case MSG_FRAME_AVAILABLE: {
@@ -471,7 +503,7 @@ public class ContinuousCaptureActivity extends Activity implements SurfaceHolder
             GLES20.glViewport(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
             mFullFrameBlit.drawFrame(mTextureId, mTmpMatrix);
             drawExtra(mFrameNum, VIDEO_WIDTH, VIDEO_HEIGHT);
-            mCircEncoder.frameAvailbleSoon();
+            mCircEncoder.frameAvailableSoon();
             mEncoderSurface.setPresentationTime(mCameraTexture.getTimestamp());
             mEncoderSurface.swapBuffers();
         }
