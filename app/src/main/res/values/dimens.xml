@@ -6,5 +6,6 @@
     <dimen name="margin_large">32dp</dimen>
     <dimen name="margin_extra_large">64dp</dimen>
 
-
+    <dimen name="exo_media_button_width">71dp</dimen>
+    <dimen name="exo_media_button_height">52dp</dimen>
 </resources>
