@@ -1,12 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <com.android.mm.grafika.utils.AspectFrameLayout
-        android:id="@+id/exo_content_frame"
+    <com.android.mm.exoplayer.ui.AspectRatioFrameLayout
+        android:id="@id/exo_content_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center">
 
 
-    </com.android.mm.grafika.utils.AspectFrameLayout>
+        <!-- Video surface will be inserted as the first child of the content frame. -->
+
+        <!-- 背景？ -->
+        <View
+            android:id="@id/exo_shutter"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/black" />
+
+        <ImageView
+            android:id="@id/exo_artwork"
+            android:scaleType="fitXY"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+
+
+    </com.android.mm.exoplayer.ui.AspectRatioFrameLayout>
 </merge>

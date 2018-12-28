@@ -9,10 +9,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 
 import androidx.annotation.Nullable;
+import android.media.*;
+import android.view.SurfaceView;
+import android.view.SurfaceHolder;
 
 /**
  * Show a list using a RecyclerView.
@@ -29,10 +34,22 @@ public class MultiMediaActivity extends ListActivity {
     private static List<String> mDataSet = Arrays.asList(
             // 主要是多媒体的介绍。
             /**
-             * 
+             * Camera SurfaceView SurfaceHolder SurfaceTexture Surface MediaCodec MediaMuxer
+             * 生产者是Camera, Canvas, OpenGL
+             * 消费者是{@link SurfaceView#getHolder} {@link SurfaceHolder@getSurface}
+             * MediaCodec既是生产者又是消费者
+             * {@link MediaCodec#createInputSurface}
+             * 消费端 {@link MediaCodec#dequeueInputBuffer} {@link MediaCodec#queueInputBuffer}
+             * 生产端　{@link MediaCodec#dequeueOutputBuffer} {@link MediaCodec#releaseOutputBuffer}
+             * 消费端 {@link MediaMuxer#writeSampleData(int, ByteBuffer, MediaCodec.BufferInfo)}
+             * MediaMuxer将编码数据写入到文件中
+             *
+             * 其中注意几点的就是Camera的数据以texture的形式输入到opengl中，2d/3d的知识都是在使用opengl,所以
+             * 后期还需要单独学习。
              */
             "Grafika",
             // 多媒体框架。
+
             "ExoPlayer",
             // 算法知识积累。
             "Algorithms",
