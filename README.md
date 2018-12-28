@@ -1,6 +1,21 @@
 # MultiMedia
 关注移动端多媒体。
 
+
+
+后续再看RecordFBOActivity，涉及到多个知识，线程，解码，显示，OpenGL绘制。
+
+AbemaTV playback makes a loud sound when playing next stream video.
+1. 在audio_hw上进行dump数据，发现声音已经产生，排除底层问题。
+2. 在AudioTrack上dump数据，发现没有声音，排除解码问题。
+3. 联系到网络差的情况，构建AudioTrack唯一可变的变量是SampleRate。
+4. 在创建Track时做出以下修改，验证成功。
+if ((mFlags & AUDIO_OUTPUT_FLAG_FAST) && mSampleRate != mAfSampleRate) {
+    ALOGW("AUDIO_OUTPUT_FLAG_FAST denied by client due to mismatching sample rate (%d vs %d)",
+        mSampleRate, mAfSampleRate);
+    mFlags = (audio_output_flags_t) (mFlags & ~AUDIO_OUTPUT_FLAG_FAST);
+}
+
 打开相机，使用SurfaceView进行显示，创建一块环形内存保存七秒的内容，点击按钮保存，并且使用GLES Shader修改显示的效果。
 
 jni调用层

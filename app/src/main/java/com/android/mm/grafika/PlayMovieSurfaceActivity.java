@@ -51,6 +51,7 @@ public class PlayMovieSurfaceActivity extends Activity implements
      * Overridable  method to get layout id.  Any provided layout needs to include
      * the same views (or compatible) as active_play_movie_surface
      */
+    // 为ScreenRecordActivity作准备。
     protected int getContentViewId() {
         return R.layout.activity_play_movie_surface;
     }

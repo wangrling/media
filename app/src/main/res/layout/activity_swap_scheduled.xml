@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_margin="@dimen/margin_small"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <SurfaceView
+        android:id="@+id/scheduledSwapSurfaceView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+    <Spinner
+        android:id="@+id/scheduledSwapUpdateSpinner"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="@dimen/margin_medium"
+        android:layout_marginBottom="@dimen/margin_medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Spinner
+        android:id="@+id/scheduledSwapAheadSpinner"
+        android:layout_centerInParent="true"
+        android:layout_below="@+id/scheduledSwapUpdateSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+</RelativeLayout>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_margin="@dimen/margin_small"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/playStopButton"
+        style="@style/MediaControlImageButton"
+        android:text="@string/play"
+        android:onClick="clickPlayStop"
+        android:paddingStart="@dimen/margin_medium"
+        android:paddingEnd="@dimen/margin_medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Spinner
+        android:id="@+id/playMovieFileSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="@dimen/margin_medium"
+        android:layout_alignTop="@id/playStopButton" />
+
+    <Button
+        android:id="@+id/screenRecordButton"
+        style="@style/MediaControlImageButton"
+        android:text="@string/toggleRecordingOn"
+        android:layout_below="@+id/playStopButton"
+        android:layout_marginStart="@dimen/margin_medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.android.mm.grafika.utils.AspectFrameLayout
+        android:id="@+id/playMovieAFL"
+        android:layout_below="@+id/screenRecordButton"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <SurfaceView
+            android:id="@+id/playMovieSurface"
+            android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </com.android.mm.grafika.utils.AspectFrameLayout>
+</RelativeLayout>

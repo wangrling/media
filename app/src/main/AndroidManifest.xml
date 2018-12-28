@@ -41,6 +41,9 @@
         <activity android:name=".grafika.LiveCameraActivity" />
         <activity android:name=".grafika.MultiSurfaceActivity" />
         <activity android:name=".grafika.RecordFBOActivity" />
+        <activity android:name=".grafika.ScreenRecordActivity" />
+        <activity android:name=".grafika.ScheduledSwapActivity" />
+        <activity android:name=".grafika.CameraCaptureActivity" />
 
 
         <activity android:name=".exoplayer.ExoPlayerActivity"

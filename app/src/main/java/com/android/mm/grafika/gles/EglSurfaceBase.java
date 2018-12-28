@@ -87,6 +87,14 @@ public class EglSurfaceBase {
     }
 
     /**
+     * Makes our EGL context and surface current for drawing, using the supplied surface
+     * for reading.
+     */
+    public void makeCurrentReadFrom(EglSurfaceBase readSurface) {
+        mEglCore.makeCurrent(mEGLSurface, readSurface.mEGLSurface);
+    }
+
+    /**
      * Release the EGL surface.
      */
     public void releaseEglSurface() {

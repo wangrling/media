@@ -28,6 +28,9 @@ public class MultiMediaActivity extends ListActivity {
     // 不要轻易修改源代码，能运行就好，改出BUG还要自己修复。
     private static List<String> mDataSet = Arrays.asList(
             // 主要是多媒体的介绍。
+            /**
+             * 
+             */
             "Grafika",
             // 多媒体框架。
             "ExoPlayer",

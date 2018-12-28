@@ -96,5 +96,31 @@
     <string name="recFramebuffer">Rec: glBlitFramebuffer [hosed]</string>
     <string name="toggleRecordingOn">Start recording</string>
     <string name="toggleRecordingOff">Stop recording</string>
+    <!-- for scheduledSwapUpdateSpinner; match with UPDATE_PATTERNS -->
+    <string-array name="scheduledSwapUpdateNames">
+        <item>15 fps</item>
+        <item>24 fps</item>
+        <item>25 fps</item>
+        <item>30 fps</item>
+        <item>48 fps</item>
+        <item>60 fps</item>
+        <item>erratic 1/5</item>
+    </string-array>
+    <!-- for scheduledSwapAheadSpinner; match with FRAME_AHEAD -->
+    <string-array name="scheduledSwapAheadNames">
+        <item>ASAP</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+    <!-- for cameraFilter_spinner; match with CameraCaptureActivity constants -->
+    <string-array name="cameraFilterNames">
+        <item>Normal</item>
+        <item>Black &amp; white</item>
+        <item>Filter: blur</item>
+        <item>Filter: sharpen</item>
+        <item>Filter: edge detect</item>
+        <item>Filter: emboss</item>
+    </string-array>
 
 </resources>

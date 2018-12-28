@@ -23,6 +23,9 @@ import androidx.annotation.Nullable;
 
 /**
  * Grafika, a dumping ground for Android graphics & media hacks.
+ *
+ * 大体的流程是SurfaceHolder获取Surface, OpenGL在上面进行绘制。
+ * 可以将ScheduledSwapActivity改成绘制OpenGL图形的模板，类似于GLSurfaceView的功能。
  */
 public class GrafikaActivity extends Activity {
     public static final String TAG = "Grafika";
@@ -99,6 +102,25 @@ public class GrafikaActivity extends Activity {
                     "Simultaneously draws to the display and to a video encoder with OpenGL ES, " +
                             "using framebuffer objects to avoid re-rendering.",
                     "RecordFBOActivity"
+            },
+
+            {
+                "Screen record",
+                    "Records the screen to a movie using the MediaProjectionManager.",
+                    "ScreenRecordActivity"
+            },
+
+            {
+                "Scheduled swap (改变周期)",
+                    "You can configure the frame delivery timing (e.g. 24fps uses a 3-2 pattern) " +
+                            "and how far in advance frames are scheduled. ",
+                    "ScheduledSwapActivity"
+            },
+
+            {
+                "Camera capture",
+                    "相机预览并且录像。",
+                    "CameraCaptureActivity"
             }
     };
 

@@ -253,6 +253,19 @@ public class EglCore {
     }
 
     /**
+     * Makes our EGL context current, using the supplied "draw" and "read" surfaces.
+     */
+    public void makeCurrent(EGLSurface drawSurface, EGLSurface readSurface) {
+        if (mEGLDisplay == EGL14.EGL_NO_DISPLAY) {
+            // called makeCurrent() before create?
+            Log.d(TAG, "NOTE: makeCurrent w/o display");
+        }
+        if (!EGL14.eglMakeCurrent(mEGLDisplay, drawSurface, readSurface, mEGLContext)) {
+            throw new RuntimeException("eglMakeCurrent(draw,read) failed");
+        }
+    }
+
+    /**
      * Calls eglSwapBuffers.  Use this to "publish" the current frame.
      *
      * @return false on failure
@@ -335,5 +348,9 @@ public class EglCore {
                 EGL14.EGL_NO_CONTEXT)) {
             throw new RuntimeException("eglMakeCurrent failed");
         }
+    }
+
+    public int getGlVersion() {
+        return mGlVersion;
     }
 }
