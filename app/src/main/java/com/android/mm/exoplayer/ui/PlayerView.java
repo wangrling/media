@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.util.ErrorMessageProvider;
 import com.google.android.exoplayer2.util.Util;
 
@@ -95,5 +96,11 @@ public class PlayerView extends FrameLayout {
                 addView(logo);
             }
         }
+    }
+
+
+
+    public void setPlayer(SimpleExoPlayer player) {
+
     }
 }

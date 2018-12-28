@@ -64,8 +64,9 @@ public class ExoPlayerActivity extends AppCompatActivity {
                 break;
             }
             case R.id.info: {
-
-
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.contentFrame, new WebViewFragment())
+                        .commit();
                 break;
             }
         }
