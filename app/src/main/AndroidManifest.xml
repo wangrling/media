@@ -48,6 +48,7 @@
 
         <activity android:name=".exoplayer.ExoPlayerActivity"
             android:parentActivityName=".MultiMediaActivity"/>
+        <activity android:name=".exoplayer.demo.SimplePlayerActivity" />
 
 
         <activity android:name=".algorithms.AlgorithmsActivity" />

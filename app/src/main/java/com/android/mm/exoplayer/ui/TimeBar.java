@@ -81,7 +81,7 @@ public interface TimeBar {
      *                          there are no ad groups.
      * @param adGroupCount      The number of ad groups.
      */
-    void setAdGroupTimeMs(long[] adGroupTimeMs, boolean[] playedAdGroups,
+    void setAdGroupTimesMs(long[] adGroupTimeMs, boolean[] playedAdGroups,
                           int adGroupCount);
 
     /**

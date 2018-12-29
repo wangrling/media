@@ -370,7 +370,7 @@ public class DefaultTimeBar extends View implements TimeBar {
     }
 
     @Override
-    public void setAdGroupTimeMs(long[] adGroupTimeMs, boolean[] playedAdGroups, int adGroupCount) {
+    public void setAdGroupTimesMs(long[] adGroupTimeMs, boolean[] playedAdGroups, int adGroupCount) {
         Assertions.checkArgument(adGroupCount == 0
                 || (adGroupTimesMs != null && playedAdGroups != null));
         this.adGroupCount = adGroupCount;
