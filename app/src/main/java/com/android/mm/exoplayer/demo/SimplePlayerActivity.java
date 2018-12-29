@@ -72,12 +72,18 @@ public class SimplePlayerActivity extends Activity {
 
     final class PlayerManager implements AdsMediaSource.MediaSourceFactory {
 
+        // private final ImaAdsLoader adsLoader;
+
         private final DataSource.Factory dataSourceFactory;
 
         private SimpleExoPlayer player;
         private long contentPosition;
 
         public PlayerManager(Context context) {
+
+            // String adTag = context.getString(R.string.ad_tag_url);
+            // adsLoader = new ImaAdsLoader(context, Uri.parse(adTag));
+
             dataSourceFactory = new DefaultDataSourceFactory(context,
                     Util.getUserAgent(context, context.getString(R.string.app_name)));
         }
@@ -97,9 +103,15 @@ public class SimplePlayerActivity extends Activity {
             MediaSource contentMediaSource = buildMediaSource(
                     Uri.parse("file:///android_asset/mpeg_4_avc_aac_24fps.mp4"));
 
+            // Compose the content media source into a new AdsMediaSource with both ads and content.
+            // MediaSource mediaSourceWithAds = new AdsMediaSource(
+            //         contentMediaSource, /* adMediaSourceFactory= */ this,
+            //         adsLoader, playerView.getOverlayFrameLayout());
+
             // Prepare the player with the source.
             player.seekTo(contentPosition);
             player.prepare(contentMediaSource);
+            // player.prepare(mediaSourceWithAds);
             player.setPlayWhenReady(true);
         }
 

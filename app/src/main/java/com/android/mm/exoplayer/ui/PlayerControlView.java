@@ -75,8 +75,6 @@ import androidx.annotation.Nullable;
  * identifies and binds its children by looking for the following ids.
  *
  * // id名字不能改变。
- *
- *
  */
 
 // 通过gravity属性来控制子View的位置。

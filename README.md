@@ -2,6 +2,47 @@
 关注移动端多媒体。
 
 
+加解密，数据压缩。
+
+m38文件简介
+RFC: https://tools.ietf.org/html/rfc8216
+原理：将视频或音频流分片，并建立m3u8格式的索引，m3u8可以嵌套(最多支持一层嵌套)。
+格式：m3u8是由独立的行组成的文本文件，行分成三类：
+(1) 以#EXT开头的表示tag;
+(2) 仅有#表示注释;
+(3) uri行表示嵌套的m3u8文件，或者真正的分片流。
+
+m3u8参数
+
+一级索引和二级索引中，给出的地址可能是相对地址/绝对地址。相对地址根据一级索引的地址更改。
+通常一级索引会给出不同带宽的下载链接，可以根据网速适配不同的下载链接，从而避免卡顿。
+流格式可能是.ts .aac或者RFC支持的其他格式。
+
+m3u8参数
+
+    EXTINF：播放时间长度，单位s
+    BANDWIDTH：带宽
+    EXT-X-ENDLIST：有这个参数，说明是点播，是完整的一段音频或者视频；没有这个参数，说明是直播，需要不断从二级索引中去获取下一片段的链接
+    EXT-X-MEDIA-SEQUENCE（可选）： 播放列表的第一个音频的序号，如64.m3u8中，有3个音频，序号分别是12591742，12591743,12591744。如果不设置，默认为第一个音频链接序号为0。可以没有这个参数
+    EXT-X-KEY：可能是加密的，具体见RFC
+    EXT-X-TARGETDURATION：每片最大时长，单位s, #EXTINF应该小于这个值
+    更多参数参考中文链接：http://www.dnsdizhi.com/m/?post=242
+
+例子
+一级索引 (可以这一层索引，直接是下面的二级索引）
+http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8
+二级索引（在一级索引中根据当前网速找合适的带宽的链接下载）
+http://devimages.apple.com/iphone/samples/bipbop/gear1/prog_index.m3u8
+可以直接播放的文件，mpeg2格式
+http://devimages.apple.com/iphone/samples/bipbop/gear1/fileSequence0.ts
+
+
+流媒体测试服务器地址
+http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8
+http://pl.youku.com/playlist/m3u8?ts=1437621689&keyframe=0&vid=XMTI5MTE4NjUwOA==&type=flv&ep=diaXHU%2BPV8gI7CHYiD8bZyThISRZXJZ3kmaA%2FLYXBMV%2BLa%2FA6DPcqJmzSvo%3D&sid=443762168927012083ecf&token=4345&ctype=12&ev=1&oip=3728081270
+
+
+hls是苹果提出的流媒体协议，smooth streaming是微软提出的流媒体协议，dash是mpeg为了兼容两者提出的流媒体协议。
 
 后续再看RecordFBOActivity，涉及到多个知识，线程，解码，显示，OpenGL绘制。
 

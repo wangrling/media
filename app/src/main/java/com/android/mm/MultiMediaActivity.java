@@ -49,7 +49,8 @@ public class MultiMediaActivity extends ListActivity {
              */
             "Grafika",
             // 多媒体框架。
-
+            // 已经完成PlayView可以播放多媒体。
+            // 后续要写hls, dash, flac, opus, rtmp, vp9.
             "ExoPlayer",
             // 算法知识积累。
             "Algorithms",
