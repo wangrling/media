@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 // 加入10万行library/core/的代码，然后模仿测试集学习。
 public class ExoPlayerActivity extends AppCompatActivity {
 
+    public static final String TAG = "ExoPlayer";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
