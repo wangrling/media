@@ -14,31 +14,49 @@ import com.android.mm.R;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-public class PermissionActivity extends Activity {
-    private static final String PREVIOUS_INTENT = "previous_intent";
-    private static final String KEY_FROM_PREVIEW = "from_preview";
+public class PermissionActivity extends Activity{
+    private static final String PERVIOUS_INTENT = "pervious_intent";
     private static final String REQUEST_PERMISSIONS = "request_permissions";
-    private static final int REQUEST_CODE = 100;
+    private static final String KEY_FROM_PREVIEW = "from_preview";
     private static final String PACKAGE_URL_SCHEME = "package:";
-
-    private Intent mPreviewIntent;
+    private static final int REQUEST_CODE = 100;
+    private String[] mRequestedPermissons;
+    private Intent mPreviousIntent;
     private boolean mIsFromPreview = false;
-    private String[] mRequestedPermissions;
+
+    public static void startFromPreview(Activity activity, String[] permissions, int requestCode) {
+        Intent intent = new Intent();
+        intent.setClass(activity, PermissionActivity.class);
+        intent.putExtra(REQUEST_PERMISSIONS, permissions);
+        intent.putExtra(PERVIOUS_INTENT, activity.getIntent());
+        intent.putExtra(KEY_FROM_PREVIEW, true);
+        activity.startActivityForResult(intent, requestCode);
+    }
+
+    public static boolean checkAndRequestPermission(Activity activity, String[] permissions) {
+        String[] neededPermissions = checkRequestedPermission(activity, permissions);
+        if (neededPermissions.length == 0) {
+            return false;
+        } else {
+            Intent intent = new Intent();
+            intent.setClass(activity, PermissionActivity.class);
+            intent.putExtra(REQUEST_PERMISSIONS, permissions);
+            intent.putExtra(PERVIOUS_INTENT, activity.getIntent());
+            activity.startActivity(intent);
+            activity.finish();
+            return true;
+        }
+    }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        mPreviewIntent = (Intent) getIntent().getExtras().get(PREVIOUS_INTENT);
+        mPreviousIntent = (Intent)getIntent().getExtras().get(PERVIOUS_INTENT);
         mIsFromPreview = getIntent().getBooleanExtra(KEY_FROM_PREVIEW, false);
-
-        mRequestedPermissions = getIntent().getStringArrayExtra(REQUEST_PERMISSIONS);
-        if (savedInstanceState == null && mRequestedPermissions != null) {
+        mRequestedPermissons = getIntent().getStringArrayExtra(REQUEST_PERMISSIONS);
+        if (savedInstanceState == null && mRequestedPermissons != null) {
             String[] neededPermissions =
-                    checkRequestedPermission(this, mRequestedPermissions);
+                    checkRequestedPermission(PermissionActivity.this, mRequestedPermissons);
             if (neededPermissions != null && neededPermissions.length != 0) {
                 requestPermissions(neededPermissions, REQUEST_CODE);
             }
@@ -61,7 +79,8 @@ public class PermissionActivity extends Activity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                           int[] grantResults) {
         boolean isAllPermissionsGranted = true;
         if (requestCode != REQUEST_CODE || permissions == null || grantResults == null ||
                 permissions.length == 0 || grantResults.length == 0) {
@@ -72,21 +91,18 @@ public class PermissionActivity extends Activity {
                     isAllPermissionsGranted = false;
             }
         }
-
-        if (isAllPermissionsGranted) {
-            if (mPreviewIntent != null) {
-                if (mIsFromPreview) {
-                    startActivity(mPreviewIntent);
+        if(isAllPermissionsGranted) {
+            if (mPreviousIntent != null)
+                if (mIsFromPreview){
+                    startActivity(mPreviousIntent);
                     setResult(Activity.RESULT_OK);
                 } else {
-                    if (mPreviewIntent != null) {
-                        startActivity(mPreviewIntent);
-                    }
+                    if (mPreviousIntent != null)
+                        startActivity(mPreviousIntent);
                 }
-                finish();
-            } else {
-                showMissingPermissionDialog();
-            }
+            finish();
+        } else {
+            showMissingPermissionDialog();
         }
     }
 
@@ -113,20 +129,5 @@ public class PermissionActivity extends Activity {
                     }
                 });
         builder.show();
-    }
-
-    public static boolean checkAndRequestPermission(Activity activity, String[] permissions) {
-        String[] neededPermissions = checkRequestedPermission(activity, permissions);
-        if (neededPermissions.length == 0) {
-            return false;
-        } else {
-            Intent intent = new Intent();
-            intent.setClass(activity, PermissionActivity.class);
-            intent.putExtra(REQUEST_PERMISSIONS, permissions);
-            intent.putExtra(PREVIOUS_INTENT, activity.getIntent());
-            activity.startActivity(intent);
-            activity.finish();
-            return true;
-        }
     }
 }

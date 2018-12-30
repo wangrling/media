@@ -18,7 +18,6 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
-import android.widget.TextView;
 
 import com.android.mm.R;
 import com.android.mm.grafika.gles.Drawable2d;
@@ -32,8 +31,6 @@ import com.android.mm.grafika.gles.WindowSurface;
 import com.android.mm.grafika.utils.MiscUtils;
 import com.android.mm.grafika.utils.TextureMovieEncoder2;
 import com.android.mm.grafika.utils.VideoEncoderCore;
-import com.android.mm.music.MusicUtils;
-import com.google.common.io.FileBackedOutputStream;
 
 import java.io.File;
 import java.io.IOException;

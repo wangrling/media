@@ -11,6 +11,12 @@ import androidx.annotation.Nullable;
 
 public class MediaPlaybackService extends Service {
 
+    public static final String PLAYSTATE_CHANGED = "com.android.music.playstatechanged";
+    public static final String META_CHANGED = "com.android.music.metadatachanged";
+    public static final String SHUFFLE_CHANGED = "com.android.music.shuffle";
+    public static final String REPEAT_CHANGED = "com.android.music.repeat";
+    public static final String QUEUE_CHANGED = "com.android.music.queuechanged";
+
 
     static class ServiceStub extends IMediaPlaybackService.Stub {
         WeakReference<MediaPlaybackService> mService;

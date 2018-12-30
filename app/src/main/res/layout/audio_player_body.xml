@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/audio_player_body"
+    android:layout_width="match_parent"
+    android:background="#E1E2E1"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/toolbar" />
+
+    <ScrollView
+        android:id="@+id/scroll_view"
+        android:layout_below="@+id/toolbar"
+        android:background="@color/design_default_color_on_primary"
+        android:layout_width="wrap_content"
+        android:layout_height="128dp">
+        <ListView
+            android:id="@+id/play_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </ScrollView>
+
+
+    <!-- 对于match_parent和layout_above选择后者作为参考。 -->
+    <FrameLayout
+        android:id="@+id/album_art_view"
+        android:layout_below="@+id/scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/timer_view">
+
+        <ImageView
+            android:id="@+id/album_icon_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_background" />
+
+
+        <com.android.mm.music.ui.LyricView
+            android:id="@+id/lv_lyric"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/margin_extra_large"
+            android:layout_gravity="center_vertical"
+            android:clickable="false"
+            android:divider="@null"
+            android:fadingEdge="none"
+            android:listSelector="@android:color/transparent"
+            android:paddingLeft="@dimen/margin_medium"
+            android:scrollbars="none" />
+
+
+        <ImageView
+            android:id="@+id/lyric"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|left"
+            android:layout_marginLeft="@dimen/margin_large"
+            android:layout_marginBottom="@dimen/margin_large"
+            android:background="@color/colorPrimary"
+            android:src="@drawable/ic_lyric_unselected" />
+
+        <ImageView
+            android:id="@+id/favorite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_marginEnd="@dimen/margin_large"
+            android:layout_marginBottom="@dimen/margin_large"
+            android:src="@drawable/ic_favorite_selected" />
+
+
+        <SeekBar
+            android:id="@+id/progess"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginStart="17dp"
+            android:layout_marginEnd="17dp" />
+
+    </FrameLayout>
+
+    <RelativeLayout
+        android:id="@+id/timer_view"
+        android:layout_width="match_parent"
+        android:layout_height="16dp"
+        android:layout_above="@+id/control_layout">
+
+        <TextView
+            android:id="@+id/current_timer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.54"
+            android:paddingStart="@dimen/margin_quarter" />
+
+        <TextView
+            android:id="@+id/total_timer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:paddingEnd="@dimen/margin_quarter" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/control_layout"
+        android:layout_width="match_parent"
+        android:layout_height="96dp"
+        android:background="@android:color/holo_blue_dark"
+        android:layout_alignParentBottom="true"
+        android:paddingTop="@dimen/margin_medium"
+        android:paddingBottom="@dimen/margin_medium"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/loop_icon"
+            style="@style/MediaControlImageButton"
+            android:layout_weight="1"
+            android:src="@drawable/ic_normal" />
+
+        <RelativeLayout
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3">
+
+            <ImageButton
+                android:id="@+id/prev_icon"
+                style="@style/MediaControlImageButton"
+                android:layout_alignParentStart="true"
+                android:src="@drawable/exo_icon_previous" />
+
+            <ImageButton
+                android:id="@+id/play_pause_icon"
+                style="@style/MediaControlImageButton"
+                android:layout_centerInParent="true"
+                android:src="@drawable/ic_play" />
+
+            <ImageButton
+                android:id="@+id/next_icon"
+                style="@style/MediaControlImageButton"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/exo_icon_next" />
+
+        </RelativeLayout>
+
+        <ImageButton
+            android:id="@+id/random_icon"
+            style="@style/MediaControlImageButton"
+            android:layout_weight="1"
+            android:src="@drawable/ic_random" />
+    </LinearLayout>
+</RelativeLayout>

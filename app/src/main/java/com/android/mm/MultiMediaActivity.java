@@ -55,6 +55,7 @@ public class MultiMediaActivity extends ListActivity {
             // 算法知识积累。
             "Algorithms",
             // 高通本地播放器。
+            // 先写内容实体，然后根据实体写界面。
             "Music",
             // 谷歌android-ndk示例。
             "Ndk",

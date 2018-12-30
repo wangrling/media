@@ -1,4 +1,4 @@
-package com.android.mm.music;
+package com.android.mm.music.custom;
 
 public class MusicUtils {
 
