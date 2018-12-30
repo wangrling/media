@@ -19,8 +19,12 @@ app/src/cpp/concurrency/build/
 # FFmpeg build files
 app/src/cpp/ffmpeg/build/
 
+# AAC build files
+app/src/cpp/codec/aac_fdk/build/
+
 # FFmpeg resource files
 app/src/cpp/ffmpeg/res/
+
 
 # FFmpeg libs
 app/src/cpp/ffmpeg/libs/

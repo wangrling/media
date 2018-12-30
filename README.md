@@ -1,6 +1,33 @@
 # MultiMedia
 关注移动端多媒体。
 
+git clone https://android.googlesource.com/platform/system/core
+system/core/include/utils/RefBase.h
+
+蓝灯地址
+https://github.com/getlantern/download/wiki
+
+建立软链接
+ln -s [源文件或目录] [目标文件和目录]
+当前路径创建test 引向/var/www/test文件夹
+ln -s /var/www/test test
+修改软链接
+ln -snf [新的源文件或目录] [目标文件或目录]
+
+一个完整的多媒体设备包括设备硬件，设备驱动以及设备应用程序，与之对应的就是OpenMAX的DL, IL, AL层。
+OpenMAX IL层的接口定义是由若干个头文件形式给出的，
+OMX_Types.h:        OpenMAX IL的数据结构类型
+OMX_Core.h:         OpenMAX IL的核心API
+OMX_Component.h:    OpenMAX IL组件相关的API
+OMX_Audio.h:        音频相关的常量和数据结构
+OMX_IVCommon.h:     图像和视频公共的常量和数据结构
+OMX_Image.h:        图像相关的常量和数据结构
+OMX_Video.h:        视频相关的常量和数据结构
+OMX_Other.h         其它数据结构 (包括A/V同步)
+OMX_ContentPipe.h   内容管道定义
+
+将fdk_acc的makefile改成cmake结构，可以将wav文件转换成为aac文件进行播放。
+
 CMake file讲解
 file (GLOB variable [RELATIVE path] [globbing expressions]...)
 GLOB will generate a list of all files that match the globbing expressions and store it into the

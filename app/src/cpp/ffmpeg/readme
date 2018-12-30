@@ -319,10 +319,5 @@ ffmpeg坑比较多
 locate -b libavcodec.so
 /usr/lib/x86_64-linux-gnu/libavcodec.so.57
 /usr/local/lib/libavcodec.so.58
-建立软链接
-ln -s [源文件或目录] [目标文件和目录]
-当前路径创建test 引向/var/www/test文件夹
-ln -s /var/www/test test
-修改软链接
-ln -snf [新的源文件或目录] [目标文件或目录]
+
 sudo ln -s /usr/local/lib/libavcodec.so.58 libavcodec.so.58
