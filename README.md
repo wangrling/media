@@ -1,142 +1,77 @@
 # MultiMedia
-关注移动端多媒体。
 
-git clone https://android.googlesource.com/platform/system/core
-system/core/include/utils/RefBase.h
+ExoPlayer
+Exoplayer is an open source, application leve media player build on top of Android's low level media APIs.
+1. Creating the player
+SimpleExoPlayer player = ExoPlayerFactory.newSimpleInstance(context);
+2. Attaching the player to a view
+// Bind the player to the view.
+playerView.setPlayer(player);
+3. Preparing the player
+// Produces DataSource instances through which media data is loaded.
+DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(context, Util.getUserAgent(context, "yourApplicationName"));
+// This is the MediaSource representing the media to be played.
+MediaSource videoSource = new ExtratorMediaSource.Factory(dataSourceFactory).createMediaSource(mp4VideoUri);
+// Prepare the player with the source.
+player.prepare(videoSource);
+4. Controlling the player
+player.setPlayWhenReady(playWhenReady);
+player.setRepeatMode(repeatMode);
+player.setShuffleModeEnabled(shuffleModeEnabled);
+player.setPlaybackParameters(playbackParameters);
+5. Listening to player events
+// Add a listener to receive events from the player.
+player.addListener(eventListener);
+6. Releasing the player
+exoPlayer.release();
 
-蓝灯地址
-https://github.com/getlantern/download/wiki
+MediaSource
+The ExoPlayer library provides MediaSource implementations for DASH(DashMediaSource), SmoothStreaming(SsMediaSource), HLS(HlsMediaSource)
+and regular media files(ExtractorMediaSource).
+The ExoPlayer library aso provides ConcatenatingMediaSource, ClippingMediaSource, LoopingMediaSource and MergingMediaSource. These
+MediaSource implementations enable more complex playback functionality through composition.
+Playlists
+MediaSource firstSource = new ExtractorMediaSource.Factory(...).CreateMediaSource(firstVideoUri);
+MediaSource secondSource = new ExtractorMediaSource.Factory(...).createMediaSource(secondVideoUri);
+// Plays the first video, then the second video.
+ConcatenatingMediaSource concatenatedSource = new ConcatenatingMediaSource(firstSource, secondSource);
+Clipping a video
+MediaSource videoSource = new ExtractorMediaSource.Factory(...).createMediaSource(videoUri);
+// Clip to start at 5 seconds and end at 10 seconds.
+ClippingMediaSource clippingSource = new ClippingMediaSource(videoSource, /* startPositionUs= */ 5_000_000, /* endPositionUs= */ 10_000_000);
+Looping a video
+MediaSource source = new ExtractorMediaSource.Factory(...).createMediaSource(videoUri);
+// Plays the video twice.
+LoopingMediaSource loopingSource = new LoopingMediaSource(source, 2);
+Side-loading a subtitle file
+// Build the video MediaSource.
+MediaSource videoSource = new ExtractorMediaSource.Factory(...).createMediaSource(videoUri);
+// Build the subtitle MediaSource.
+Format subtitleFormat = Format.createTextSampleFormat(
+	id,		// An identifier for the track. May be null.
+	MimeTypes.APPLICTION_SUBRIP,	// The mime type. Must by set correctly.
+	selectionFlags,	// Selection flags for the track.
+	language);	// The subtitle language. May be null.
+MediaSource subtitleSource = new SingleSampleMediaSource.Factory(...).createMediaSource(subtitleUri, subtitleFormat, C.TIME_UNSET);
+// Plays the video with the sideloaded subtitle.
+MergingMediaSource mergeSource = new MergingMediaSource(videoSource, subtitleSource);
 
-建立软链接
-ln -s [源文件或目录] [目标文件和目录]
-当前路径创建test 引向/var/www/test文件夹
-ln -s /var/www/test test
-修改软链接
-ln -snf [新的源文件或目录] [目标文件或目录]
+Track selection determines which of the available media tracks are played by the player's Renderer S.
+DefaultTrackSelector trackSelector = new DefaultTrackSelector();
+// Tells the selector to restrict video track selections to SD, and to select a German audio track if there is one.
+trackSelector.setParameters(trackSelector.buildUponParameters().setMaxVideoSizeSd().setPreferredAudioLanguage("deu"));
+SimpleExoPlayer player = ExoPlayerFactor.newSimpleInstance(context, trackSelector);
 
-一个完整的多媒体设备包括设备硬件，设备驱动以及设备应用程序，与之对应的就是OpenMAX的DL, IL, AL层。
-OpenMAX IL层的接口定义是由若干个头文件形式给出的，
-OMX_Types.h:        OpenMAX IL的数据结构类型
-OMX_Core.h:         OpenMAX IL的核心API
-OMX_Component.h:    OpenMAX IL组件相关的API
-OMX_Audio.h:        音频相关的常量和数据结构
-OMX_IVCommon.h:     图像和视频公共的常量和数据结构
-OMX_Image.h:        图像相关的常量和数据结构
-OMX_Video.h:        视频相关的常量和数据结构
-OMX_Other.h         其它数据结构 (包括A/V同步)
-OMX_ContentPipe.h   内容管道定义
-
-将fdk_acc的makefile改成cmake结构，可以将wav文件转换成为aac文件进行播放。
-
-CMake file讲解
-file (GLOB variable [RELATIVE path] [globbing expressions]...)
-GLOB will generate a list of all files that match the globbing expressions and store it into the
-variable. Globbing expressions are similar to regular expressions, but much simpler.
-If RELATIVE flag is specified for an expression, the results will be returned as a relative
-path to the given path. (We do not recommend using GLOB to collect a list of source files
-from your source tree. If no CMakeLists.txt file changes when a source is added or removed then
-the generated build system cannot know when to ask CMake to regenerate.
-*.cxx      - match all files with extension cxx
-*.vt?      - match all files with extension vta,...,vtz
-f[3-5].txt - match files f3.txt, f4.txt, f5.txt
-
-加解密，数据压缩，转换，数据结构。
-
-m38文件简介
-RFC: https://tools.ietf.org/html/rfc8216
-原理：将视频或音频流分片，并建立m3u8格式的索引，m3u8可以嵌套(最多支持一层嵌套)。
-格式：m3u8是由独立的行组成的文本文件，行分成三类：
-(1) 以#EXT开头的表示tag;
-(2) 仅有#表示注释;
-(3) uri行表示嵌套的m3u8文件，或者真正的分片流。
-
-m3u8参数
-
-一级索引和二级索引中，给出的地址可能是相对地址/绝对地址。相对地址根据一级索引的地址更改。
-通常一级索引会给出不同带宽的下载链接，可以根据网速适配不同的下载链接，从而避免卡顿。
-流格式可能是.ts .aac或者RFC支持的其他格式。
-
-m3u8参数
-
-    EXTINF：播放时间长度，单位s
-    BANDWIDTH：带宽
-    EXT-X-ENDLIST：有这个参数，说明是点播，是完整的一段音频或者视频；没有这个参数，说明是直播，需要不断从二级索引中去获取下一片段的链接
-    EXT-X-MEDIA-SEQUENCE（可选）： 播放列表的第一个音频的序号，如64.m3u8中，有3个音频，序号分别是12591742，12591743,12591744。如果不设置，默认为第一个音频链接序号为0。可以没有这个参数
-    EXT-X-KEY：可能是加密的，具体见RFC
-    EXT-X-TARGETDURATION：每片最大时长，单位s, #EXTINF应该小于这个值
-    更多参数参考中文链接：http://www.dnsdizhi.com/m/?post=242
-
-例子
-一级索引 (可以这一层索引，直接是下面的二级索引）
-http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8
-二级索引（在一级索引中根据当前网速找合适的带宽的链接下载）
-http://devimages.apple.com/iphone/samples/bipbop/gear1/prog_index.m3u8
-可以直接播放的文件，mpeg2格式
-http://devimages.apple.com/iphone/samples/bipbop/gear1/fileSequence0.ts
-
-
-流媒体测试服务器地址
-http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8
-http://pl.youku.com/playlist/m3u8?ts=1437621689&keyframe=0&vid=XMTI5MTE4NjUwOA==&type=flv&ep=diaXHU%2BPV8gI7CHYiD8bZyThISRZXJZ3kmaA%2FLYXBMV%2BLa%2FA6DPcqJmzSvo%3D&sid=443762168927012083ecf&token=4345&ctype=12&ev=1&oip=3728081270
-
-
-hls是苹果提出的流媒体协议，smooth streaming是微软提出的流媒体协议，dash是mpeg为了兼容两者提出的流媒体协议。
-
-后续再看RecordFBOActivity，涉及到多个知识，线程，解码，显示，OpenGL绘制。
-
-AbemaTV playback makes a loud sound when playing next stream video.
-1. 在audio_hw上进行dump数据，发现声音已经产生，排除底层问题。
-2. 在AudioTrack上dump数据，发现没有声音，排除解码问题。
-3. 联系到网络差的情况，构建AudioTrack唯一可变的变量是SampleRate。
-4. 在创建Track时做出以下修改，验证成功。
-if ((mFlags & AUDIO_OUTPUT_FLAG_FAST) && mSampleRate != mAfSampleRate) {
-    ALOGW("AUDIO_OUTPUT_FLAG_FAST denied by client due to mismatching sample rate (%d vs %d)",
-        mSampleRate, mAfSampleRate);
-    mFlags = (audio_output_flags_t) (mFlags & ~AUDIO_OUTPUT_FLAG_FAST);
-}
-
-打开相机，使用SurfaceView进行显示，创建一块环形内存保存七秒的内容，点击按钮保存，并且使用GLES Shader修改显示的效果。
-
-jni调用层
-processFile(String path, String mimeType, MediaScannerClient client);
-android_media_MediaScanner_processFile(JNIEnv* env, jobject thiz, jstring path, jobject client);
-如果是静态调用就使用jclass类型。
-
-AudioTrack的cts测试，主要使用流程set -> getMinBufferSize -> write(重要) -> play -> release等，其中有生成正弦波形的代码。
-
-1. 精通Java, 熟悉c/c++, 熟悉Android/ios平台
-架构原理；
-2. 熟悉多线程、网络编程，了解http, rtmp, rtsp
-等协议。
-3. 掌握OpenGLES渲染技术，熟悉多种格式的音视频
-软硬编解码技术；
-4. 熟练使用FFmpeg等开源框架，熟悉OpenH264、
-H265、AAC、RTMP、RTSP、HLS、MP4等各种网络协议
-或者视频格式等优先。
-5. 丰富的多媒体行业经验，对视频处理方面具有前瞻性
-和自己的见解和规划
-
-C++库中添加FFmpeg头文件
-extern "C" {
-#include <libavutil/imgutils.h>
-#include <libavcodec/avcodec.h>
-#include <libswscale/swscale.h>
-}
-
-endian的问题参考Computer Systems: A Programmer's Perspective
-修改wav_header.h文件，使它不依赖WEBRTC_ARCH_LITTLE_ENDIAN定义。
-
-wav格式协议
-http://soundfile.sapp.org/doc/WaveFormat/
-
-opus
-https://opus-codec.org/
-
-x264
-http://git.videolan.org/git/x264.git
-x264 is a free software library and application for encoding video streams into
-the H.264/MPEG-4 AVC compression format, and is released under the terms of the
-GNU GPL.
-
-
+Customization
+1. Renderer - You may want to implement a custom Renderer to handle a media type not supported by the default implementations provided by the library.
+2. TrackSelector - Implementing a cusotm TrackSelector allows an app developer to change the way in which tracks exposed by a
+	MediaSource are selected for consumption by each of the available Renderer S.
+3. LoadControl - Implementing a custom LoadControl allows an app developer to change the player's buffering policy.
+4. Extractor - If you need to support a container format not currently supported by the library, consider implementing a custom Extractor
+	class, which can then be used to together with ExtractorMediaSource to play media of that type.
+5. MediaSource - Implementing a custom MediaSource class may be appropriate if you wish to obtain media samples to feed to renderers in a
+	custom way, or if you wish to implement custom MediaSource compositing bahavior.
+6. DataSource - ExoPlayer's upstream package already contains a number of DataSource implementations for different use cases. You may want
+	to implement you own DataSource class to load data in another way, such as over a custom protocal, using a custom HTTP stack, or from
+	a custom persistent cache.
 
