@@ -10,16 +10,110 @@ import com.android.mm.algs.conversions.AnyBaseToAnyBase;
 import com.android.mm.algs.conversions.BinaryToHexadecimal;
 import com.android.mm.algs.conversions.DecimalToBinary;
 import com.android.mm.algs.conversions.DecimalToHexadecimal;
+import com.android.mm.algs.structures.Bag;
+import com.android.mm.algs.structures.CSVFile;
+import com.android.mm.algs.structures.CircularBuffer;
+import com.android.mm.algs.structures.graphs.AdjacencyListGraph;
+import com.android.mm.algs.structures.hashing.HashMap;
 
 import org.junit.Test;
 
 import java.math.BigInteger;
-
+import java.util.ArrayList;
 import javax.crypto.SecretKey;
 
 import static org.junit.Assert.*;
 
 public class AlgorithmsTest {
+
+
+
+    @Test
+    public void testHashMap() {
+        HashMap h = new HashMap(7);
+        h.insertHash(4);
+        h.insertHash(11);
+        h.insertHash(3);
+
+        /**
+         * Bucket 0 :
+         * Bucket 1 :
+         * Bucket 2 :
+         * Bucket 3 :3
+         * Bucket 4 :11 4
+         * Bucket 5 :
+         * Bucket 6 :
+         */
+
+        h.displayHashTable();
+    }
+
+    @Test
+    public void testAdjacencyListGraph() {
+        AdjacencyListGraph<Integer> graph = new AdjacencyListGraph<>();
+        assert graph.addEdge(1, 2);
+        assert graph.addEdge(1, 5);
+        assert graph.addEdge(2, 5);
+        assert !graph.addEdge(1, 2);
+        assert graph.addEdge(2, 3);
+        assert graph.addEdge(3, 4);
+        assert graph.addEdge(4, 1);
+        assert !graph.addEdge(2, 3);
+    }
+
+    @Test
+    public void testCSVFile() {
+        CSVFile testObj = new CSVFile(',');
+        testObj.addRow("1, 65.78331, 112.9925");
+        testObj.addRow("12, 67.62333, 114.143");
+        testObj.addRow("6, 68.69784, 123.3024");
+
+        assertTrue(testObj.contains("67.62333"));
+
+        // find row
+        ArrayList<String> columns = new ArrayList<>();
+        columns.add("12");
+        columns.add("67.62333");
+        columns.add("114.143");
+        assertEquals(testObj.findRow("67.62333"), columns);
+    }
+
+    @Test
+    public void testCircularBuffer() throws InterruptedException {
+        int bufferSize = 1024;
+
+        // create circular buffer
+        CircularBuffer cb = new CircularBuffer(bufferSize);
+
+        // Create threads that read and write the buffer.
+        Thread writeThread = new Thread(new CircularBuffer.WriteWorker(cb));
+        Thread readThread = new Thread(new CircularBuffer.ReadWorker(cb));
+
+        readThread.start();
+        writeThread.start();
+
+        // wait some amount of time.
+        Thread.sleep(5000);
+
+        // interrupt threads and exit.
+        writeThread.interrupt();
+        readThread.interrupt();
+    }
+
+    @Test
+    public void testBag() {
+        Bag<String> bag = new Bag<>();
+
+        bag.add("1");
+        bag.add("1");
+        bag.add("2");
+
+        // 可以加入重复值。
+        assertEquals(bag.size(), 3);
+        assertFalse(bag.contains(null));
+        assertTrue(bag.contains("1"));
+        assertFalse(bag.contains("3"));
+    }
 
     @Test
     public void testDecimalToHexadecimal() {
@@ -144,6 +238,5 @@ public class AlgorithmsTest {
         in = "12";
         BigInteger decryptionKey = new BigInteger(in, 16);
         // System.out.println("The deciphered message is:\n" + AES.decrypt(cipherText, decryptionKey).toString(16));
-
     }
 }

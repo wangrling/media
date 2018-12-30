@@ -1,4 +1,4 @@
-package com.android.mm.algorithms.structures;
+package com.android.mm.algs.structures;
 
 import java.util.Iterator;
 import java.util.ListIterator;

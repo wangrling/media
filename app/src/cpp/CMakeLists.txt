@@ -44,8 +44,8 @@ add_library(sonic SHARED sonic/SonicJni.cpp sonic/Sonic.cpp)
 target_link_libraries(sonic android log m)
 
 # decode/encode codec
-add_library(codec SHARED codec/WavReader.cpp)
-target_link_libraries(codec android log m)
+# add_library(codec SHARED codec/WavReader.cpp)
+# target_link_libraries(codec android log m)
 
 # native activity
 add_library(glue STATIC

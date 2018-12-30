@@ -1,7 +1,7 @@
 package com.android.mm;
 
-import com.android.mm.algorithms.structures.Bag;
-import com.android.mm.algorithms.structures.CircularBuffer;
+import com.android.mm.algs.structures.Bag;
+import com.android.mm.algs.structures.CircularBuffer;
 import com.android.mm.algorithms.structures.stacks.ArrayStack;
 import com.android.mm.algorithms.structures.stacks.ListStack;
 
@@ -23,20 +23,7 @@ public class AlgorithmsTest {
         assertEquals(4, 2 + 2);
     }
 
-    @Test
-    public void testBag() {
-        Bag<String> bag = new Bag<>();
 
-        bag.add("1");
-        bag.add("1");
-        bag.add("2");
-
-        // 可以加入重复值。
-        assertEquals(bag.size(), 3);
-        assertFalse(bag.contains(null));
-        assertTrue(bag.contains("1"));
-        assertFalse(bag.contains("3"));
-    }
 
     @Test
     public void testStack() {
@@ -65,25 +52,5 @@ public class AlgorithmsTest {
         assertEquals(listStack.pop(), 2);
     }
 
-    @Test
-    public void testCircularBuffer() throws InterruptedException {
-        int bufferSize = 1024;
 
-        // create circular buffer
-        CircularBuffer cb = new CircularBuffer(bufferSize);
-
-        // Create threads that read and write the buffer.
-        Thread writeThread = new Thread(new CircularBuffer.WriteWorker(cb));
-        Thread readThread = new Thread(new CircularBuffer.ReadWorker(cb));
-
-        readThread.start();
-        writeThread.start();
-
-        // wait some amount of time.
-        Thread.sleep(5000);
-
-        // interrupt threads and exit.
-        writeThread.interrupt();
-        readThread.interrupt();
-    }
 }

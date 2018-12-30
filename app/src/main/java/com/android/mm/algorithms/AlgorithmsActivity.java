@@ -30,9 +30,15 @@ public class AlgorithmsActivity extends ListActivity {
             "十进制转换成二进制，conventionalConversion, bitwiseConversion两种方法。",
             "十进制转换成十六进制，Integer.toHexString已经包括该算法。",
 
+            "(4)数据结构",
             "Bag: collection which does not allow removing elements (only collect and iterate).",
-            "Stack: An element gets added to the top of the stack and only the element on the top may be removed.",
-            "CircularBuffer: 环形缓冲区，记录读写位置和剩余数，读写两个线程同步工作。"
+            "CircularBuffer: 环形缓冲区，记录读写位置和剩余数，读写两个线程同步工作。",
+            "操作CSV文件，相当于传统的excel表格。",
+
+            "AdjacencyListGraph (增加邻边和删除邻边。)",
+
+            "使用简单的LinkedList写个HashMap,使用求余来计算hash值。"
+
 
     );
 

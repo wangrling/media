@@ -1,4 +1,4 @@
-package com.android.mm.algorithms.structures;
+package com.android.mm.algs.structures;
 
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;

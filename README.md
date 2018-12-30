@@ -1,8 +1,19 @@
 # MultiMedia
 关注移动端多媒体。
 
+CMake file讲解
+file (GLOB variable [RELATIVE path] [globbing expressions]...)
+GLOB will generate a list of all files that match the globbing expressions and store it into the
+variable. Globbing expressions are similar to regular expressions, but much simpler.
+If RELATIVE flag is specified for an expression, the results will be returned as a relative
+path to the given path. (We do not recommend using GLOB to collect a list of source files
+from your source tree. If no CMakeLists.txt file changes when a source is added or removed then
+the generated build system cannot know when to ask CMake to regenerate.
+*.cxx      - match all files with extension cxx
+*.vt?      - match all files with extension vta,...,vtz
+f[3-5].txt - match files f3.txt, f4.txt, f5.txt
 
-加解密，数据压缩。
+加解密，数据压缩，转换，数据结构。
 
 m38文件简介
 RFC: https://tools.ietf.org/html/rfc8216
