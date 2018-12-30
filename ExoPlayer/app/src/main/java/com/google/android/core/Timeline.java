@@ -21,10 +21,10 @@ import androidx.annotation.Nullable;
  * 详细图解 http://google.github.io/ExoPlayer/doc/reference/
  */
 
-public abstract class TimeLine {
+public abstract class Timeline {
 
     /**
-     * Holds information about a window in a {@link TimeLine}. A window defines a region of media
+     * Holds information about a window in a {@link Timeline}. A window defines a region of media
      * currently available for playback along with additional information such as whether seeking is
      * supported within the window. The figure below shows some of the information defined by a
      * window,as well as how this information relates to corresponding {@link Period}s in the
@@ -93,5 +93,86 @@ public abstract class TimeLine {
          * belonging to it, in microseconds.
          */
         public long positionInFirstPeriodUs;
+
+        /** Sets the data held by this window. */
+        public Window set(
+                @Nullable Object tag,
+                long presentationStartTimeMs,
+                long windowStartTimeMs,
+                boolean isSeekable,
+                boolean isDynamic,
+                long defaultPositionUs,
+                long durationUs,
+                int firstPeriodIndex,
+                int lastPeriodIndex,
+                long positionInFirstPeriodUs) {
+            this.tag = tag;
+            this.presentationStartTimeMs = presentationStartTimeMs;
+            this.windowStartTimeMs = windowStartTimeMs;
+            this.isSeekable = isSeekable;
+            this.isDynamic = isDynamic;
+            this.defaultPositionUs = defaultPositionUs;
+            this.durationUs = durationUs;
+            this.firstPeriodIndex = firstPeriodIndex;
+            this.lastPeriodIndex = lastPeriodIndex;
+            this.positionInFirstPeriodUs = positionInFirstPeriodUs;
+            return this;
+        }
+
+        /**
+         * @return  Returns the default position relative to the start of the window at which to begin
+         * playback, in milliseconds. May e {@link C#TIME_UNSET} if and only if the window was populated with
+         * a non-zero default position projection, and if the specified projection cannot be performed
+         * whilst remaining within the bounds of the window.
+         * 相当于播放本地文件的开头位置。
+         */
+        public long getDefaultPositionMs() {
+            return C.usToMs(defaultPositionUs);
+        }
+
+        // 1s = 1000ms = 1000,000us
+
+        /**
+         * @return Returns the default position relative to the start of the window at which to begin
+         * playback, in microseconds. May be {@link C#TIME_UNSET} if and only if the window was populated
+         * with a non-zero default position projection, and if the specified projection cannot be performed
+         * whilst remaining within the bounds of the window.
+         */
+        public long getDefaultPositionUs() {
+            return defaultPositionUs;
+        }
+
+        /**
+         * @return  the duration of the window in milliseconds, or {@link C#TIME_UNSET} if unknown.
+         */
+        public long getDurationMs() {
+            return C.usToMs(durationUs);
+        }
+
+        /**
+         * @return  the duration of this window in microseconds, or {@link C#TIME_UNSET} if unknown.
+         */
+        public long getDurationUs() {
+            return durationUs;
+        }
+
+        // 只能获取三个参数，起始位置，长度，开始播放位置，都是以时间作为基准轴。
+        // 三者的相对值不同，相对Period周期的起始时间，相对Window窗口的起始时间，相对epoch的时间。
+
+        /**
+         * @return  the position of the start of this window relative to the start of the first period
+         * belonging to it, in milliseconds.
+         */
+        public long getPositionInFirstPeriodMs() {
+            return C.usToMs(positionInFirstPeriodUs);
+        }
+
+        /**
+         * @return  the position of the start of this window relative to the start of the first period
+         * belonging to it, in microseconds.
+         */
+        public long getPositionInFirstPeriodUs() {
+            return positionInFirstPeriodUs;
+        }
     }
 }
