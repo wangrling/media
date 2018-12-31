@@ -1,6 +1,7 @@
 package com.google.android.core;
 
 import android.media.AudioAttributes;
+import android.os.Looper;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -8,13 +9,17 @@ import android.view.TextureView;
 
 import com.google.android.core.audio.AudioListener;
 import com.google.android.core.audio.AuxEffectInfo;
+import com.google.android.core.source.TrackGroupArray;
 import com.google.android.core.text.TextOutput;
+import com.google.android.core.trackselection.TrackSelectionArray;
 import com.google.android.core.video.VideoFrameMetadataListener;
 import com.google.android.core.video.VideoListener;
 import com.google.android.core.video.spherical.CameraMotionListener;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
+import javax.annotation.ParametersAreNullableByDefault;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -247,6 +252,146 @@ public interface Player {
     }
 
     /**
+     * Listener of changes in player state. All method have no-op default implementations
+     * to allow selective overrides.
+     */
+    interface EventListener {
+
+        /**
+         * Called when the timeline and/or manifest has been refreshed.
+         *
+         * <p>Note that if the timeline has changed then a position discontinuity may also have
+         * occurred. For example, the current period index may have changed as a result of periods being
+         * added or removed from the timeline. This will <em>not</em> be reported via a separate call
+         * to {@link #onPositionDiscontinuity(int)}.
+         *
+         * @param timeline  The latest timeline. Never null, but may be empty.
+         * @param manifest  The latest manifest. May be null.
+         * @param reason    The {@link TimelineChangeReason} responsible for this timeline change.
+         */
+        default void onTimelineChanged(
+                Timeline timeline, @Nullable Object manifest, @TimelineChangeReason int reason) {}
+
+        /**
+         * Called when the available or selected tracks change.
+         *
+         * @param trackGroups   The available tracks. Never null, but may be of length zero.
+         * @param trackSelections   The track selections for each renderer. Never null an always of
+         *                          length {@link @getRendererCount()}, but may contain null elements.
+         */
+        default void onTracksChanged(
+                TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {}
+
+        /**
+         * Called when the player starts or stops loading the source.
+         *
+          * @param isLoading    Whether the source is currently being loaded.
+         */
+        default void onLoadingChanged(boolean isLoading) {}
+
+        /**
+         * Called when the value returned from either {@link #getPlayWhenReady()} or {@link
+         * #getPlaybackState()} changes.
+         *
+         * @param playWhenReady     Whether playback will process when ready.
+         * @param playbackState     One of the {@code STATE} constants.
+         */
+        default void onPlayerStateChanged(boolean playWhenReady, int playbackState) {}
+
+        /**
+         * Call when the value of {@link #getRepeatMode()} changes.
+         *
+         * @param repeatMode    The {@link RepeatMode} used for playback.
+         */
+        default void onRepeatModeChanged(@RepeatMode int repeatMode) { }
+
+        /**
+         * Called when the value of {@link #getShuffleModeEnabled()} changes.
+         * @param shuffleModeEnabled
+         */
+        default void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {}
+
+        /**
+         * Called when an error occurs. The playback state will transition to {@link #STATE_IDLE}
+         * immediately after this method is called. The player instance can still be used, and
+         * {@link #release()} must still be called on the player should it no longer be required.
+         *
+         * @param error The error.
+         */
+        default void onPlayerError(ExoPlaybackException error) {}
+
+        /**
+         * Called when a position discontinuity occurs without a change to the timeline. A position
+         * discontinuity occurs when the current window or period index changes (as a result of playback
+         * transitioning from one period in the timeline to the text), or when the playback position
+         * jumps within the period currently being played (as a result of a seek being performed, or
+         * when the source introduces a discontinuity internally).
+         *
+         * <p>When a position discontinuity occurs as a result of a change to the timeline this method
+         * is <em>not</em> called. {@link #onTimelineChanged(Timeline, Object, int)} is called in this
+         * case.
+         * @param reason    The {@link DiscontinuityReason} responsible for the discontinuity.
+         */
+        default void onPositionDiscontinuity(@DiscontinuityReason int reason) {}
+
+        /**
+         * Called when the current playback parameters change. The playback parameter may
+         * change due to a call {@link #setPlaybackParameters(PlaybackParamters)}, or
+         * the player itself may change them (for example, if audio playback switch to
+         * passthrough mode, where speed adjustment is no long possible).
+         *
+         * @param playbackParameters The playback parameters.
+         */
+        default void onPlaybackParametersChanged(PlaybackParamters playbackParameters) {}
+
+        /**
+         * Called when all pending seek requests have been processed by the player. This is
+         * guaranteed to happen after any necessary changes to the player state were reported
+         * to {@link #onPlayerStateChanged(boolean, int)}.
+         */
+        default void onSeekProcessed() {}
+    }
+
+    /**
+     * @deprecated Use {@link EventListener} interface directly for selective overrides
+     * as all methods are implemented as no-op default methods.
+     */
+    @Deprecated
+    abstract class DefaultEventListener implements EventListener {
+
+        public void onTimelineChange(
+                Timeline timeline, @Nullable Object manifest, @TimelineChangeReason int reason) {
+            // Called deprecated version. Otherwise, do nothing.
+            onTimelineChanged(timeline, manifest);
+        }
+
+        /** @deprecated Use {@link EventListener#onTimelineChanged(Timeline, Object, int)} instead.*/
+        @Deprecated
+        public void onTimelineChanged(Timeline timeline, @Nullable Object manifest) {
+            // Do nothing.
+        }
+    }
+
+    /**
+     * The player does not have media to play.
+     */
+    int STATE_IDLE = 1;
+    /**
+     * The player is not able to immediately play from its current position. This state typically
+     * occurs when more data needs to be loaded.
+     */
+    int STATE_BUFFERING = 2;
+    /**
+     * The player is able to immediately play from its current position. The player will be playing
+     * if {@link #getPlayWhenReady()} is true, and paused otherwise.
+     */
+    int STATE_READY = 3;
+    /**
+     * The player has finished playing the media.
+     */
+    int STATE_ENDED = 4;
+
+    /**
      * Repeat modes for playback. One of {@link #REPEAT_MODE_OFF}, {@link #REPEAT_MODE_ONE} or
      * {@link #REPEAT_MODE_ALL}.
      */
@@ -265,4 +410,379 @@ public interface Player {
      * "Repeat All" mode to repeat the entire timeline infinitely.
      */
     int REPEAT_MODE_ALL = 2;
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({
+            TIMELINE_CHANGE_REASON_PREPARED,
+            TIMELINE_CHANGE_REASON_RESET,
+            TIMELINE_CHANGE_REASON_DYNAMIC
+    })
+    @interface TimelineChangeReason {}
+    /**
+     * Timeline and manifest changed as a result of a player initialization with new media.
+     */
+    int TIMELINE_CHANGE_REASON_PREPARED = 0;
+    /**
+     * Timeline and manifest changed as a result of a player reset.
+     */
+    int TIMELINE_CHANGE_REASON_RESET = 1;
+    /**
+     * Timeline or manifest changed as a result of an dynamic update introduced by the played media.
+     */
+    int TIMELINE_CHANGE_REASON_DYNAMIC = 2;
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({
+            DISCONTINUITY_REASON_PERIOD_TRANSITION,
+            DISCONTINUITY_REASON_SEEK,
+            DISCONTINUITY_REASON_SEEK_ADJUSTMENT,
+            DISCONTINUITY_REASON_AD_INSERTION,
+            DISCONTINUITY_REASON_INTERNAL
+    })
+    @interface DiscontinuityReason {}
+    /**
+     * Automatic playback transition from one period in the timeline to the next. The period index
+     * may be the same as it was before the discontinuity in case the current period is repeated.
+     */
+    int DISCONTINUITY_REASON_PERIOD_TRANSITION = 0;
+    /** Seek within the current period or to another period. */
+    int DISCONTINUITY_REASON_SEEK = 1;
+    /**
+     * Seek adjustment due to being unable to seek to the requested position or because the seek was
+     * permitted to be inexact.
+     */
+    int DISCONTINUITY_REASON_SEEK_ADJUSTMENT = 2;
+    /** Discontinuity to or from an ad within one period in the timeline. */
+    int DISCONTINUITY_REASON_AD_INSERTION = 3;
+    /** Discontinuity introduced internally by the source. */
+    int DISCONTINUITY_REASON_INTERNAL = 4;
+
+    /** Returns the component of this player for audio output, or null if audio is not
+     * supported.
+     */
+    @Nullable
+    AudioComponent getAudioComponent();
+
+    /** Returns the component of this player for video output, or null if video is
+     * not supported.
+     */
+    @Nullable
+    VideoComponent getVideoComponent();
+
+    /**
+     * Returns the component of this player for text output, or null if text is not
+     * supported.
+     */
+    TextComponent getTextComponent();
+
+    /**
+     * @return  the {@link Looper} associated with the application thread that's
+     * use to access the player and on which player events are received.
+     */
+    Looper getApplicationLooper();
+
+    /**
+     * Register a listener to receive events from the player. The listener's method
+     * will be called on the thread that was used to construct the player. However,
+     * if the thread used to construct the player does not a {@link Looper}, then
+     * the listener will ba called on the main thread.
+     */
+    void addListener();
+
+    /**
+     * Unregister a listener. The listener will no longer receive events from the player.
+     *
+     * @param listener  The listener to unregister.
+     */
+    void removeListener(EventListener listener);
+
+    /**
+     * Returns the current state of the player.
+     *
+     * @return  One of the {@code STATE} constants defined in this interface.
+     */
+    int getPlaybackState();
+
+    /**
+     * Returns the error that caused playback to fail. This is the same error that will have been
+     * reported via {@link Player.EventListener#onPlayerError(ExoPlaybackException)} at the time of
+     * failure. It can be queried using this method until {@Code stop(true} is called or the player
+     * is re-prepared
+     *
+     * @return  The error, or {@code null}.
+     */
+    @Nullable
+    ExoPlaybackException getPlaybackError();
+
+    /**
+     * Sets whether playback should proceed when {@link #getPlaybackState()} == {@link #STATE_READY}.
+     * <p>
+     * If the player is already in the ready state then this method can be used to pause and resume
+     * playback.
+     *
+     * @param playWhenReady Whether playback should proceed when ready.
+     */
+    void setPlayWhenReady(boolean playWhenReady);
+
+    /**
+     * Sets the {@link RepeatMode} to be used for playback.
+     *
+     * @param repeatMode    A repeat mode.
+     */
+    void setRepeatMode(@RepeatMode int repeatMode);
+
+    /**
+     * Returns the current {@link RepeatMode} used for playback.
+     *
+     * @return  The current repeat mode.
+     */
+    @RepeatMode int getRepeatMode();
+
+    /**
+     * Sets whether shuffling of windows is enabled.
+     *
+     * @param shuffleModeEnabled    Whether shuffling is enabled.
+     */
+    void setShuffleModeEnabled(boolean shuffleModeEnabled);
+
+    /**
+     * @return whether shuffling of windows is enabled.
+     */
+    boolean getShuffleModeEnabled();
+
+    /**
+     * Whether the player is currently loading the source.
+     *
+     * @return  Whether the player is  currently loading the source.
+     */
+    boolean isLoading();
+
+    /**
+     * Seek to the default position associated with the current window. The position can depend on
+     * the type of media being played. For live streams it will typically be the live edge of the
+     * window. For other streams it will typically be the start of the window.
+     */
+    void seekToDefaultPosition();
+
+    /**
+     * Seeks to the default position associated with the specified window. The position can depend on
+     * the type of media being played. For live streams it will typically be the live edge of the
+     * window. For other streams it will typically be the start of the window.
+     *
+     * @param windowIndex   The index of the window whose associated default position should be seeked
+     *                      to.
+     */
+    void seekToDefaultPosition(int windowIndex);
+
+    /**
+     * Seeks to a position specified in milliseconds in the current window.
+     *
+     * @param positionMs    The seek position in the current window, or {@link C#TIME_UNSET} to seek to
+     *                      the window's default position.
+     */
+    void seekTo(long positionMs);
+
+    /**
+     * Seeks to a position specified in milliseconds in the specified window.
+     * @param windowIndex   The index of the window.
+     * @param positionMs    The seek position in the specified window, or {@link C#TIME_UNSET} to seek
+     *                      to the window's default position.
+     * @throws IllegalSeekPositionException If the player has a non-empty timeline and the provided
+     * {@code windowIndex} is not within the bounds of the current timeline.
+     */
+    void seekTo(int windowIndex, long positionMs);
+
+    /**
+     * Attempts to set the playback parameters. Passing {@code null} sets the parameters to the
+     * default, {@link PlaybackParamters#DEFAULT}, which means there is no speed or pitch adjustment.
+     * <p>
+     * Playback parameters changes may cause the player to buffer.
+     * {@link EventListener#onPlaybackParametersChanged(PlaybackParamters)} will be called whenever
+     * the currently active playback parameters change. When that listener is called, the parameters
+     * passed to it may not match {@code playbackParameters}. For example, the chosen speed or pitch
+     * may be out of range, in which case they are constrained to a set of permitted values. If it is
+     * not possible to change the playback parameters, the listener will not be invoked.
+     *
+     * @param playbackParameters    The playback parameters, or {@code null} to use the defaults.
+     */
+    void setPlaybackParameters(@Nullable PlaybackParamters playbackParameters);
+
+    /**
+     * @return  The currently active playback parameters.
+     *
+     * @see EventListener#onPlaybackParametersChanged(PlaybackParamters)
+     */
+    PlaybackParamters getPlaybackParameters();
+
+    /**
+     * Stops playback without resetting the player. Use {@code setPlayWhenReady(false)} rather than
+     * this method if the intention is to pause playback.
+     *
+     * <p>Calling this method will cause the playback state to transition to {@link #STATE_IDLE}. The
+     * player instance can still be used, and {@link #release()} must still be called on the player
+     * if it's no longer required.
+     */
+    void stop();
+
+    /**
+     * Stops playback and optionally resets the player. Use {@code setPlayWhenReady(false} rather
+     * than this method if the intention is to pause playback.
+     *
+     * <p>Calling this method will cause the playback state to transition to {@link #STATE_IDLE}. The
+     * player instance can still be used, and {@link #release} must still be called on the player if
+     * it's no longer required.
+     *
+     * @param reset Whether the player should be reset.
+     */
+    void stop(boolean reset);
+
+    /**
+     * Releases the player. This method must be called when the player is no longer required. The
+     * player must not be used after calling this method.
+     */
+    void release();
+
+    /**
+     * @return  the number of renderers.
+     */
+    int getRendererCount();
+
+    /**
+     * Returns the track type that the renderer at a given index handles.
+     *
+     * @see Renderer#getTrackType();
+     * @param index The index of the renderer.
+     * @return  One of hte {@code TRACK_TYPE_*} constants define in {@link C}.
+     */
+    int getRendererType(int index);
+
+    /**
+     * Returns The available track groups.
+     */
+    TrackGroupArray getCurrentTrackGroups();
+
+    /**
+     * @return  The current track selections for each renderer.
+     */
+    TrackSelectionArray getCurrentTrackSelections();
+
+    /**
+     * @return  The current manifest. The type depends on the type of media being played. May be null.
+     */
+    @Nullable
+    Object getCurrentManifest();
+
+    /**
+     * @return  The current {@link Timeline}. Never null, but may be empty.
+     */
+    Timeline getCurrentTimeline();
+
+    /**
+     * @return The index of the period currently being played.
+     */
+    int getCurrentPeriodIndex();
+
+    /**
+     * @return  The index of the window currently being played.
+     */
+    int getCurrentWindowIndex();
+
+    /**
+     * @return  The index of the next timeline window to be played, which may depend on the current
+     * repeat mode and whether shuffle mode is enabled. Returns {@link C#INDEX_UNSET} if the window
+     * currently being played is the last window.
+     */
+    int getNextWindowIndex();
+
+    /**
+     * @return  The index of the previous timeline window to be played, which may depend on the current
+     * repeat mode and whether shuffle mode is enabled. Returns {@link C#INDEX_UNSET} if the window
+     * currently being played is the first window.
+     */
+    int getPreviousWindowIndex();
+
+    /**
+     * @return  The tag of the currently playing window in the timeline. May be null if no tag is set or
+     * the timeline is not yet available.
+     */
+    @Nullable Object getCurrentTag();
+
+    /**
+     * @return  The duration of the current content window or ad in milliseconds, or {@link C#TIME_UNSET}
+     * if the duration is not known.
+     */
+    long getDuration();
+
+    /**
+     * @return  The playback position in the current content window or ad, in milliseconds.
+     */
+    long getCurrentPosition();
+
+    /**
+     * @return  An estimate f the position in the current content window or ad up to which data is
+     * buffered, in milliseconds.
+     */
+    long getBufferedPosition();
+
+    /**
+     * @return  An estimate of the percentage in the current content window or ad up to which data is
+     * buffered, or 0 if no estimate is available.
+     */
+    int getBufferedPercentage();
+
+    /**
+     * @return  An estimate of the total buffered duration from the current position, in milliseconds.
+     * This includes pre-buffered data dro subsequent ads and windows.
+     */
+    long getTotalBufferedDuration();
+
+    /**
+     * @return  Whether the current window is dynamic, or {@code false} if the {@link Timeline} is
+     * empty.
+     */
+    boolean isCurrentWindowDynamic();
+
+    /**
+     * @return  Whether the current window is seekable, or {@code false} if the {@link Timeline} is
+     * empty.
+     */
+    boolean isCurrentWindowSeekable();
+
+    /**
+     * @return  Whether the player is currently playing an ad.
+     */
+    boolean isPlayingAd();
+
+    /**
+     * If {@link #isPlayingAd()} returns true, returns the index fo the ad group in the period currently
+     * being played. Returns {@link C#INDEX_UNSET} otherwise.
+     */
+    int getCurrentAdGroupIndex();
+
+    /**
+     * If {@link #isPlayingAd()} returns true, returns the index of the ad in its ad group. Returns
+     * {@link C#INDEX_UNSET} otherwise.
+     */
+    int getCurrentAdIndexInAdGroup();
+
+    /**
+     * If {@link #isPlayingAd()} returns {@code true}, returns the duration of current content window in
+     * milliseconds, or {@link C#TIME_UNSET} if the duration is not known. If there is no ad playing,
+     * the returned duration is the same as the returned by {@link #getDuration()}.
+     */
+    long getContentDuration();
+
+    /**
+     * If {@link #isPlayingAd()} returns {@code true}, returns the content position that will be
+     * played once all ads in the ad group have finished playing, in milliseconds. If there is no ad
+     * playing, the returned position is the same as that returned by {@link #getCurrentPosition()}.
+     */
+    long getContentPosition();
+
+    /**
+     * If {@link #isPlayingAd()} return true, returns an estimate of the content position in the current
+     * content window up to which data is buffered, in milliseconds. If there is no ad playing,
+     * the returned position is the same as that returned by {@link #getBufferedPosition()}.
+     */
+    long getContentBufferedPosition();
 }
