@@ -1,5 +1,12 @@
 package com.google.android.core;
 
+import android.util.Pair;
+import android.view.WindowInsets;
+
+import com.google.android.core.source.ads.AdPlaybackState;
+import com.google.android.core.util.Assertions;
+import com.google.android.core.util.Log;
+
 import androidx.annotation.Nullable;
 
 /**
@@ -19,6 +26,17 @@ import androidx.annotation.Nullable;
  * various use cases.
  * 默认位置表示媒体播放的起点。
  * 详细图解 http://google.github.io/ExoPlayer/doc/reference/
+ *
+ * <h3 id="single-file>Single media file or on-demand stream</h3>
+ * <p align="center">
+ *     <img src="doc-files/timeline-single-file.svg" alt="Example timeline for a single file">
+ * </p>
+ * A timeline for a single media file or on-demand stream consists of a single period and window.
+ * The window spans the whole period, indicating taht all parts of the media are available for
+ * playback. The window's default position is typically at the start of the period (indicated by the
+ * black dot in the figure above).
+ *
+ *
  */
 
 public abstract class Timeline {
@@ -175,4 +193,391 @@ public abstract class Timeline {
             return positionInFirstPeriodUs;
         }
     }
+
+    /**
+     * Holds information about a period in a {@link Timeline}. A period defines a single logical
+     * piece of media, for example a media file. It may also define groups of ads inserted into the media,
+     * along with information about whether those ads have been loaded and played.
+     * <p>
+     * The figure below shows some of the information defined by a period, as well as how this
+     * information relates to a corresponding {@link Window} in the timeline.
+     * <p>
+     *     <img src="doc-files/timeline-period.svg" alt="Information defined by a period">
+     * </p>
+     */
+    public static final class Period {
+
+        /**
+         * An identifier for the period. Not necessarily unique.
+         */
+        public Object id;
+
+        /**
+         * A unique identifier for the period.
+         */
+        public Object uid;
+
+        /**
+         * The index of the window to which this period belongs.
+         */
+        public int windowIndex;
+
+        /**
+         * The duration of this period in microseconds, or {@link C#TIME_UNSET} if unknown.
+         */
+        public long durationUs;
+
+        private long positionInWindowUs;
+
+        // 代表一组广告以及它们的状态。
+        private AdPlaybackState adPlaybackState;
+
+        /**
+         * Sets the data held by this period.
+         *
+         * @param id
+         * @param uid
+         * @param windowIndex
+         * @param durationUs
+         * @param positionInWindowUs
+         * @return
+         */
+        public Period set(Object id, Object uid, int windowIndex, long durationUs,
+                          long positionInWindowUs) {
+            return set(id, uid, windowIndex, durationUs, positionInWindowUs, AdPlaybackState.NONE);
+        }
+
+        public Period set(
+                Object id,
+                Object uid,
+                int windowIndex,
+                long durationUs,
+                long positionInWindowUs,
+                AdPlaybackState adPlaybackState) {
+            this.id = id;
+            this.uid = uid;
+            this.windowIndex = windowIndex;
+            this.durationUs = durationUs;
+            this.positionInWindowUs = positionInWindowUs;
+            this.adPlaybackState = adPlaybackState;
+            return this;
+        }
+
+
+        /**
+         * @return  the duration of this period in microseconds, or {@link C#TIME_UNSET} if unknown.
+         */
+        public long getDurationUs() {
+            return durationUs;
+        }
+    }
+
+    /** An empty timeline. */
+    public static final Timeline EMPTY =
+            new Timeline() {
+                @Override
+                public int getWindowCount() {
+                    return 0;
+                }
+
+                @Override
+                public Window getWindow(int windowIndex, Window window, boolean setTag, long defaultPositionProjectionUs) {
+                    throw  new IndexOutOfBoundsException();
+                }
+
+                @Override
+                public int getPeriodCount() {
+                    return 0;
+                }
+
+                @Override
+                public Period getPeriod(int periodIndex, Period period, boolean setIds) {
+                    throw  new IndexOutOfBoundsException();
+                }
+
+                @Override
+                public int getIndexOfPeriodUid(Object uid) {
+                    return C.INDEX_UNSET;
+                }
+
+                @Override
+                public Object getUidOfPeriod(int periodIndex) {
+                    return new IndexOutOfBoundsException();
+                }
+            };
+
+    /**
+     * @return  whether the timeline is empty.
+     */
+    public final boolean isEmpty() {
+        return getWindowCount() == 0;
+    }
+
+    // 获取Window和Period数量。
+
+    /**
+     * 获取Window数量
+     *
+     * @return  the number of windows in the timeline.
+     */
+    public abstract int getWindowCount();
+
+    public int getNextWindowIndex(int windowIndex, @Player.RepeatMode int repeatMode,
+                                  boolean shuffleModeEnabled) {
+        switch (repeatMode) {
+            case Player.REPEAT_MODE_OFF:
+                // 如果index是最后一个index则返回C.INDEX_UNSET
+                return windowIndex == getLastWindowIndex(shuffleModeEnabled) ? C.INDEX_UNSET :
+                        windowIndex + 1;
+            case Player.REPEAT_MODE_ONE:
+                return windowIndex;
+            case Player.REPEAT_MODE_ALL:
+                // 如果index是最后一个index则返回最开始的index
+                return windowIndex == getLastWindowIndex(shuffleModeEnabled) ?
+                        getFirstWindowIndex(shuffleModeEnabled) : windowIndex + 1;
+            default:
+                throw new IllegalStateException();
+        }
+    }
+
+    /**
+     * Returns the index of the window before the window at index {@code windowIndex} depending on the
+     * {@code repeatMode} and whether shuffling is enabled.
+     *
+     * @param windowIndex   Index of window in the timeline.
+     * @param repeatMode    A repeat mode.
+     * @param shuffleModeEnabled    Whether shuffling is enabled.
+     * @return  The index of the previous window, or {@link C#INDEX_UNSET} if this is the first window.
+     */
+    public int getPreviousWindowIndex(int windowIndex, @Player.RepeatMode int repeatMode,
+                                      boolean shuffleModeEnabled) {
+        switch (repeatMode) {
+            case Player.REPEAT_MODE_OFF:
+                // 如果等于最开始的index则返回C.INDEX_UNSET
+                return windowIndex == getFirstWindowIndex(shuffleModeEnabled) ? C.INDEX_UNSET :
+                        windowIndex - 1;
+            case Player.REPEAT_MODE_ONE:
+                return windowIndex;
+            case Player.REPEAT_MODE_ALL:
+                // 如果是最开始的index则返回最后的index
+                return windowIndex == getFirstWindowIndex(shuffleModeEnabled)
+                        ? getLastWindowIndex(shuffleModeEnabled) : windowIndex - 1;
+            default:
+                throw new IllegalStateException();
+        }
+    }
+
+    /**
+     * Returns the index of the last window in the playback order depending on whether shuffling is
+     * enabled.
+     *
+     * @param shuffleModeEnabled    Whether shuffling is enabled.
+     *                              参数并没有使用。
+     * @return  The index of the last window in the playback order, or {@link C#INDEX_UNSET} if the
+     * timeline is empty.
+     */
+    public int getLastWindowIndex(boolean shuffleModeEnabled) {
+        return isEmpty() ? C.INDEX_UNSET : getWindowCount() - 1;
+    }
+
+    /**
+     * Returns the index of the first window in the playback order depending on whether shuffling is
+     * enabled.
+     *
+     * @param shuffleModeEnabled    Whether shuffling is enabled.
+     *                              参数并没有使用
+     * @return  The index of the first window in the playback order, or {@link C#TIME_UNSET} if the
+     *          timeline is empty.
+     */
+    public int getFirstWindowIndex(boolean shuffleModeEnabled) {
+        return isEmpty() ? C.INDEX_UNSET : 0;
+    }
+
+    /**
+     * Populates a {@link Window} with data for the window at the specified index. Does not populate
+     * {@link Window#tag}.
+     *
+     * @param windowIndex   The index of the window.
+     * @param window        The {@link Window} to populate. Must not be null.
+     * @return  The populated {@link Window}, for convenience.
+     */
+    public final Window getWindow(int windowIndex, Window window) {
+        return getWindow(windowIndex, window, false);
+    }
+
+    /**
+     * Populates a {@link Window} with data for the window at the specified index.
+     *
+     * @param windowIndex   The index of the window.
+     * @param window    The {@link Window} to populate. Must not be null.
+     * @param setTag    Whether {@link Window#tag} should be populated. If false, the field will be
+     *                  set to null. The caller should pass false for efficiency reasons unless the
+     *                  field is required.
+     * @return  The populated {@link Window}, for convenience.
+     */
+    public final Window getWindow(int windowIndex, Window window, boolean setTag) {
+        return getWindow(windowIndex, window, setTag, 0);
+    }
+
+    /**
+     * Populates a {@link Window} with data for the window at the specified index.
+     *
+     * @param windowIndex   The index of the window.
+     * @param window    The {@link Window} to populate. Must not be null.
+     * @param setTag    Whether {@link Window#tag} should be populated. If false, the field will be
+     *                  set to null. The caller should pass false for efficiency reasons unless the field
+     *                  is required.
+     * @param defaultPositionProjectionUs   A duration into the future that the populated window's
+     *                                      default start position should be projected.
+     *                                     　描述窗口未来默认的开始位置。
+     * @return  The populated {@link Window}, for convenience.
+     */
+    public abstract Window getWindow(
+            int windowIndex, Window window, boolean setTag, long defaultPositionProjectionUs);
+
+    /**
+     * 获取Period的数量
+     *
+     * @return  the number of periods in the timeline.
+     */
+    public abstract int getPeriodCount();
+
+    /**
+     * Returns the index of the period after the period at index {@code periodIndex} depending on the
+     * {@code repeatMode} and whether shuffling is enabled.
+     * @param periodIndex   Index of a period in the timeline.
+     * @param period    A {@link Period} to be used internally. Must not be null.
+     * @param window    A {@link Window} to be used internally. Must not be null.
+     * @param repeatMode    A repeat mode.
+     * @param shuffleModeEnabled    Whether shuffling is enabled.
+     * @return  The index of the next period, or {@link C#INDEX_UNSET} if this is the last period.
+     */
+    public final int getNextPeriodIndex(int periodIndex, Period period, Window window,
+                                        @Player.RepeatMode int repeatMode, boolean shuffleModeEnabled) {
+        int windowIndex = getPeriod(periodIndex, period).windowIndex;
+        // 如果这是最后一个Period
+        if (getWindow(windowIndex, window).lastPeriodIndex == periodIndex) {
+            int nextWindowIndex = getNextWindowIndex(windowIndex, repeatMode, shuffleModeEnabled);
+            if (nextWindowIndex == C.INDEX_UNSET) {
+                // 同时也是最后一个Window就返回C.INDEX_UNSET
+                return C.INDEX_UNSET;
+            }
+            // 返回下一个Window的第一个Period
+            return getWindow(nextWindowIndex, window).firstPeriodIndex;
+        }
+        return periodIndex + 1;
+    }
+
+    public final boolean isLastPeriod(int periodIndex, Period period, Window window,
+                                      @Player.RepeatMode int repeatMode, boolean shuffleModeEnabled) {
+        return getNextPeriodIndex(periodIndex, period, window, repeatMode, shuffleModeEnabled)
+                == C.INDEX_UNSET;
+    }
+
+    /**
+     * Calls {@link #getPeriodPosition(Window, Period, int, long)} with zero default position
+     * projection.
+     */
+    public final Pair<Object, Long> getPeriodPosition(
+            Window window, Period period, int windowIndex, long windowPositionUs) {
+        return getPeriodPosition(window, period, windowIndex, windowPositionUs, 0);
+    }
+
+    /**
+     * Converts (windowIndex, windowPositionUs) to the corresponding (periodUid, periodPositionUs).
+     *
+     * @param window    A {@link Window} that may be overwritten.
+     * @param period    A {@link Period} that may be overwritten.
+     * @param windowIndex   The window index.
+     * @param windowPositionUs  The Window time, or {@link C#TIME_UNSET} to use the window's default
+     *                          start position.
+     * @param defaultPositionProjectionUs   if {@code windowPositionUs} is {@link C#TIME_UNSET}, the
+     *                                      duration into the future by which the window's position
+     *                                      should be projected.
+     * @return  The corresponding (periodUid, periodPositionUs), or null if {@code #windowPosistionUs}
+     * is {@link C#TIME_UNSET}, {@code defaultPositionProjectionUs} is non-zero, and the window's
+     * position could be projected by {@code defaultPositionProjectionUs}.
+     */
+    public final Pair<Object, Long> getPeriodPosition(
+            Window window,
+            Period period,
+            int windowIndex,
+            long windowPositionUs,  // period.positionInWindow这个变量
+            long defaultPositionProjectionUs) {
+        Assertions.checkIndex(windowIndex, 0, getWindowCount());
+        getWindow(windowIndex, window, false, defaultPositionProjectionUs);
+        if (windowPositionUs == C.TIME_UNSET) {
+            // 如果没有设置就设置为默认值
+            windowPositionUs = window.getDefaultPositionUs();
+            if (windowPositionUs == C.TIME_UNSET) {
+                // 如果默认值也没有设置就返回null
+                return null;
+            }
+        }
+        // 根据Window获取Period
+        int periodIndex = window.firstPeriodIndex;
+        long periodPositionUs = window.getPositionInFirstPeriodUs();
+        // Period的时间长度
+        long periodDurationUs = getPeriod(periodIndex, period, /* setIds= */ true).getDurationUs();
+        // 核心
+        while (periodDurationUs != C.TIME_UNSET && periodPositionUs >= periodDurationUs
+                && periodIndex < window.lastPeriodIndex) {
+            periodPositionUs -= periodDurationUs;
+            periodDurationUs = getPeriod(++periodIndex, period, /* setIds= */ true).getDurationUs();
+        }
+        Log.d("create period position " + periodPositionUs);
+        return Pair.create(period.uid, periodPositionUs);
+    }
+
+    /**
+     * Populates a {@link Period} with data for the period with the specified unique identifier.
+     *
+     * @param periodIndex   The unique identifier of the period.
+     * @param period    The {@link Period} to populate. Must not be null.
+     * @return  The Populated {@link Period}, for convenience.
+     */
+    public final Period getPeriod(int periodIndex, Period period) {
+        return getPeriod(periodIndex, period, false);
+    }
+
+    /**
+     * Populates a {@link Period} with data for the period at the specified index.
+     *
+     * @param periodIndex   The index of the period.
+     * @param period    The {@link Period} to populate. Must not be null.
+     * @param setIds    Whether {@link Period#id} and {@link Period#uid} should be populated. If false,
+     *                  the fields will be set to null. The caller should pass false for efficiency
+     *                  reasons unless the fields are required.
+     * @return  The populated {@link Period}, for convenience.
+     */
+    public abstract Period getPeriod(int periodIndex, Period period, boolean setIds);
+
+    /**
+     * Populates a {@link Period} with data for the period with the specified unique identifier.
+     *
+     * @param periodUid The unique identifier of the period.
+     * @param period    The {@link Period} to populate. Must not be null.
+     * @return  the populated {@link Period}, for convenience.
+     */
+    public Period getPeriodByUid(Object periodUid, Period period) {
+        return getPeriod(getIndexOfPeriodUid(periodUid), period, /* setIds= */ true);
+    }
+
+
+    /**
+     * Returns the index of the period identified by its unique {@code id}, or {@link C#INDEX_UNSET}
+     * if the period is not in the timeline.
+     *
+     * @param uid   A unique identifier for a period.
+     * @return  The index of the period, or {@link C#INDEX_UNSET} if the period was not found.
+     */
+    public abstract int getIndexOfPeriodUid(Object uid);
+
+    /**
+     * Returns the unique id of the period identified by its index in the timeline.
+     *
+     * @param periodIndex   The index of the period.
+     * @return  The unique id of the period.
+     */
+    public abstract Object getUidOfPeriod(int periodIndex);
 }

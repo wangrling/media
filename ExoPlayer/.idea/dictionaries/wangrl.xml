@@ -2,8 +2,12 @@
   <dictionary name="wangrl">
     <words>
       <w>playlists</w>
+      <w>renderers</w>
+      <w>robolectric</w>
       <w>seekable</w>
       <w>timelines</w>
+      <w>unapplied</w>
+      <w>wallclock</w>
     </words>
   </dictionary>
 </component>
