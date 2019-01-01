@@ -4,6 +4,7 @@
       <w>initializable</w>
       <w>lockscreen</w>
       <w>logtag</w>
+      <w>profilers</w>
       <w>setprop</w>
     </words>
   </dictionary>

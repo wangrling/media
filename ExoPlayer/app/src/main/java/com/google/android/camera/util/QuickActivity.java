@@ -79,7 +79,7 @@ public class QuickActivity extends Activity {
     };
 
     @Override
-    protected void onNewIntent(Intent intent) {
+    protected final void onNewIntent(Intent intent) {
         logLifecycle("onNewIntent", true);
         Log.v(TAG, "Intent Action = " + intent.getAction());
         setIntent(intent);
@@ -110,7 +110,7 @@ public class QuickActivity extends Activity {
     }
 
     @Override
-    protected void onResume() {
+    protected final void onResume() {
         logLifecycle("onResume", true);
         /**
          * For lockscreen launch, there are two possible flows:
@@ -142,7 +142,7 @@ public class QuickActivity extends Activity {
     }
 
     @Override
-    protected void onPause() {
+    protected final void onPause() {
         logLifecycle("onPause", true);
         // 停止Handler的执行
         mMainHandler.removeCallbacks(mOnResumeTasks);
@@ -182,7 +182,7 @@ public class QuickActivity extends Activity {
     }
 
     @Override
-    protected void onDestroy() {
+    protected final void onDestroy() {
         logLifecycle("onDestroy", true);
         onDestroyTasks();
         super.onDestroy();
@@ -222,7 +222,7 @@ public class QuickActivity extends Activity {
     }
 
     /** Subclasses should override this in place of {@link Activity#onCreate}. */
-    private void onCreateTasks(Bundle savedInstanceState) {
+    protected void onCreateTasks(Bundle savedInstanceState) {
 
     }
 
