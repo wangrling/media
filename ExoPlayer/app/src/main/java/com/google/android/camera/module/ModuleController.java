@@ -3,6 +3,10 @@ package com.google.android.camera.module;
 import com.google.android.camera.CameraActivity;
 import com.google.android.camera.ShutterButton;
 import com.google.android.camera.app.AppController;
+import com.google.android.camera.app.CameraAppUI;
+import com.google.android.camera.ex.CameraAgent;
+import com.google.android.camera.hardware.HardwareSpec;
+import com.google.android.camera.settings.SettingsManager;
 
 /**
  * The controller at app level.
@@ -81,7 +85,7 @@ public interface ModuleController extends ShutterButton.OnShutterButtonListener 
     public void hardResetSettings(SettingsManager settingsManager);
 
     /**
-     * @return  A {@link HardWareSpec} based on the module's open camera device.
+     * @return  A {@link HardwareSpec} based on the module's open camera device.
      */
     public HardwareSpec getHardWareSpec();
 
@@ -90,7 +94,7 @@ public interface ModuleController extends ShutterButton.OnShutterButtonListener 
      * ideal bottom bar layout of the mode options. The app edits the final layout
      * based on the {@link HardwareSpec}.
      */
-    public BottomBarUISpec getBottomBarSpec();
+    public CameraAppUI.BottomBarUISpec getBottomBarSpec();
 
     /**
      * Used by the app on configuring the button bar color and visibility.

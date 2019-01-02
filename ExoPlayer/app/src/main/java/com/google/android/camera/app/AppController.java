@@ -13,8 +13,16 @@ import android.net.Uri;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.google.android.camera.ButtonManager;
+import com.google.android.camera.FatalErrorHandler;
+import com.google.android.camera.SoundPlayer;
 import com.google.android.camera.module.ModuleController;
+import com.google.android.camera.one.OneCameraOpener;
 import com.google.android.camera.one.config.OneCameraFeatureConfig;
+import com.google.android.camera.settings.ResolutionSetting;
+import com.google.android.camera.settings.SettingsManager;
+import com.google.android.camera.ui.AbstractTutorialOverlay;
+import com.google.android.camera.ui.PreviewStatusListener;
 
 /**
  * The controller at app level.
