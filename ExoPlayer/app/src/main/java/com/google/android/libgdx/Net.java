@@ -1,4 +1,4 @@
 package com.google.android.libgdx;
 
-interface Net {
+public interface Net {
 }
