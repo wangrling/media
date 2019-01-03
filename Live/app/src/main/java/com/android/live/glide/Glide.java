@@ -14,13 +14,8 @@ public class Glide implements ComponentCallbacks2 {
 
     private static volatile boolean isInitializing;
 
-    private final Engine engine;
+    // private final Engine engine;
 
-    private final BitmapPool bitmapPool;
-
-    private final MemoryCache memoryCache;
-
-    private final BitmapPrefiller bitmapPrefiller;
 
     @Override
     public void onTrimMemory(int level) {
