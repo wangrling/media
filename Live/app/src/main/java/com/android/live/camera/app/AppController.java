@@ -12,9 +12,21 @@ import android.net.Uri;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.android.live.camera.ButtonManager;
+import com.android.live.camera.FatalErrorHandler;
+import com.android.live.camera.SoundPlayer;
+import com.android.live.camera.module.ModuleController;
+import com.android.live.camera.one.OneCameraOpener;
+import com.android.live.camera.one.config.OneCameraFeatureConfig;
+import com.android.live.camera.settings.ResolutionSetting;
+import com.android.live.camera.settings.SettingsManager;
+import com.android.live.camera.ui.AbstractTutorialOverlay;
+import com.android.live.camera.ui.PreviewStatusListener;
+
 
 /**
  * The controller at app level.
+ *　先定义好接口，然后写每个模块。
  */
 public interface AppController {
 
@@ -309,7 +321,7 @@ public interface AppController {
     public void enableKeepScreenOn(boolean enabled);
 
     /**
-     * Returns the {@link com.android.camera.app.CameraProvider}.
+     * Returns the {@link CameraProvider}.
      */
     public CameraProvider getCameraProvider();
 
@@ -338,7 +350,7 @@ public interface AppController {
     public SettingsManager getSettingsManager();
 
     /**
-     * Returns the {@link com.android.camera.settings.ResolutionSetting}.
+     * Returns the {@link ResolutionSetting}.
      *
      * @return the current resolution setting.
      */
@@ -355,21 +367,21 @@ public interface AppController {
     public FatalErrorHandler getFatalErrorHandler();
 
     /**
-     * Returns the {@link com.android.camera.app.CameraAppUI}.
+     * Returns the {@link CameraAppUI}.
      *
      * @return {@code null} if not available yet.
      */
     public CameraAppUI getCameraAppUI();
 
     /**
-     * Returns the {@link com.android.camera.app.ModuleManager}.
+     * Returns the {@link ModuleManager}.
      *
      * @return {@code null} if not available yet.
      */
     public ModuleManager getModuleManager();
 
     /**
-     * Returns the {@link com.android.camera.ButtonManager}.
+     * Returns the {@link ButtonManager}.
      */
     public ButtonManager getButtonManager();
 

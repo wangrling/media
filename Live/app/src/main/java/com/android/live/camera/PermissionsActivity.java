@@ -16,11 +16,15 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import com.android.live.R;
+import com.android.live.camera.app.CameraServicesImpl;
 import com.android.live.camera.debug.Log;
+import com.android.live.camera.settings.Keys;
+import com.android.live.camera.settings.SettingsManager;
 import com.android.live.camera.util.QuickActivity;
 
 /**
  * Activity that shows permissions request dialogs and handles lack of critical permissions.
+ * 申请相机需要的所有权限。
  */
 public class PermissionsActivity extends QuickActivity {
     private static final Log.Tag TAG = new Log.Tag("PermissionsActivity");
@@ -162,6 +166,7 @@ public class PermissionsActivity extends QuickActivity {
             mIndexPermissionRequestLocation = permissionsRequestIndex;
         }
 
+        // CAM_PermissionsActivity: requestPermissions count: 4
         Log.v(TAG, "requestPermissions count: " + permissionsToRequest.length);
         requestPermissions(permissionsToRequest, PERMISSION_REQUEST_CODE);
     }
@@ -169,7 +174,8 @@ public class PermissionsActivity extends QuickActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
-        Log.v(TAG, "onPermissionsResult counts: " + permissions.length + ":" + grantResults.length);
+        // CAM_PermissionsActivity: onPermissionsResult counts: 4 : 4
+        Log.v(TAG, "onPermissionsResult counts: " + permissions.length + " : " + grantResults.length);
         mSettingsManager.set(
                 SettingsManager.SCOPE_GLOBAL,
                 Keys.KEY_HAS_SEEN_PERMISSIONS_DIALOGS,

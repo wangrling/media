@@ -19,13 +19,26 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import com.android.live.camera.app.AppController;
+import com.android.live.camera.app.CameraAppUI;
+import com.android.live.camera.app.CameraProvider;
+import com.android.live.camera.app.CameraServices;
+import com.android.live.camera.app.CameraServicesImpl;
 import com.android.live.camera.app.LocationManager;
+import com.android.live.camera.app.ModuleManager;
 import com.android.live.camera.app.OrientationManager;
 import com.android.live.camera.app.OrientationManagerImpl;
 import com.android.live.camera.debug.Log;
+import com.android.live.camera.module.ModuleController;
+import com.android.live.camera.one.OneCameraOpener;
+import com.android.live.camera.one.config.OneCameraFeatureConfig;
+import com.android.live.camera.settings.Keys;
+import com.android.live.camera.settings.ResolutionSetting;
+import com.android.live.camera.settings.SettingsManager;
 import com.android.live.camera.stats.profiler.Profile;
 import com.android.live.camera.stats.profiler.Profiler;
 import com.android.live.camera.stats.profiler.Profilers;
+import com.android.live.camera.ui.AbstractTutorialOverlay;
+import com.android.live.camera.ui.PreviewStatusListener;
 import com.android.live.camera.util.ApiHelper;
 import com.android.live.camera.util.CameraPerformanceTracker;
 import com.android.live.camera.util.QuickActivity;
@@ -64,9 +77,14 @@ public class CameraActivity extends QuickActivity implements AppController {
     private boolean mHasCriticalPermissions;
 
     // 首次安装应用启动
-    private FirstRunDialog mFirstRunDialog;
+    // private FirstRunDialog mFirstRunDialog;
 
     private SettingsManager mSettingsManager;
+
+    private FatalErrorHandler mFatalErrorHandler;
+
+    // 模式
+    private int mCurrentModeIndex;
 
     @Override
     protected void onCreateTasks(Bundle savedInstanceState) {
@@ -81,6 +99,13 @@ public class CameraActivity extends QuickActivity implements AppController {
         mSettingsManager = getServices().getSettingsManager();
 
         checkPermissions();
+        if (!mHasCriticalPermissions) {
+            Log.v(TAG, "onCreate: Missing critical permissions.");
+            finish();
+            return;
+        }
+        profile.mark();
+
 
 
         // Check if this is in the secure camera mode.
@@ -107,10 +132,10 @@ public class CameraActivity extends QuickActivity implements AppController {
             // Show the dialog if necessary. The resume logic will be invoked
             // at the onFirstRunStateReady() callback.
             try {
-                mFirstRunDialog.showIfNecessary();
+                // mFirstRunDialog.showIfNecessary();
             } catch (AssertionError e) {
                 Log.e(TAG, "Creating camera controller failed.", e);
-                mFatalErrorHandler.onGenericCameraAccessFailure();
+                // mFatalErrorHandler.onGenericCameraAccessFailure();
             }
         } else {
             // In secure mode from lockscreen, we go straight to camera and will
@@ -118,6 +143,30 @@ public class CameraActivity extends QuickActivity implements AppController {
             Log.v(TAG, "in secure mode, skipping first run dialog check");
             resume();
         }
+    }
+
+    @Override
+    protected void onPauseTasks() {
+        CameraPerformanceTracker.onEvent(CameraPerformanceTracker.ACTIVITY_PAUSE);
+        Profile profile = mProfiler.create("CameraActivity.onPause").start();
+
+        /*
+         * Save the last module index after all secure camera and icon launches,
+         * not just on mode switches.
+         *
+         * Right now we exclude capture intents from this logic, because we also
+         * ignore the cross-Activity recovery logic in onStart for capture intents.
+         */
+        if (!isCaptureIntent()) {
+            // 默认存储位置，也就是app都可以访问。
+            mSettingsManager.set(SettingsManager.SCOPE_GLOBAL,
+                    Keys.KEY_STARTUP_MODULE_INDEX,
+                    mCurrentModeIndex);
+        }
+
+        mPaused = true;
+
+
     }
 
     private void resume() {
@@ -401,7 +450,7 @@ public class CameraActivity extends QuickActivity implements AppController {
 
     @Override
     public CameraServices getServices() {
-        return null;
+        return CameraServicesImpl.instance();
     }
 
     @Override
@@ -448,6 +497,7 @@ public class CameraActivity extends QuickActivity implements AppController {
     public void finishActivityWithIntentCanceled() {
 
     }
+
 
     private class MainHandler extends Handler {
         final WeakReference<CameraActivity> mActivity;
