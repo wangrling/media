@@ -106,6 +106,7 @@ public class CameraActivity extends QuickActivity implements AppController {
         }
         profile.mark();
 
+        // 切换到Glide4，接口全部改变，不用annotation生成接口。
 
 
         // Check if this is in the secure camera mode.
