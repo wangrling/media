@@ -1,14 +1,24 @@
 <component name="ProjectDictionaryState">
   <dictionary name="wangrl">
     <words>
+      <w>automata</w>
       <w>bumptech</w>
+      <w>computeable</w>
       <w>factorizer</w>
       <w>hideybars</w>
       <w>initializable</w>
       <w>lockscreen</w>
       <w>logtag</w>
+      <w>memoizer</w>
+      <w>nonreentrant</w>
+      <w>nthreads</w>
+      <w>poolable</w>
+      <w>preloader</w>
       <w>profilers</w>
       <w>recordlocation</w>
+      <w>synchronizer</w>
+      <w>synchronizers</w>
+      <w>transcode</w>
     </words>
   </dictionary>
 </component>
