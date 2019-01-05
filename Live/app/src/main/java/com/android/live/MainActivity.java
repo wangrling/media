@@ -2,18 +2,19 @@ package com.android.live;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.android.live.camera.CameraActivity;
-import com.android.live.camera.MockActivity;
 import com.android.live.codec.OpenMaxALActivity;
+import com.android.live.filament.jni.Platform;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
-
+    private final String TAG = "MainActivity";
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = (item) -> {
@@ -37,6 +38,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // 测试使用
+
+        // MainActivity: platform is android true
+        Log.d(TAG, "platform is android " + Platform.isAndroid());
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);

@@ -27,7 +27,9 @@ public class OpenMaxALActivity extends AppCompatActivity {
     private final String TAG = "OpenMaxAL";
 
     // 输入
-    String mSourceString = "mpeg4_avc_aac_24fps.mp4";
+    String mJavaSourceString = "mpeg4_avc_aac_24fps.mp4";
+
+    String mNativeSourceString = "mpeg2_avc_aac.ts";
 
     // member variables for java media player
     MediaPlayer mMediaPlayer;
@@ -55,6 +57,7 @@ public class OpenMaxALActivity extends AppCompatActivity {
     AssetManager assetManager;
 
     boolean engineCreated = false;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,49 +90,43 @@ public class OpenMaxALActivity extends AppCompatActivity {
                     mMediaPlayerIsPrepared = true;
                     mp.start();
                     ((ImageButton) findViewById(R.id.startJava)).setImageDrawable(getDrawable(R.drawable.ic_pause));
-                }
-        );
+            ((ImageButton) findViewById(R.id.startNative)).setEnabled(false);
+        });
 
         mMediaPlayer.setOnCompletionListener((mp) -> {
-            ((ImageButton)findViewById(R.id.startJava)).setImageDrawable(getDrawable(R.drawable.ic_play_arrow));
+            ((ImageButton) findViewById(R.id.startJava)).setImageDrawable(getDrawable(R.drawable.ic_play_arrow));
         });
 
 
-        ((ImageButton) findViewById(R.id.startJava)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mJavaMediaPlayerVideoSink == null) {
-                    if (mSelectVideoSink == null) {
-                        return ;
+        ((ImageButton) findViewById(R.id.startJava)).setOnClickListener((v) -> {
+            if (mJavaMediaPlayerVideoSink == null) {
+                mSelectVideoSink.useAsSinkForJava(mMediaPlayer);
+                mJavaMediaPlayerVideoSink = mSelectVideoSink;
+            }
+            if (!mMediaPlayerIsPrepared) {
+                if (mJavaSourceString != null) {
+                    try {
+                        AssetFileDescriptor clipFd = assetManager.openFd(mJavaSourceString);
+                        mMediaPlayer.setDataSource(clipFd.getFileDescriptor(),
+                                clipFd.getStartOffset(), clipFd.getLength());
+                        clipFd.close();
+
+                    } catch (IOException e) {
+                        Log.e(TAG, "IOException");
+                        e.printStackTrace();
                     }
-
-
-                    mSelectVideoSink.useAsSinkForJava(mMediaPlayer);
-                    mJavaMediaPlayerVideoSink = mSelectVideoSink;
+                    mMediaPlayer.prepareAsync();
                 }
-                if (!mMediaPlayerIsPrepared) {
-                    if (mSourceString != null) {
-                        try {
-                            AssetFileDescriptor clipFd = assetManager.openFd(mSourceString);
-                            mMediaPlayer.setDataSource(clipFd.getFileDescriptor(),
-                                    clipFd.getStartOffset(), clipFd.getLength());
-                            clipFd.close();
-
-                        } catch (IOException e) {
-                            Log.e(TAG, "IOException");
-                            e.printStackTrace();
-                        }
-                        mMediaPlayer.prepareAsync();
-                    }
-                } else if (mMediaPlayer.isPlaying()) {
-                    mMediaPlayer.pause();
-                    ((ImageButton) v).setImageDrawable(getDrawable(R.drawable.ic_play_arrow));
-                } else {
-                    mMediaPlayer.start();
-                    ((ImageButton) v).setImageDrawable(getDrawable(R.drawable.ic_pause));
-                }
+            } else if (mMediaPlayer.isPlaying()) {
+                mMediaPlayer.pause();
+                ((ImageButton) v).setImageDrawable(getDrawable(R.drawable.ic_play_arrow));
+            } else {
+                mMediaPlayer.start();
+                ((ImageButton) v).setImageDrawable(getDrawable(R.drawable.ic_pause));
+                ((ImageButton) findViewById(R.id.startNative)).setEnabled(false);
             }
         });
+
 
         ((ImageButton) findViewById(R.id.rewindJava)).setOnClickListener((v) -> {
             if (mMediaPlayer.isPlaying()) {
@@ -140,43 +137,49 @@ public class OpenMaxALActivity extends AppCompatActivity {
 
         ((ImageButton) findViewById(R.id.startNative)).setOnClickListener((v) -> {
             if (!engineCreated) {
+
                 if (mNativeMediaPlayerVideoSink == null) {
                     if (mSelectVideoSink == null)
-                        return ;
+                        return;
                 }
                 // 都是在java创建的两个Surface
                 mSelectVideoSink.useAsSinkForNative();
                 mNativeMediaPlayerVideoSink = mSelectVideoSink;
             }
-            if (mSourceString != null) {
+            if (mNativeSourceString != null) {
                 // 不能传入空值
-                engineCreated = createStreamingMediaPlayer(assetManager, mSourceString);
+                engineCreated = createStreamingMediaPlayer(assetManager, mNativeSourceString);
             }
             if (engineCreated) {
                 mIsPlayingStreaming = !mIsPlayingStreaming;
                 setPlayingStreamMediaPlayer(mIsPlayingStreaming);
                 ((ImageButton) v).setImageDrawable(getDrawable(R.drawable.ic_pause));
+                ((ImageButton) findViewById(R.id.startJava)).setEnabled(false);
             }
 
         });
 
 
-        ((RadioGroup)findViewById(R.id.viewRadioGroup)).setOnCheckedChangeListener((group, checkedId)-> {
-                switch (checkedId) {
-                    case R.id.surfaceViewRadioButton: {
-
-                        mSelectVideoSink = new SurfaceHolderVideoSink(mSurfaceHolder);
-                        break;
-                    }
-                    case R.id.glSurfaceViewRadioButton: {
-                        mSelectVideoSink = new GLViewVideoSink(mGLView);
-                        break;
-                    }
+        ((RadioGroup) findViewById(R.id.viewRadioGroup)).setOnCheckedChangeListener((group, checkedId) -> {
+            switch (checkedId) {
+                case R.id.surfaceViewRadioButton: {
+                    if (mJavaMediaPlayerVideoSink != null)
+                        return;
+                    mSelectVideoSink = new SurfaceHolderVideoSink(mSurfaceHolder);
+                    break;
                 }
+                case R.id.glSurfaceViewRadioButton: {
+                    if (mNativeMediaPlayerVideoSink != null)
+                        return;
+
+                    mSelectVideoSink = new GLViewVideoSink(mGLView);
+                    break;
+                }
+            }
         });
 
         // 设置默认为SurfaceView播放
-        ((RadioButton)findViewById(R.id.surfaceViewRadioButton)).toggle();
+        ((RadioButton) findViewById(R.id.surfaceViewRadioButton)).toggle();
         mSelectVideoSink = new SurfaceHolderVideoSink(mSurfaceHolder);
     }
 
@@ -184,8 +187,14 @@ public class OpenMaxALActivity extends AppCompatActivity {
     protected void onPause() {
 
         mIsPlayingStreaming = false;
-        // setPlayingStreamMediaPlayer(false);
+        setPlayingStreamMediaPlayer(false);
         mGLView.onPause();
+        if (mMediaPlayer.isPlaying()) {
+            mMediaPlayer.pause();
+            mMediaPlayer.stop();
+        }
+
+        shutdown();
         super.onPause();
     }
 
@@ -195,23 +204,23 @@ public class OpenMaxALActivity extends AppCompatActivity {
         mGLView.onResume();
     }
 
-    @Override
-    protected void onDestroy() {
-        shutdown();
-
-        super.onDestroy();
-    }
-
-    /** Native methods */
+    /**
+     * Native methods
+     */
     public static native void createEngine();
+
     // 创建流播放器。
     public static native boolean createStreamingMediaPlayer(AssetManager assetManager, String filename);
+
     // 播放和暂停控制。
     public static native void setPlayingStreamMediaPlayer(boolean isPlaying);
+
     // 关闭。
     public static native void shutdown();
+
     // 设置播放界面。
     public static native void setSurface(Surface surface);
+
     // 重新开始播放。
     public static native void rewindStreamingMediaPlayer();
 
@@ -222,7 +231,9 @@ public class OpenMaxALActivity extends AppCompatActivity {
 
     static abstract class VideoSink {
         abstract void setFixedSize(int width, int height);
+
         abstract void useAsSinkForJava(MediaPlayer mediaPlayer);
+
         abstract void useAsSinkForNative();
     }
 
@@ -245,7 +256,7 @@ public class OpenMaxALActivity extends AppCompatActivity {
             // because setSurface also works with a Surface derived from a SurfaceTexture.
             Surface s = mSurfaceHolder.getSurface();
             mediaPlayer.setSurface(s);
-            // s.release();
+            s.release();
         }
 
         @Override
@@ -253,7 +264,7 @@ public class OpenMaxALActivity extends AppCompatActivity {
             Surface s = mSurfaceHolder.getSurface();
             // 传递到底层
             setSurface(s);
-            // s.release();
+            s.release();
         }
     }
 
@@ -275,7 +286,7 @@ public class OpenMaxALActivity extends AppCompatActivity {
             SurfaceTexture st = mMyGLSurfaceView.getSurfaceTexture();
             Surface s = new Surface(st);
             mediaPlayer.setSurface(s);
-            // s.release();
+            s.release();
         }
 
         @Override
@@ -283,7 +294,7 @@ public class OpenMaxALActivity extends AppCompatActivity {
             SurfaceTexture st = mMyGLSurfaceView.getSurfaceTexture();
             Surface s = new Surface(st);
             setSurface(s);
-            // s.release();
+            s.release();
         }
     }
 }

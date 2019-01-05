@@ -77,4 +77,12 @@
 
     </LinearLayout>
 
+    <TextView
+        android:textAppearance="@android:style/TextAppearance.Medium"
+        android:text="没有TS解码器，所以没法使用OpenMAX AL进行播放。
+        \nNuPlayer: onSetVideoSurface(0xeb88d000, no video decoder);
+        \nlibOpenSLES: Error after prepare: 1;"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
 </LinearLayout>

@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 28
@@ -47,4 +48,9 @@ dependencies {
     // 各种各样的annotation泛滥
     implementation 'org.checkerframework:checker-qual-android:2.5.8'
     annotationProcessor 'org.checkerframework:checker:2.5.8'
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+repositories {
+    mavenCentral()
 }
