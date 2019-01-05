@@ -2,22 +2,32 @@ package com.android.live.camera;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.nfc.NfcAdapter;
+import android.nfc.NfcEvent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
+import com.android.live.R;
 import com.android.live.camera.app.AppController;
 import com.android.live.camera.app.CameraAppUI;
 import com.android.live.camera.app.CameraProvider;
@@ -28,6 +38,8 @@ import com.android.live.camera.app.ModuleManager;
 import com.android.live.camera.app.OrientationManager;
 import com.android.live.camera.app.OrientationManagerImpl;
 import com.android.live.camera.debug.Log;
+import com.android.live.camera.device.ActiveCameraDeviceTracker;
+import com.android.live.camera.filmstrip.FilmstripController;
 import com.android.live.camera.module.ModuleController;
 import com.android.live.camera.one.OneCameraOpener;
 import com.android.live.camera.one.config.OneCameraFeatureConfig;
@@ -38,12 +50,16 @@ import com.android.live.camera.stats.profiler.Profile;
 import com.android.live.camera.stats.profiler.Profiler;
 import com.android.live.camera.stats.profiler.Profilers;
 import com.android.live.camera.ui.AbstractTutorialOverlay;
+import com.android.live.camera.ui.CameraActivityLayout;
 import com.android.live.camera.ui.PreviewStatusListener;
 import com.android.live.camera.util.ApiHelper;
 import com.android.live.camera.util.CameraPerformanceTracker;
+import com.android.live.camera.util.GoogleHelpHelper;
 import com.android.live.camera.util.QuickActivity;
 
 import java.lang.ref.WeakReference;
+
+import androidx.appcompat.app.ActionBar;
 
 import static android.provider.MediaStore.ACTION_IMAGE_CAPTURE_SECURE;
 import static android.provider.MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA_SECURE;
@@ -86,6 +102,38 @@ public class CameraActivity extends QuickActivity implements AppController {
     // 模式
     private int mCurrentModeIndex;
 
+    // 记录现在和之前使用的相机设备。
+    private ActiveCameraDeviceTracker mActiveCameraDeviceTracker;
+
+    private ActionBar mActionBar;
+
+    /**
+     * Close activity when secure app passes lock screen or screen turns
+     * off.
+     */
+    private BroadcastReceiver mShutdownReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            finish();
+        }
+    };
+
+    // 管理应用的界面
+    private CameraAppUI mCameraAppUI;
+
+    private final Uri[] mNfcPushUris = new Uri[1];
+    private Menu mActionBarMenu;
+
+    private Intent mGalleryIntent;
+
+    // 图片查看
+    private FilmstripController mFilmstripController;
+
+    /**
+     * Whether onResume should reset the view to the preview.
+     */
+    private boolean mResetToPreviewOnResume;
+
     @Override
     protected void onCreateTasks(Bundle savedInstanceState) {
         Profile profile = mProfiler.create("CameraActivity.onCreateTasks").start();
@@ -108,6 +156,47 @@ public class CameraActivity extends QuickActivity implements AppController {
 
         // 切换到Glide4，接口全部改变，不用annotation生成接口。
 
+        profile.mark();
+
+        mActiveCameraDeviceTracker = ActiveCameraDeviceTracker.instance();
+
+        profile.mark("OneCameraManager.get");
+
+        // We suppress this flag via theme when drawing the system preview
+        // background, but once we create activity here, reactivate to the
+        // default value. The default is important for L, we don't want to
+        // change app behavior, just starting background drawable layout.
+        if (ApiHelper.isLOrHigher()) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        }
+
+        profile.mark();
+        setContentView(R.layout.activity_camera);
+        profile.mark("setContentView");
+
+        // A window background is set in styles.xml for the system to show a
+        // drawable background with gray color and camera icon before the
+        // activity is created. We set the background to null here to prevent
+        // overdraw, all views must take care of drawing backgrounds if
+        // necessary. This call to setBackgroundDrawable must occur after
+        // setContentView, otherwise a background may be set again from the
+        // style.
+        getWindow().setBackgroundDrawable(null);
+
+        // mActionBar = getActionBar();
+        mActionBar = getSupportActionBar();
+        // 隐藏Action title
+        mActionBar.setDisplayShowTitleEnabled(false);
+        // set actionbar background to 100% or 50% transparent
+        if (ApiHelper.isLOrHigher()) {
+            // mActionBar.setBackgroundDrawable(new ColorDrawable(0x00000000));
+            // 100%透明
+            mActionBar.setBackgroundDrawable(new ColorDrawable(getColor(R.color.review_background)));
+        } else {
+            mActionBar.setBackgroundDrawable(new ColorDrawable(0x80000000));
+        }
+
+
 
         // Check if this is in the secure camera mode.
         Intent intent = getIntent();
@@ -118,6 +207,55 @@ public class CameraActivity extends QuickActivity implements AppController {
         } else {
             mSecureCamera = intent.getBooleanExtra(SECURE_CAMERA_EXTRA, false);
         }
+
+        if (mSecureCamera) {
+            // Change the window flags so that secure camera can show when locked.
+            Window win = getWindow();
+            WindowManager.LayoutParams params = win.getAttributes();
+            params.flags |= WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
+            win.setAttributes(params);
+
+            // 注册监听，结束Activity
+
+            // Filter for screen off so that we can finish secure camera
+            // activity when screen is off.
+            IntentFilter filter_screen_off = new IntentFilter(Intent.ACTION_SCREEN_OFF);
+            registerReceiver(mShutdownReceiver, filter_screen_off);
+
+            // Filter for phone unlock so that we can finish secure camera
+            // via this UI path:
+            //    1. from secure lock screen, user starts secure camera
+            //    2. user presses home button
+            //    3. user unlocks phone
+            IntentFilter filter_user_unlock = new IntentFilter(Intent.ACTION_USER_PRESENT);
+            registerReceiver(mShutdownReceiver, filter_user_unlock);
+        }
+
+        mCameraAppUI = new CameraAppUI(this,
+                (CameraActivityLayout) findViewById(R.id.activity_root_view), isCaptureIntent());
+
+        // Nfc
+        setupNfcBeamPush();
+    }
+
+    private void setupNfcBeamPush() {
+        NfcAdapter adapter = NfcAdapter.getDefaultAdapter(mAppContext);
+        if (adapter == null) {
+            return ;
+        }
+        if (!ApiHelper.HAS_SET_BEAM_PUSH_URIS) {
+            // Disable beaming
+            adapter.setNdefPushMessage(null, CameraActivity.this);
+            return ;
+        }
+
+        adapter.setBeamPushUris(null, CameraActivity.this);
+        adapter.setBeamPushUrisCallback(new NfcAdapter.CreateBeamUrisCallback() {
+            @Override
+            public Uri[] createBeamUris(NfcEvent event) {
+                return mNfcPushUris;
+            }
+        }, CameraActivity.this);
     }
 
     @Override
@@ -170,6 +308,20 @@ public class CameraActivity extends QuickActivity implements AppController {
 
     }
 
+    @Override
+    protected void onDestroyTasks() {
+        if (mSecureCamera) {
+            unregisterReceiver(mShutdownReceiver);
+        }
+
+        // Ensure anything that checks for "isPaused" returns true.
+        mPaused = true;
+
+        mSettingsManager.removeAllListeners();
+
+
+    }
+
     private void resume() {
 
     }
@@ -206,6 +358,45 @@ public class CameraActivity extends QuickActivity implements AppController {
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.filmstrip_menu, menu);
+        mActionBarMenu = menu;
+
+        // Add a button for launching the gallery.
+        if (mGalleryIntent != null) {
+
+        }
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            case R.id.action_details:
+                // 需要实现，不然会发生crash
+                showDetailsDialog(mFilmstripController.getCurrentAdapterIndex());
+                return true;
+            case R.id.action_help_and_feedback:
+                mResetToPreviewOnResume = false;
+                new GoogleHelpHelper(this).launchGoogleHelp();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+    }
+
+    private void showDetailsDialog(int currentAdapterIndex) {
+
+    }
+
     private boolean isCaptureIntent() {
         if (MediaStore.ACTION_VIDEO_CAPTURE.equals(getIntent().getAction()) ||
                 MediaStore.ACTION_IMAGE_CAPTURE.equals(getIntent().getAction()) ||
@@ -221,7 +412,7 @@ public class CameraActivity extends QuickActivity implements AppController {
 
     @Override
     public Context getAndroidContext() {
-        return null;
+        return mAppContext;
     }
 
     @Override
@@ -461,7 +652,7 @@ public class CameraActivity extends QuickActivity implements AppController {
 
     @Override
     public CameraAppUI getCameraAppUI() {
-        return null;
+        return mCameraAppUI;
     }
 
     @Override

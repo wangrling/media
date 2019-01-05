@@ -2,14 +2,14 @@ package com.android.live;
 
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
+import android.view.MenuItem;
 
 import com.android.live.camera.CameraActivity;
+import com.android.live.camera.MockActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.camera:
                     getApplicationContext().startActivity(
                             new Intent(getApplicationContext(), CameraActivity.class));
+                            // new Intent(getApplicationContext(), MockActivity.class));
                     return true;
             }
             return false;
@@ -42,4 +43,15 @@ public class MainActivity extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 }

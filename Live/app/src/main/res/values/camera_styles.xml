@@ -2,8 +2,15 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Camera resources below -->
 
-    <style name="Theme.Camera" parent="android:style/Theme.Holo.Light.DarkActionBar">
-        <item name="android:windowFullscreen">true</item>
+    <!-- <style name="Theme.Camera" parent="android:style/Theme.Holo.Light.DarkActionBar"> -->
+
+    <style name="Theme.Camera" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- android:windowFullScreen和App Style存在冲突，必须保证和App主题一致，所以只能修改此处。
+            ActionBar兼容器做得不好。
+           <item name="android:windowFullscreen">true</item>
+            -->
+
+
         <item name="android:windowActionBar">false</item>
         <item name="android:windowTitleSize">0dp</item>
         <item name="android:windowActionBarOverlay">true</item>
@@ -14,7 +21,8 @@
     </style>
 
 
-    <style name="Camera.ActionBar" parent="android:Widget.Holo.Light.ActionBar">
+    <!-- <style name="Camera.ActionBar" parent="android:Widget.Holo.Light.ActionBar"> -->
+    <style name="Camera.ActionBar" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:displayOptions">useLogo|showHome|homeAsUp</item>
         <item name="android:background">@drawable/actionbar_translucent</item>
         <item name="android:backgroundStacked">@null</item>

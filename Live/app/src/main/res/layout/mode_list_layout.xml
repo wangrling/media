@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 如果处于隐藏状态就不会对输入事件做出相应。 -->
+<com.android.live.camera.ui.ModeListView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mode_list_layout"
+    android:fillViewport="true"
+    android:layoutDirection="ltr"
+    android:background="@null"
+    android:visibility="invisible"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/mode_list"
+        android:orientation="vertical"
+        android:layout_gravity="top|left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+    <ImageView
+        android:id="@+id/settings_button"
+        android:layout_width="@dimen/mode_list_settings_icon_size"
+        android:layout_height="@dimen/mode_list_settings_icon_size"
+        android:scaleType="center"
+        android:layout_gravity="top|left"
+        android:contentDescription="@string/mode_settings"
+        android:background="@drawable/settings_gear_background"
+        android:src="@drawable/ic_settings_normal" />
+
+
+</com.android.live.camera.ui.ModeListView>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 不能将ActionBar覆盖 -->
+<FrameLayout android:id="@+id/camera_app_root"
+    android:background="@android:color/black"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextureView
+        android:id="@+id/preview_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.android.live.camera.ui.PreviewOverlay
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
+
+    <include layout="@layout/mode_list_layout" />
+
+
+</FrameLayout>

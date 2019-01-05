@@ -10,6 +10,7 @@ import android.os.SystemClock;
 import com.android.live.camera.debug.Log;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * Workaround for lockscreen double-onResume() bug:
@@ -38,7 +39,9 @@ import androidx.annotation.Nullable;
  * started from a lockscreen will result in a quick no-op.<br>
  * </p>
  */
-public abstract class QuickActivity extends Activity {
+public abstract class QuickActivity
+        // extends Activity {
+        extends AppCompatActivity {
     private static final Log.Tag TAG = new Log.Tag("QuickActivity");
 
     /** onResume tasks delay from secure lockscreen. */
