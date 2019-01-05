@@ -9,8 +9,6 @@
             ActionBar兼容器做得不好。
            <item name="android:windowFullscreen">true</item>
             -->
-
-
         <item name="android:windowActionBar">false</item>
         <item name="android:windowTitleSize">0dp</item>
         <item name="android:windowActionBarOverlay">true</item>

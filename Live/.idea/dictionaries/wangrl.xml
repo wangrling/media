@@ -2,14 +2,19 @@
   <dictionary name="wangrl">
     <words>
       <w>automata</w>
+      <w>bitstream</w>
       <w>bumptech</w>
       <w>computeable</w>
       <w>factorizer</w>
+      <w>fopen</w>
       <w>hideybars</w>
       <w>initializable</w>
+      <w>jstring</w>
       <w>lockscreen</w>
       <w>logtag</w>
+      <w>logv</w>
       <w>memoizer</w>
+      <w>mpeg</w>
       <w>nonreentrant</w>
       <w>nthreads</w>
       <w>poolable</w>

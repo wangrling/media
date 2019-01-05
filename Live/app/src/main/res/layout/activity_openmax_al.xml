@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_marginStart="8dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageButton
+            android:src="@drawable/ic_play_arrow"
+            android:id="@+id/startJava"
+            style="@style/MediaButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <ImageButton
+            android:id="@+id/rewindJava"
+            android:src="@drawable/ic_fast_rewind"
+            style="@style/MediaButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageButton
+            android:id="@+id/startNative"
+            android:src="@drawable/ic_play_arrow"
+            style="@style/MediaButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <ImageButton
+            android:src="@drawable/ic_fast_rewind"
+            android:id="@+id/rewindNative"
+            style="@style/MediaButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <RadioGroup
+        android:id="@+id/viewRadioGroup"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:text="SurfaceView"
+            android:id="@+id/surfaceViewRadioButton"
+            android:layout_marginEnd="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <RadioButton
+            android:text="GLSurfaceView"
+            android:id="@+id/glSurfaceViewRadioButton"
+            android:layout_marginStart="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RadioGroup>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <SurfaceView
+            android:layout_margin="8dp"
+            android:id="@+id/surfaceView"
+            android:layout_width="320px"
+            android:layout_height="240px" />
+
+        <com.android.live.codec.MyGLSurfaceView
+            android:layout_margin="8dp"
+            android:id="@+id/glSurfaceView"
+            android:layout_width="320px"
+            android:layout_height="240px" />
+
+    </LinearLayout>
+
+</LinearLayout>

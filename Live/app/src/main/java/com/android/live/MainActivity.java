@@ -6,6 +6,7 @@ import android.view.MenuItem;
 
 import com.android.live.camera.CameraActivity;
 import com.android.live.camera.MockActivity;
+import com.android.live.codec.OpenMaxALActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.ActionBar;
@@ -18,6 +19,8 @@ public class MainActivity extends AppCompatActivity {
             = (item) -> {
             switch (item.getItemId()) {
                 case R.id.home:
+                    getApplicationContext().startActivity(
+                            new Intent(getApplicationContext(), OpenMaxALActivity.class));
                     return true;
                 case R.id.player:
                     return true;

@@ -59,6 +59,8 @@
         <activity android:name=".camera.MockActivity" />
 
 
+        <activity android:name=".codec.OpenMaxALActivity" />
+
     </application>
 
 </manifest>
