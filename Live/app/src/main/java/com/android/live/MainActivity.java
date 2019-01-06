@@ -7,7 +7,7 @@ import android.view.MenuItem;
 
 import com.android.live.camera.CameraActivity;
 import com.android.live.codec.OpenMaxALActivity;
-import com.android.live.filament.jni.Platform;
+import com.android.live.filament.android.Platform;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.ActionBar;

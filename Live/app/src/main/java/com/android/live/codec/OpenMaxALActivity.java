@@ -145,15 +145,20 @@ public class OpenMaxALActivity extends AppCompatActivity {
                 // 都是在java创建的两个Surface
                 mSelectVideoSink.useAsSinkForNative();
                 mNativeMediaPlayerVideoSink = mSelectVideoSink;
+
+                if (mNativeSourceString != null) {
+                    // 不能传入空值
+                    engineCreated = createStreamingMediaPlayer(assetManager, mNativeSourceString);
+                }
             }
-            if (mNativeSourceString != null) {
-                // 不能传入空值
-                engineCreated = createStreamingMediaPlayer(assetManager, mNativeSourceString);
-            }
+
             if (engineCreated) {
                 mIsPlayingStreaming = !mIsPlayingStreaming;
                 setPlayingStreamMediaPlayer(mIsPlayingStreaming);
-                ((ImageButton) v).setImageDrawable(getDrawable(R.drawable.ic_pause));
+                if (mIsPlayingStreaming)
+                    ((ImageButton) v).setImageDrawable(getDrawable(R.drawable.ic_pause));
+                else
+                    ((ImageButton) v).setImageDrawable(getDrawable(R.drawable.ic_play_arrow));
                 ((ImageButton) findViewById(R.id.startJava)).setEnabled(false);
             }
 

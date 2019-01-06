@@ -43,6 +43,7 @@ import com.android.live.camera.filmstrip.FilmstripController;
 import com.android.live.camera.module.ModuleController;
 import com.android.live.camera.one.OneCameraOpener;
 import com.android.live.camera.one.config.OneCameraFeatureConfig;
+import com.android.live.camera.one.config.OneCameraFeatureConfigCreator;
 import com.android.live.camera.settings.Keys;
 import com.android.live.camera.settings.ResolutionSetting;
 import com.android.live.camera.settings.SettingsManager;
@@ -134,6 +135,11 @@ public class CameraActivity extends QuickActivity implements AppController {
      */
     private boolean mResetToPreviewOnResume;
 
+    private SoundPlayer mSoundPlayer;
+
+    /** Holds configuration for various OneCamera features. */
+    private OneCameraFeatureConfig mFeatureConfig;
+
     @Override
     protected void onCreateTasks(Bundle savedInstanceState) {
         Profile profile = mProfiler.create("CameraActivity.onCreateTasks").start();
@@ -145,6 +151,9 @@ public class CameraActivity extends QuickActivity implements AppController {
         mLocationManager = new LocationManager(mAppContext);
         mOrientationManager = new OrientationManagerImpl(this, mMainHandler);
         mSettingsManager = getServices().getSettingsManager();
+        mSoundPlayer = new SoundPlayer(mAppContext);
+        mFeatureConfig = OneCameraFeatureConfigCreator.createDefault(getContentResolver(),
+                getServices().getMemoryManager());
 
         checkPermissions();
         if (!mHasCriticalPermissions) {

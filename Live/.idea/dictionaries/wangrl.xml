@@ -9,6 +9,7 @@
       <w>coord</w>
       <w>factorizer</w>
       <w>fopen</w>
+      <w>gservices</w>
       <w>hideybars</w>
       <w>initializable</w>
       <w>jstring</w>
@@ -25,7 +26,10 @@
       <w>recordlocation</w>
       <w>synchronizer</w>
       <w>synchronizers</w>
+      <w>throwables</w>
       <w>transcode</w>
+      <w>transcoded</w>
+      <w>transcodes</w>
     </words>
   </dictionary>
 </component>

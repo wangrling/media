@@ -2,6 +2,9 @@ package com.android.live.camera.app;
 
 import android.content.Context;
 
+import com.android.live.camera.MediaSaverImpl;
+import com.android.live.camera.remote.RemoteShutterListener;
+import com.android.live.camera.session.CaptureSessionManager;
 import com.android.live.camera.settings.SettingsManager;
 import com.android.live.camera.util.AndroidContext;
 
@@ -17,13 +20,6 @@ public class CameraServicesImpl implements CameraServices {
                 AndroidContext.instance().get());
     }
 
-    private final SettingsManager mSettingsManager;
-
-    private CameraServicesImpl(Context context) {
-
-        mSettingsManager = new SettingsManager(context);
-    }
-
     /**
      * @return a single instance of of the global camera services.
      */
@@ -31,6 +27,43 @@ public class CameraServicesImpl implements CameraServices {
         return Singleton.INSTANCE;
     }
 
+    private final MediaSaver mMediaSaver;
+    private final MemoryManagerImpl mMemoryManager;
+    private final SettingsManager mSettingsManager;
+
+
+    private CameraServicesImpl(Context context) {
+        mMediaSaver = new MediaSaverImpl(context.getContentResolver());
+
+        mMemoryManager = MemoryManagerImpl.create(context, mMediaSaver);
+        mSettingsManager = new SettingsManager(context);
+    }
+
+
+    @Override
+    public CaptureSessionManager getCaptureSessionManager() {
+        return null;
+    }
+
+    @Override
+    public MemoryManager getMemoryManager() {
+        return mMemoryManager;
+    }
+
+    @Override
+    public MotionManager getMotionManager() {
+        return null;
+    }
+
+    @Override
+    public MediaSaver getMediaSaver() {
+        return null;
+    }
+
+    @Override
+    public RemoteShutterListener getRemoteShutterListener() {
+        return null;
+    }
 
     @Override
     public SettingsManager getSettingsManager() {

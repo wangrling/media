@@ -1,8 +1,9 @@
-package com.android.live.filament.jni;
+package com.android.live.filament.android;
 
 public class Filament {
 
     static {
+        // 获取当前Platform和加载本地库。
         Platform.get();
         System.loadLibrary("filament");
     }
