@@ -2,8 +2,10 @@
   <dictionary name="wangrl">
     <words>
       <w>emoji</w>
+      <w>renderers</w>
       <w>slashy</w>
       <w>thaana</w>
+      <w>timelines</w>
     </words>
   </dictionary>
 </component>

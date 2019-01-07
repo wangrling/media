@@ -1,6 +1,7 @@
 package com.android.media.player.core;
 
 import com.android.media.player.core.util.Assertions;
+import com.android.media.player.core.util.TraceUtil;
 
 import java.util.HashSet;
 
