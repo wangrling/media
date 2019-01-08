@@ -1,8 +1,10 @@
 package com.android.media.player.core;
 
 import android.media.AudioAttributes;
+import android.media.AudioFormat;
+import android.media.AudioManager;
 import android.media.MediaCodec;
-import android.widget.MediaController;
+import android.media.MediaFormat;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -104,6 +106,90 @@ public class C {
      * The name of the sans-serif font family.
      */
     public static final String SANS_SERIF_NAME = "sans-serif";
+
+    /**
+     * Represents a PCM audio encoding, or an invalid or unset value. One of {@link Format#NO_VALUE},
+     * {@link #ENCODING_INVALID}, {@link #ENCODING_PCM_8BIT}, {@link #ENCODING_PCM_16BIT}, {@link
+     * #ENCODING_PCM_24BIT}, {@link #ENCODING_PCM_32BIT}, {@link #ENCODING_PCM_FLOAT}, {@link
+     * #ENCODING_PCM_MU_LAW} or {@link #ENCODING_PCM_A_LAW}.
+     */
+    @Documented
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({
+            Format.NO_VALUE,
+            ENCODING_INVALID,
+            ENCODING_PCM_8BIT,
+            ENCODING_PCM_16BIT,
+            ENCODING_PCM_24BIT,
+            ENCODING_PCM_32BIT,
+            ENCODING_PCM_FLOAT,
+            ENCODING_PCM_MU_LAW,
+            ENCODING_PCM_A_LAW
+    })
+    public @interface PcmEncoding {}
+
+    public static final int ENCODING_INVALID = AudioFormat.ENCODING_INVALID;
+
+    public static final int ENCODING_PCM_8BIT = AudioFormat.ENCODING_PCM_8BIT;
+
+    public static final int ENCODING_PCM_16BIT = AudioFormat.ENCODING_PCM_16BIT;
+
+    /** PCM encoding with 24 bits per sample. */
+    public static final int ENCODING_PCM_24BIT = 0x80000000;
+
+    /** PCM encoding with 32 bits per sample. */
+    public static final int ENCODING_PCM_32BIT = 0x40000000;
+
+    public static final int ENCODING_PCM_FLOAT = AudioFormat.ENCODING_PCM_FLOAT;
+
+    /** Audio encoding for mu-law. */
+    public static final int ENCODING_PCM_MU_LAW = 0X10000000;
+
+    public static final int ENCODING_PCM_A_LAW = 0x20000000;
+
+    // Dolby Surround Audio Coding-3
+    public static final int ENCODING_AC3 = AudioFormat.ENCODING_AC3;
+
+    public static final int ENCODING_E_AC3 = AudioFormat.ENCODING_E_AC3;
+
+    public static final int ENCODING_DTS = AudioFormat.ENCODING_DTS;
+
+    public static final int ENCODING_DTS_HD = AudioFormat.ENCODING_DTS_HD;
+
+    public static final int ENCODING_DOLBY_TRUEHD = AudioFormat.ENCODING_DOLBY_TRUEHD;
+
+
+    @Documented
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({
+            STREAM_TYPE_ALARM,
+            STREAM_TYPE_DTMF,
+            STREAM_TYPE_MUSIC,
+            STREAM_TYPE_NOTIFICATION,
+            STREAM_TYPE_RING,
+            STREAM_TYPE_SYSTEM,
+            STREAM_TYPE_VOICE_CALL,
+            STREAM_TYPE_USE_DEFAULT
+    })
+    public @interface StreamType {}
+
+    public static final int STREAM_TYPE_ALARM = AudioManager.STREAM_ALARM;
+
+    public static final int STREAM_TYPE_DTMF = AudioManager.STREAM_DTMF;
+
+    public static final int STREAM_TYPE_MUSIC = AudioManager.STREAM_MUSIC;
+
+    public static final int STREAM_TYPE_NOTIFICATION = AudioManager.STREAM_NOTIFICATION;
+
+    public static final int STREAM_TYPE_RING = AudioManager.STREAM_RING;
+
+    public static final int STREAM_TYPE_SYSTEM = AudioManager.STREAM_SYSTEM;
+
+    public static final int STREAM_TYPE_VOICE_CALL = AudioManager.STREAM_VOICE_CALL;
+
+    public static final int STREAM_TYPE_USE_DEFAULT = AudioManager.USE_DEFAULT_STREAM_TYPE;
+
+    public static final int STREAM_TYPE_DEFAULT = STREAM_TYPE_MUSIC;
 
     /**
      * Content types for {@link com.android.media.player.core.audio.AudioAttributes}. One of
@@ -232,11 +318,11 @@ public class C {
 
     /**
      * Video scaling modes for {@link MediaCodec}-based {@link Renderer}s. One of
-     * {@link #VIDEO_SCALING_MODE_SCALE_TO_FIT} or {@link #VIDEO_SCALING_MODE_SCLE_TO_FIT_WITH_CROPPING}.
+     * {@link #VIDEO_SCALING_MODE_SCALE_TO_FIT} or {@link #VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING}.
      */
     @Documented
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef(value = {VIDEO_SCALING_MODE_SCALE_TO_FIT, VIDEO_SCALING_MODE_SCLE_TO_FIT_WITH_CROPPING})
+    @IntDef(value = {VIDEO_SCALING_MODE_SCALE_TO_FIT, VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING})
     public @interface VideoScalingMode {}
 
     /**
@@ -248,7 +334,7 @@ public class C {
     /**
      * @see MediaCodec#VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING
      */
-    public static final int VIDEO_SCALING_MODE_SCLE_TO_FIT_WITH_CROPPING =
+    public static final int VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING =
             MediaCodec.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING;
 
     /**
@@ -256,5 +342,66 @@ public class C {
      */
     public static final int VIDEO_SCALING_MODE_DEFAULT = VIDEO_SCALING_MODE_SCALE_TO_FIT;
 
+    @Documented
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef(
+            flag = true,
+            value = {SELECTION_FLAG_DEFAULT, SELECTION_FLAG_FORCED, SELECTION_FLAG_AUTOSELECT})
+    public @interface SelectionFlags {}
 
+    public static final int SELECTION_FLAG_DEFAULT = 1;
+
+    public static final int SELECTION_FLAG_FORCED = 1 << 1; //  2
+
+    public static final int SELECTION_FLAG_AUTOSELECT = 1 << 2;     // 4
+
+    public static final String LANGUAGE_UNDETERMINED = "und";
+
+    /**
+     * The stereo mode for 360/3D/VR videos. One of {@link Format#NO_VALUE}, {@link
+     * #STEREO_MODE_MONO}, {@link #STEREO_MODE_TOP_BOTTOM}, {@link #STEREO_MODE_LEFT_RIGHT} or {@link
+     * #STEREO_MODE_STEREO_MESH}.
+     */
+    @Documented
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({
+            Format.NO_VALUE,
+            STEREO_MODE_MONO,
+            STEREO_MODE_TOP_BOTTOM,
+            STEREO_MODE_LEFT_RIGHT,
+            STEREO_MODE_STEREO_MESH
+    })
+    public @interface StereoMode {}
+
+    /**
+     * Indicates Monoscopic stereo layout, used with 360/3D/VR videos.
+     */
+    public static final int STEREO_MODE_MONO = 0;
+
+    /**
+     * Indicates Top-Bottom stereo layout, used with 360/3D/VR videos.
+     */
+    public static final int STEREO_MODE_TOP_BOTTOM = 1;
+
+    /**
+     * Indicates Left-Right stereo layout, used with 360/3D/VR videos.
+     */
+    public static final int STEREO_MODE_LEFT_RIGHT = 2;
+
+    /**
+     * Indicates a stereo layout where the left and right eyes have separate meshes,
+     * used with 360/3D/VR videos.
+     */
+    public static final int STEREO_MODE_STEREO_MESH = 3;
+
+    @Documented
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({})
+    public @interface ColorSpace {}
+
+    public static final int COLOR_SPACE_BT709 = MediaFormat.COLOR_STANDARD_BT709;
+
+    public static final int COLOR_SPACE_BT601 = MediaFormat.COLOR_STANDARD_BT601_PAL;
+
+    public static final int COLOR_SPACE_BT2020 = MediaFormat.COLOR_STANDARD_BT2020;
 }

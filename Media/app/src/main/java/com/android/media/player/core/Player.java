@@ -9,9 +9,19 @@ import com.android.media.player.core.audio.AudioAttributes;
 import com.android.media.player.core.audio.AudioListener;
 import com.android.media.player.core.audio.AuxEffectInfo;
 
+import com.android.media.player.core.metadata.MetadataOutput;
+import com.android.media.player.core.source.TrackGroupArray;
+import com.android.media.player.core.text.TextOutput;
 import com.android.media.player.core.video.VideoFrameMetadataListener;
 import com.android.media.player.core.video.VideoListener;
+import com.android.media.player.core.video.spherical.CameraMotionListener;
+import com.android.media.player.trackselection.TrackSelectionArray;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 /**
@@ -276,7 +286,7 @@ public interface Player {
          *
          * @param listener  The output to remove.
          */
-        void removeTextOutput(TexOutput listener);
+        void removeTextOutput(TextOutput listener);
     }
 
     /**
@@ -289,21 +299,167 @@ public interface Player {
          *
          * @param output The output to register.
          */
-        void addMetadataOutput(MetadataComponent output);
+        void addMetadataOutput(MetadataOutput output);
 
         /**
          * Removes a {@link MetadataOutput}.
          *
          * @param output The output to remove.
          */
-        void removeMetadataOutput(MetadataComponent output);
+        void removeMetadataOutput(MetadataOutput output);
     }
 
     interface EventListener {
         default void onTimelineChanged(
-                Timeline timeline, @Nullable Object manifest, @TimelineChangeReason int reason
-        ) {}
+                Timeline timeline, @Nullable Object manifest, @TimelineChangeReason int reason) {}
 
+        default void onTracksChanged(
+                TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {}
 
+        default void onLoadingChanged(boolean isLoading) {}
+
+        default void onPlayerStateChanged(boolean playWhenReady, int playbackState) {}
+
+        default void onRepeatModeChanged(@RepeatMode int repeatMode) {}
+
+        default void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {}
+
+        default void onPlayerError(ExoPlaybackException error) {}
+
+        default void onPositionDiscontinuity(@DiscontinuityReason int reason) {}
+
+        default void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {}
+
+        default void onSeekProcessed() {}
     }
+
+    @Deprecated
+    abstract class DefaultEventListener implements EventListener {
+
+        @Override
+        @SuppressWarnings("deprecation")
+        public void onTimelineChanged(
+                Timeline timeline, @Nullable Object manifest, @TimelineChangeReason int reason) {
+
+            // Call deprecated version. Otherwise, do nothing.
+            onTimelineChanged(timeline, manifest);
+        }
+
+        public void onTimelineChanged(Timeline timeline, @Nullable Object manifest) {
+            // Do nothing.
+        }
+    }
+
+    /**
+     * The player does not have any media to play.
+     */
+    int STATE_IDLE = 1;
+
+    /**
+     * The player is not able to immediately play from its current position. This state typically
+     * occurs when more data needs to be loaded.
+     */
+    int STATE_BUFFERING = 2;
+
+    /**
+     * The player is able to immediately play from its current position. The player will be playing if
+     * {@link #getPlayWhenReady()} is true, and paused otherwise.
+     */
+    int STATE_READY = 3;
+
+    /**
+     * The player has finished playing the media.
+     */
+    int STATE_ENDED = 4;
+
+    /**
+     * Repeat modes for playback. One of {@link #REPEAT_MODE_OFF}, {@link #REPEAT_MODE_ONE} or {@link
+     * #REPEAT_MODE_ALL}.
+     */
+    @Documented
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({REPEAT_MODE_OFF, REPEAT_MODE_ONE, REPEAT_MODE_ALL})
+    @interface RepeatMode {}
+
+    /**
+     * Normal playback without repetition.
+     */
+    int REPEAT_MODE_OFF = 0;
+
+    /**
+     * "Repeat One" mode to repeat the currently playing window infinitely.
+     */
+    int REPEAT_MODE_ONE = 1;
+
+    /**
+     * "Repeat All" mode to repeat the entire timeline infinitely.
+     */
+    int REPEAT_MODE_ALL = 2;
+
+
+    /**
+     * Reasons for position discontinuities. One of {@link #DISCONTINUITY_REASON_PERIOD_TRANSITION},
+     * {@link #DISCONTINUITY_REASON_SEEK}, {@link #DISCONTINUITY_REASON_SEEK_ADJUSTMENT}, {@link
+     * #DISCONTINUITY_REASON_AD_INSERTION} or {@link #DISCONTINUITY_REASON_INTERNAL}.
+     */
+    @Documented
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({
+            DISCONTINUITY_REASON_PERIOD_TRANSITION,
+            DISCONTINUITY_REASON_SEEK,
+            DISCONTINUITY_REASON_SEEK_ADJUSTMENT,
+            DISCONTINUITY_REASON_INTERNAL
+    })
+    @interface DiscontinuityReason {}
+
+    /**
+     * Automatic playback transition from one period in the timeline to the next. The period index may
+     * be the same as it was before the discontinuity in case the current period is repeated.
+     */
+    int DISCONTINUITY_REASON_PERIOD_TRANSITION = 0;
+
+    /** Seek within the current period or to another period. */
+    int DISCONTINUITY_REASON_SEEK = 1;
+
+    /**
+     * Seek adjustment due to being unable to seek to the requested position or because the seek was
+     * permitted to be inexact.
+     */
+    int DISCONTINUITY_REASON_SEEK_ADJUSTMENT = 2;
+
+    /** Discontinuity to or from an ad within one period in the timeline. */
+    int DISCONTINUITY_REASON_AD_INSERTION = 3;
+
+    /** Discontinuity introduced internally by the source. */
+    int DISCONTINUITY_REASON_INTERNAL = 4;
+
+    /**
+     * Reasons for timeline and/or manifest changes. One of {@link #TIMELINE_CHANGE_REASON_PREPARED},
+     * {@link #TIMELINE_CHANGE_REASON_RESET} or {@link #TIMELINE_CHANGE_REASON_DYNAMIC}.
+     */
+    @Documented
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({
+            TIMELINE_CHANGE_REASON_PREPARED,
+            TIMELINE_CHANGE_REASON_RESET,
+            TIMELINE_CHANGE_REASON_DYNAMIC
+    })
+    @interface TimelineChangeReason {}
+
+    /**
+     * Timeline and manifest changed as a result of a player initialization with new media.
+     */
+    int TIMELINE_CHANGE_REASON_PREPARED = 0;
+
+    /**
+     * Timeline and manifest changed as a result of a player reset.
+     */
+    int TIMELINE_CHANGE_REASON_RESET = 1;
+
+    /**
+     * Timeline or manifest changed as a result of an dynamic update introduced by the played media.
+     */
+    int TIMELINE_CHANGE_REASON_DYNAMIC = 2;
+
+
 }

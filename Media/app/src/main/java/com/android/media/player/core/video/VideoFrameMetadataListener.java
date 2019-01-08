@@ -1,5 +1,7 @@
 package com.android.media.player.core.video;
 
+import com.android.media.player.core.Format;
+
 /** A listener for metadata corresponding to video frame being rendered. */
 
 public interface VideoFrameMetadataListener {
@@ -12,5 +14,5 @@ public interface VideoFrameMetadataListener {
      *     If the platform API version of the device is less than 21, then this is the best effort.
      * @param format The format associated with the frame.
      */
-    void onVideoFrameAboutToBeRendered(long presentationTimeUs, long releaseTimeNs, Format forat);
+    void onVideoFrameAboutToBeRendered(long presentationTimeUs, long releaseTimeNs, Format format);
 }

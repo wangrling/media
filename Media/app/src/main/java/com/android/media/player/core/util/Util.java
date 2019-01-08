@@ -1,6 +1,7 @@
 package com.android.media.player.core.util;
 
 import android.os.Build;
+import android.os.Parcel;
 
 /**
  * Miscellaneous utility methods.
@@ -45,4 +46,14 @@ public final class Util {
     private static final String TAG = "Util";
 
 
+    /**
+     * Reads an integer from a {@link Parcel} and interprets it as a boolean, with 0 mapping to false
+     * and all other values mapping to true.
+     *
+     * @param parcel The {@link Parcel} to read from.
+     * @return The read value.
+     */
+    public static boolean readBoolean(Parcel parcel) {
+        return parcel.readInt() != 0;
+    }
 }
