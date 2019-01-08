@@ -1,6 +1,8 @@
 package com.android.media.player.core;
 
 import android.media.AudioAttributes;
+import android.media.MediaCodec;
+import android.widget.MediaController;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -227,6 +229,32 @@ public class C {
 
     public static final int USAGE_VOICE_COMMUNICATION_SIGNALLING =
             AudioAttributes.USAGE_VOICE_COMMUNICATION_SIGNALLING;
+
+    /**
+     * Video scaling modes for {@link MediaCodec}-based {@link Renderer}s. One of
+     * {@link #VIDEO_SCALING_MODE_SCALE_TO_FIT} or {@link #VIDEO_SCALING_MODE_SCLE_TO_FIT_WITH_CROPPING}.
+     */
+    @Documented
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef(value = {VIDEO_SCALING_MODE_SCALE_TO_FIT, VIDEO_SCALING_MODE_SCLE_TO_FIT_WITH_CROPPING})
+    public @interface VideoScalingMode {}
+
+    /**
+     * @see MediaCodec#VIDEO_SCALING_MODE_SCALE_TO_FIT
+     */
+    public static final int VIDEO_SCALING_MODE_SCALE_TO_FIT =
+            MediaCodec.VIDEO_SCALING_MODE_SCALE_TO_FIT;
+
+    /**
+     * @see MediaCodec#VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING
+     */
+    public static final int VIDEO_SCALING_MODE_SCLE_TO_FIT_WITH_CROPPING =
+            MediaCodec.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING;
+
+    /**
+     * A default video scaling mode for {@link MediaCodec}-based {@link Renderer}s.
+     */
+    public static final int VIDEO_SCALING_MODE_DEFAULT = VIDEO_SCALING_MODE_SCALE_TO_FIT;
 
 
 }

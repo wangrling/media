@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
  * document of {@link android.media.audiofx.AudioEffect} for more information.</p>
  */
 
-// 具体有什么作用还是实践。
+// 具体有什么作用还是要实践。
 
 public final class AuxEffectInfo {
 
