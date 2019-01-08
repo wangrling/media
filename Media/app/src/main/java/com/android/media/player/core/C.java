@@ -1,5 +1,13 @@
 package com.android.media.player.core;
 
+import android.media.AudioAttributes;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+import androidx.annotation.IntDef;
+
 /**
  * Defines constants used by the library.
  */
@@ -94,4 +102,131 @@ public class C {
      * The name of the sans-serif font family.
      */
     public static final String SANS_SERIF_NAME = "sans-serif";
+
+    /**
+     * Content types for {@link com.android.media.player.core.audio.AudioAttributes}. One of
+     * {@link #CONTENT_TYPE_MOVIE}, {@link #CONTENT_TYPE_MUSIC}, {@link #CONTENT_TYPE_SONIFICATION},
+     * {@link #CONTENT_TYPE_SPEECH} or {@link #CONTENT_TYPE_UNKNOWN}.
+     */
+    @Documented
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({
+            CONTENT_TYPE_MOVIE,
+            CONTENT_TYPE_MUSIC,
+            CONTENT_TYPE_SONIFICATION,
+            CONTENT_TYPE_SPEECH,
+            CONTENT_TYPE_UNKNOWN
+    })
+    public @interface AudioContentType {}
+
+    /**
+     * @see AudioAttributes#CONTENT_TYPE_MOVIE
+     */
+    public static final int CONTENT_TYPE_MOVIE = AudioAttributes.CONTENT_TYPE_MOVIE;
+    /**
+     * @see AudioAttributes#CONTENT_TYPE_MUSIC
+     */
+    public static final int CONTENT_TYPE_MUSIC = AudioAttributes.CONTENT_TYPE_MUSIC;
+    /**
+     * @see AudioAttributes#CONTENT_TYPE_SONIFICATION
+     */
+    public static final int CONTENT_TYPE_SONIFICATION = AudioAttributes.CONTENT_TYPE_SONIFICATION;
+    /**
+     * @see AudioAttributes#CONTENT_TYPE_SPEECH
+     */
+    public static final int CONTENT_TYPE_SPEECH = AudioAttributes.CONTENT_TYPE_SPEECH;
+    /**
+     * @see AudioAttributes#CONTENT_TYPE_UNKNOWN
+     */
+    public static final int CONTENT_TYPE_UNKNOWN = AudioAttributes.CONTENT_TYPE_UNKNOWN;
+
+    /**
+     * audibility 可听性
+     * Flags for {@link com.android.media.player.core.audio.AudioAttributes}. Possible flag value
+     * is {@link #FlAG_AUDIBILITY_ENFORCED}.
+     *
+     * <p>Note that {@link AudioAttributes#FLAG_HW_AV_SYNC} is not available because the player
+     * takes care of setting the flag when tunneling is enabled via a track selector.</p>
+     */
+    @Documented
+    @Retention(RetentionPolicy.SOURCE)
+    // flag属性
+    @IntDef(
+            flag = true,
+            value = {FlAG_AUDIBILITY_ENFORCED})
+    public @interface AudioFlags {}
+    /**
+     * @see AudioAttributes#FLAG_AUDIBILITY_ENFORCED
+     */
+    public static final int FlAG_AUDIBILITY_ENFORCED = AudioAttributes.FLAG_AUDIBILITY_ENFORCED;
+
+    @Documented
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({
+            USAGE_ALARM,
+            USAGE_ASSISTANCE_ACCESSIBILITY,
+            USAGE_ASSISTANCE_NAVIGATION_GUIDANCE,
+            USAGE_ASSISTANCE_SONIFICATION,
+            USAGE_ASSISTANT,
+            USAGE_GAME,
+            USAGE_MEDIA,
+            USAGE_NOTIFICATION,
+            USAGE_NOTIFICATION_COMMUNICATION_DELAYED,
+            USAGE_NOTIFICATION_COMMUNICATION_INSTANT,
+            USAGE_NOTIFICATION_COMMUNICATION_REQUEST,
+            USAGE_NOTIFICATION_EVENT,
+            USAGE_NOTIFICATION_RINGTONE,
+            USAGE_UNKNOWN,
+            USAGE_VOICE_COMMUNICATION,
+            USAGE_VOICE_COMMUNICATION_SIGNALLING
+    })
+    public @interface AudioUsage {}
+
+    // 分得真细致
+
+    public static final int USAGE_ALARM = AudioAttributes.USAGE_ALARM;
+
+    public static final int USAGE_ASSISTANCE_ACCESSIBILITY =
+            AudioAttributes.USAGE_ASSISTANCE_ACCESSIBILITY;
+
+    public static final int USAGE_ASSISTANCE_NAVIGATION_GUIDANCE =
+            AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE;
+
+    public static final int USAGE_ASSISTANCE_SONIFICATION =
+            AudioAttributes.USAGE_ASSISTANCE_SONIFICATION;
+
+    public static final int USAGE_ASSISTANT =
+            AudioAttributes.USAGE_ASSISTANT;
+
+    public static final int USAGE_GAME = AudioAttributes.USAGE_GAME;
+
+    public static final int USAGE_MEDIA = AudioAttributes.USAGE_MEDIA;
+
+    public static final int USAGE_NOTIFICATION = AudioAttributes.USAGE_NOTIFICATION;
+
+    public static final int USAGE_NOTIFICATION_COMMUNICATION_DELAYED =
+            AudioAttributes.USAGE_NOTIFICATION_COMMUNICATION_DELAYED;
+
+    public static final int USAGE_NOTIFICATION_COMMUNICATION_INSTANT =
+            AudioAttributes.USAGE_NOTIFICATION_COMMUNICATION_INSTANT;
+
+    public static final int USAGE_NOTIFICATION_COMMUNICATION_REQUEST =
+            AudioAttributes.USAGE_NOTIFICATION_COMMUNICATION_REQUEST;
+
+    public static final int USAGE_NOTIFICATION_EVENT =
+            AudioAttributes.USAGE_NOTIFICATION_EVENT;
+
+    public static final int USAGE_NOTIFICATION_RINGTONE =
+            AudioAttributes.USAGE_NOTIFICATION_RINGTONE;
+
+    public static final int USAGE_UNKNOWN =
+            AudioAttributes.USAGE_UNKNOWN;
+
+    public static final int USAGE_VOICE_COMMUNICATION =
+            AudioAttributes.USAGE_VOICE_COMMUNICATION;
+
+    public static final int USAGE_VOICE_COMMUNICATION_SIGNALLING =
+            AudioAttributes.USAGE_VOICE_COMMUNICATION_SIGNALLING;
+
+
 }
