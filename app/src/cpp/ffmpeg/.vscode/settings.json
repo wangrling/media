@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "mem.h": "c",
+        "hwcontext_qsv.h": "c",
+        "config.h": "c"
+    }
+}

@@ -2,9 +2,17 @@
   <dictionary name="wangrl">
     <words>
       <w>autoselect</w>
+      <w>cbcs</w>
+      <w>cenc</w>
+      <w>cens</w>
+      <w>clearkey</w>
       <w>dtmf</w>
       <w>emoji</w>
       <w>monoscopic</w>
+      <w>muxed</w>
+      <w>perferences</w>
+      <w>playready</w>
+      <w>pssh</w>
       <w>renderers</w>
       <w>slashy</w>
       <w>sonification</w>
@@ -12,6 +20,8 @@
       <w>timelines</w>
       <w>truehd</w>
       <w>unapplied</w>
+      <w>wallclock</w>
+      <w>widevine</w>
     </words>
   </dictionary>
 </component>

@@ -17,8 +17,10 @@ link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs)
 set(libffmpeg  libavutil.so  libavdevice.so libavfilter.so libavformat.so libavcodec.so
         libswresample.so libswscale.so)
 
-set(TESTS metadata seek decode_audio)
+set(TESTS avio_dir_cmd avio_reading decode_audio decode_video demuxing_decoding encode_audio encode_video
+        extract_mvs filter_audio filtering_video http_multiclient hw_decode metadata muxing  remuxing
+        resampling_audio scaling_video seek transcode_aac transcoding vaapi_encode vaapi_transcode)
 foreach(TEST ${TESTS})
         add_executable(${TEST} tests/${TEST}.c)
-        target_link_libraries(${TEST} ${libffmpeg})
+        target_link_libraries(${TEST} ${libffmpeg} -lm)
 endforeach(TEST)
